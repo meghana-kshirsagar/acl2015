@@ -229,7 +229,7 @@
 \newcommand{\cjd}[1]{\arkcomment{\cjdmarker}{#1}{green}}
 \newcommand{\nss}[1]{\arkcomment{\nssmarker}{#1}{magenta}}
 \newcommand{\mk}[1]{\arkcomment{\nasmarker}{#1}{red}}
-\newcommand{\bo}[1]{\arkcomment{\bomarker}{#1}{blue}}
+\newcommand{\st}[1]{\arkcomment{\bomarker}{#1}{blue}}
 \newcommand{\jb}[1]{\arkcomment{\jbmarker}{#1}{orange}}
 \newcommand{\db}[1]{\arkcomment{\dbmarker}{#1}{purple}}
 \newcommand{\wts}{\mathbf{w}}
@@ -372,9 +372,9 @@ that leverage additional resources internal and external to FrameNet.
 Frame-semantic parsing \citep{das-14} is a case in point.
 This is the task of automating the rich linguistic structure analyses 
 of the FrameNet lexicon and corpus \citep{baker-98}.\footnote{\url{http://framenet.icsi.berkeley.edu/}}
-The FrameNet representation describes events and other scenarios 
+FrameNet represents kinds of events and other scenarios 
 with an inventory of \textbf{frames} (\nss{examples}). 
-Each frame in is associated with lexical \textbf{predicates} (verbs, nouns, adjectives, and adverbs) capable of 
+Each frame is associated with lexical \textbf{predicates} (verbs, nouns, adjectives, and adverbs) capable of 
 evoking the scenario, and a set of \textbf{roles} (or \textbf{frame elements}) 
 called to mind in order to understand the scenario. 
 These roles may be implicit, 
@@ -382,22 +382,23 @@ but are frequently realized linguistically in the same sentence as the predicate
 Given a sentence, frame-semantic parsing is the task of mapping tokens in the sentences
 to evoked frames, and for each evoked frame, finding and labeling its \textbf{argument} phrases 
 with roles.\nss{example}
-FrameNet defines a structured hierarchy of over 1,000 frames associated with \nss{\#}~English lexical predicates, 
-and also provides annotations for \nss{\#} attestations 
+
+FrameNet~1.5 defines a structured hierarchy of over 1,000 frames associated with \nss{\#}~English lexical predicates, 
+and also provides annotations for \nss{\# targets annotated total} attestations 
 of these frames/predicates in corpora, annotated in context with their arguments. 
 In FrameNet~1.5, a rather small number of sentences---\nss{\#}, comprising \nss{\#} words---% 
 are provided with \textbf{full-text} annotations, i.e.~the sentence 
 has been analyzed for all available frames. 
-But a full \nss{\#}\% of sentences in FrameNet---the lexicographic \textbf{exemplars}---are annotated for only one frame, 
+But a full \nss{\#}\% of sentences in FrameNet---the lexicographic \textbf{exemplars}---are annotated for only one frame per sentence, 
 and have thus far not been exploited successfully for frame-semantic parsing.
-Here, we seek to leverage FrameNet's partially-annotated exemplar sentences 
+Here, we seek to leverage these exemplar sentences 
 as well as the (type-level) hierarchical structure of the FrameNet lexicon. 
 
 In this paper, we address the \textbf{argument identification} 
 subtask of finding and labeling arguments 
 given a predicate in context and the frame it evokes.
 This is a form of semantic role labeling (SRL).
-Another resource, PropBank \citep{propbank}, has been widely used for SRL \citep{palmer-10}. 
+Notably, another resource, \textbf{PropBank} \citep{propbank}, has been widely used for SRL \citep{palmer-10}. 
 PropBank annotations capture shallower lexical frames and arguments; 
 additionally, PropBank provides \nss{millions?} of words of fully annotated English sentences
 (annotation is much less expensive, but also potentially less valuable, because of the shallower representation).
@@ -409,7 +410,7 @@ to augment the training data, or by preprocessing sentences with a PropBank SRL 
 for FrameNet argument identification.
 
 Our experiments expand the \emph{training data} and/or the \emph{feature space}
-of argument identification
+of supervised argument identification
 in order to integrate evidence from all of these sources 
 into SEMAFOR \citep{das-14}, the leading open-source frame-semantic parser for English.\footnote{\url{http://www.ark.cs.cmu.edu/SEMAFOR/}} 
 The results show that some of these sources of evidence succeed 
