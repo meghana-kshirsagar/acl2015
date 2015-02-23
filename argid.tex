@@ -355,11 +355,65 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-This paper 
+The sparseness of annotated data is a major obstacle 
+to automating semantic analysis with broad coverage.
+This paper considers the argument identification subtask 
+of frame-semantic parsing, which to date has relied exclusively 
+upon full-text annotations in the FrameNet resource.
+We propose to augment supervised learning with additional features 
+that leverage additional resources internal and external to FrameNet. 
+\nss{result}
 \end{abstract}
 
 \section{Introduction}
 
+\nss{sparseness is a challenge for many computational semantics tasks}
+
+Frame-semantic parsing \citep{das-14} is a case in point.
+This is the task of automating the rich linguistic structure analyses 
+of the FrameNet lexicon and corpus \citep{baker-98}.\footnote{\url{http://framenet.icsi.berkeley.edu/}}
+The FrameNet representation describes events and other scenarios 
+with an inventory of \textbf{frames} (\nss{examples}). 
+Each frame in is associated with lexical \textbf{predicates} (verbs, nouns, adjectives, and adverbs) capable of 
+evoking the scenario, and a set of \textbf{roles} (or \textbf{frame elements}) 
+called to mind in order to understand the scenario. 
+These roles may be implicit, 
+but are frequently realized linguistically in the same sentence as the predicate.
+Given a sentence, frame-semantic parsing is the task of mapping tokens in the sentences
+to evoked frames, and for each evoked frame, finding and labeling its \textbf{argument} phrases 
+with roles.\nss{example}
+FrameNet defines a structured hierarchy of over 1,000 frames associated with \nss{\#}~English lexical predicates, 
+and also provides annotations for \nss{\#} attestations 
+of these frames/predicates in corpora, annotated in context with their arguments. 
+In FrameNet~1.5, a rather small number of sentences---\nss{\#}, comprising \nss{\#} words---% 
+are provided with \textbf{full-text} annotations, i.e.~the sentence 
+has been analyzed for all available frames. 
+But a full \nss{\#}\% of sentences in FrameNet---the lexicographic \textbf{exemplars}---are annotated for only one frame, 
+and have thus far not been exploited successfully for frame-semantic parsing.
+Here, we seek to leverage FrameNet's partially-annotated exemplar sentences 
+as well as the (type-level) hierarchical structure of the FrameNet lexicon. 
+
+In this paper, we address the \textbf{argument identification} 
+subtask of finding and labeling arguments 
+given a predicate in context and the frame it evokes.
+This is a form of semantic role labeling (SRL).
+Another resource, PropBank \citep{propbank}, has been widely used for SRL \citep{palmer-10}. 
+PropBank annotations capture shallower lexical frames and arguments; 
+additionally, PropBank provides \nss{millions?} of words of fully annotated English sentences
+(annotation is much less expensive, but also potentially less valuable, because of the shallower representation).
+To get the best of both worlds, we aim to tap into PropBank's vast resources 
+as indirect token-level supervision for FrameNet-style analysis. 
+We hypothesize that PropBank analyses can serve as a weak signal for the FrameNet SRL task, 
+either by heuristically transforming PropBank annotations into FrameNet annotations 
+to augment the training data, or by preprocessing sentences with a PropBank SRL system to obtain new features 
+for FrameNet argument identification.
+
+Our experiments expand the \emph{training data} and/or the \emph{feature space}
+of argument identification
+in order to integrate evidence from all of these sources 
+into SEMAFOR \citep{das-14}, the leading open-source frame-semantic parser for English.\footnote{\url{http://www.ark.cs.cmu.edu/SEMAFOR/}} 
+The results show that some of these sources of evidence succeed 
+at boosting argument identification performance.\nss{SOTA (without constraints)?}
 
 \section{Conclusion}
 
