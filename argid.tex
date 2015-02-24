@@ -355,16 +355,19 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-The sparseness of annotated data is a major obstacle 
+The high cost of semantic structure annotation is a major obstacle 
 to automating semantic analysis with broad coverage.
-Yet separate datasets annotated with similar forms of annotation
-potentially provide weak evidence for the task of interest.
-This paper considers the argument identification subtask 
+The fully annotated datasets that exist are often small, 
+hindering the robustness of models trained on them.
+However, low-resource tasks may benefit from exploiting \emph{partially} annotated data, 
+as well as data with \emph{different} (but related) forms of annotation,
+for additional training data or features.
+This paper considers the argument identification and classification subtask 
 of frame-semantic parsing, which to date has relied exclusively 
 upon full-text annotations in the FrameNet resource.
-We propose to augment supervised learning with additional 
+We augment supervised learning with additional 
 ``indirect'' training data and features 
-so as to leverage additional resources internal and external to FrameNet. 
+so as to leverage additional resources internal and external to FrameNet (e.g., PropBank). 
 \nss{result}
 \end{abstract}
 
