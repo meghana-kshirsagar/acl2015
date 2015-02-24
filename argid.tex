@@ -16,6 +16,7 @@
 \usepackage[small,bf,skip=5pt]{caption}
 \usepackage{sidecap} % side captions
 \usepackage{rotating}	% sideways
+\usepackage[pdftex]{graphicx}
 
 % Italicize subparagraph headings
 \usepackage{titlesec}
@@ -447,6 +448,21 @@ at boosting argument identification performance.\nss{SOTA (without constraints)?
  \end{tabular}
  \end{small}
  \end{table*}
+
+
+\begin{figure}[t]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\includegraphics[width=\textwidth]{fig/num_instances}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.5\textwidth}
+		\vspace{-1cm}
+		\includegraphics[width=\textwidth]{fig/f1_sorted_by_num_instances}
+	\end{subfigure}
+	\caption{Frame elements sorted by decreasing frequency.}
+\end{figure}
+
+
+
 
 \section{Conclusion}
 
