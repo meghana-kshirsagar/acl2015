@@ -446,6 +446,13 @@ at boosting argument identification performance.\nss{SOTA (without constraints)?
 
 \section{Learning from multiple domains and representations}
 
+We experiment with several techniques for modifying the model-fitting portion of 
+the argument identification model's local learning objective 
+(training data, features). All of our experiments use the same form of regularization, 
+condition on the same frame predictions\nss{not oracle, right? these are SEMAFOR's current frame ID model, so not state of the art?} 
+and syntactic preprocessing\nss{does this match Dipanjan's latest experiments?}, 
+and use beam search with \nss{hyperparam value} for joint decoding of arguments.\footnote{\nss{recent work has improved upon global decoding techniques; we expect such improvements to be complementary to the gains due to the local model reported here}}
+
 \nss{Domain adaptation/multitask learning techniques}
 
 \subsection{Augmenting the Training Data}
@@ -469,11 +476,11 @@ We have made several modifications to SEMAFOR's training that do not affect perf
   \item We use squared structured hinge loss (defined below) instead of multiclass logistic regression.
   Using hinge loss, there is no longer a need to calculate a partition function.
   Gradients, and hence parameters, are sparser than in logistic regression, allowing us to use a sparse vector implementation.
-  \item We use the online optimization method AdaDelta \citep{zeiler-12} with minibatches, instead of the batch method L-BFGS \citep{liu-89}.
-  \item We use elastic net ($\ell_1 + \ell_2$) regularization. Adding $\ell_1$ also has the effect of keeping the parameter vector sparse.
+  \item We use the online optimization method AdaDelta \citep{zeiler-12} with minibatches\nss{minibatch size?}, instead of the batch method L-BFGS \citep{liu-89}.
+  \item We use elastic net ($\ell_1 + \ell_2$) regularization. Adding $\ell_1$ also has the effect of keeping the parameter vector sparse.\nss{what hyperparameter(s)? are $\ell_1$ and $\ell_2$ tuned separately?}
 \end{itemize}
 We use these changes for all systems, including the baseline.
-While performance is not significantly affected\st{we checked this, right?}, these changes enabled us to run more experiments with the larger exemplar dataset and expanded feature space. 
+While performance is not significantly affected\st{we checked this, right?}\nss{meghana should have P/R/F and runtime numbers}, these changes enabled us to run more experiments with the larger exemplar dataset and expanded feature space. 
 
 The details of squared hinge loss are as follows.
 We use a linearly parametrized model \st{this should probably be talked about earlier}:
@@ -491,12 +498,11 @@ and squared hinge loss is:
 \text{SquaredHinge}_\mathbf{w}(i) =
 \text{Hinge}_\mathbf{w}(i)^2.
 \end{equation}
-In our experiments, we use $\text{cost}(y, y^{(i)}) = \indicator{y \ne y^{(i)}}$ \st{define}\footnote{We experimented with recall-oriented training, where errors of omission are assigned a higher cost, but found that while recall increased, overall F1 went down.}.
+In our experiments, we use $\text{cost}(y, y^{(i)}) = \indicator{y \ne y^{(i)}}$ \st{define}\footnote{We experimented with recall-oriented training, where errors of omission are assigned a higher cost, but found that while recall increased, overall $F_1$ went down\nss{or: failed to improve?}.}.
 
 During training, each frame element is treated as an independent training instance.
-But at test time, all frame elements for a given frame are decoded at once, and beam search is used to ensure that no roles overlap.
+But at test time, all frame elements for a given frame are decoded at once, and beam search is used to ensure that no roles\nss{arguments?} overlap.\nss{does beam search require normalizing to probabilities?}
 
-\nss{cost-augmented hinge rather than log loss, train with adadelta. runtime improvement, accuracies almost the same}
 
 \nss{can mention recall-oriented experiments in a footnote}
 
@@ -516,7 +522,7 @@ But at test time, all frame elements for a given frame are decoded at once, and 
 
 \nss{hierarchy features: which ones work best (decided on baseline), how do they improve best result so far}
 
-\nss{Sam's curves on per-FE F1}
+\nss{Sam's curves on per-FE $F_1$}
 
 \nss{comparison to prior work (baseline, best result). args+frames score vs. args only}
 
@@ -528,7 +534,7 @@ But at test time, all frame elements for a given frame are decoded at once, and 
 \begin{small}
 \begin{tabular}{|l|c|c|c|c|c|c|}\hline
 & \multicolumn{3}{c|}{\textbf{Test on FN}} & \multicolumn{3}{c|}{\textbf{Test on Exemplars}} \\ \hline
- & P & R & F1 & P & R & F1 \\ \hline
+ & P & R & $F_1$ & P & R & $F_1$ \\ \hline
  Semafor baseline (trained on FN) & 0.6603 & 0.5379 & 0.5929 & 0.649 & 0.336 & 0.4427 \\ \hline
  baseline trained on combined &  0.66061 & 0.58234 & 0.61901 & 0.75639 & 0.65446 & 0.70174 \\ \hline
  trained only on exemplars & 0.61084 & 0.49049 & 0.54409 & 0.77279 & 0.66228 & 0.71328 \\ \hline
@@ -557,7 +563,7 @@ But at test time, all frame elements for a given frame are decoded at once, and 
 		\vspace{-1cm}
 		\includegraphics[width=\textwidth]{fig/f1_sorted_by_num_instances}
 	\end{subfigure}
-	\caption{Count and F1 for each frame element appearing in the test set. F1 values have been smoothed with \texttt{loess}, with a smoothing parameter of 0.2.}
+	\caption{Count and $F_1$ for each frame element appearing in the test set. $F_1$ values have been smoothed with \texttt{loess}, with a smoothing parameter of 0.2.}
 \end{figure}
 
 
