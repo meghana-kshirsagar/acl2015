@@ -16,7 +16,7 @@
 \usepackage[small,bf,skip=5pt]{caption}
 \usepackage{sidecap} % side captions
 \usepackage{rotating}	% sideways
-\usepackage[pdftex]{graphicx}
+% \usepackage[pdftex]{graphicx}
 
 % Italicize subparagraph headings
 \usepackage{titlesec}
@@ -37,6 +37,7 @@
 \usepackage{xspace}
 \usepackage{xparse} % for fancy custom macros (\NewDocumentEnvironment, etc.)
 
+\newcommand{\indicator}[1]{\boldsymbol{1}\{#1\}}
 
 
 \usepackage{textcomp}
@@ -222,7 +223,7 @@
 \newcommand{\cjdmarker}{\ensuretext{\textcolor{green}{\ensuremath{^{\textsc{CJ}}_{\textsc{D}}}}}}
 \newcommand{\nssmarker}{\ensuretext{\textcolor{magenta}{\ensuremath{^{\textsc{NS}}_{\textsc{S}}}}}}
 \newcommand{\nasmarker}{\ensuretext{\textcolor{red}{\ensuremath{^{\textsc{NA}}_{\textsc{S}}}}}}
-\newcommand{\bomarker}{\ensuretext{\textcolor{blue}{\ensuremath{^{\textsc{B}}_{\textsc{O}}}}}}
+\newcommand{\stmarker}{\ensuretext{\textcolor{blue}{\ensuremath{^{\textsc{S}}_{\textsc{T}}}}}}
 \newcommand{\jbmarker}{\ensuretext{\textcolor{orange}{\ensuremath{^{\textsc{J}}_{\textsc{B}}}}}}
 \newcommand{\dbmarker}{\ensuretext{\textcolor{purple}{\ensuremath{^{\textsc{D}}_{\textsc{B}}}}}}
 \newcommand{\arkcomment}[3]{\ensuretext{\textcolor{#3}{[#1 #2]}}}
@@ -230,7 +231,7 @@
 \newcommand{\cjd}[1]{\arkcomment{\cjdmarker}{#1}{green}}
 \newcommand{\nss}[1]{\arkcomment{\nssmarker}{#1}{magenta}}
 \newcommand{\mk}[1]{\arkcomment{\nasmarker}{#1}{red}}
-\newcommand{\st}[1]{\arkcomment{\bomarker}{#1}{blue}}
+\newcommand{\st}[1]{\arkcomment{\stmarker}{#1}{blue}}
 \newcommand{\jb}[1]{\arkcomment{\jbmarker}{#1}{orange}}
 \newcommand{\db}[1]{\arkcomment{\dbmarker}{#1}{purple}}
 \newcommand{\wts}{\mathbf{w}}
@@ -460,6 +461,40 @@ at boosting argument identification performance.\nss{SOTA (without constraints)?
 \nss{tuning regularizer for all experiments}
 
 \subsection{Baseline}
+
+As a baseline, we compare to SEMAFOR \citep{das-14}.
+We have made several modifications to SEMAFOR's training that do not affect performance, but do speed up experiments:
+
+\begin{itemize}
+  \item We use squared structured hinge loss (defined below) instead of multiclass logistic regression.
+  Using hinge loss, there is no longer a need to calculate a partition function.
+  Gradients, and hence parameters, are sparser than in logistic regression, allowing us to use a sparse vector implementation.
+  \item We use the online optimization method AdaDelta \citep{zeiler-12} with minibatches, instead of the batch method L-BFGS \citep{liu-89}.
+  \item We use elastic net ($\ell_1 + \ell_2$) regularization. Adding $\ell_1$ also has the effect of keeping the parameter vector sparse.
+\end{itemize}
+We use these changes for all systems, including the baseline.
+While performance is not significantly affected\st{we checked this, right?}, these changes enabled us to run more experiments with the larger exemplar dataset and expanded feature space. 
+
+The details of squared hinge loss are as follows.
+We use a linearly parametrized model \st{this should probably be talked about earlier}:
+\begin{equation}
+\text{score}_\mathbf{w}(y \mid x) = \mathbf{w}^\top \mathbf{f}(x, y)
+\end{equation}
+Let $(x^{(i)}, y^{(i)})$ be the $i^{th}$ training example.
+Then the structured hinge loss on the $i^{th}$ example is given by:
+\begin{equation}
+\text{Hinge}_\mathbf{w}(i) = 
+\max_y{\{\mathbf{w}^\top \mathbf{f}(x^{(i)}, y) + \text{cost}(y, y^{(i)})\}} - \mathbf{w}^\top \mathbf{f}(x^{(i)}, y^{(i)})
+\end{equation}
+and squared hinge loss is:
+\begin{equation}
+\text{SquaredHinge}_\mathbf{w}(i) =
+\text{Hinge}_\mathbf{w}(i)^2.
+\end{equation}
+In our experiments, we use $\text{cost}(y, y^{(i)}) = \indicator{y \ne y^{(i)}}$ \st{define}\footnote{We experimented with recall-oriented training, where errors of omission are assigned a higher cost, but found that while recall increased, overall F1 went down.}.
+
+During training, each frame element is treated as an independent training instance.
+But at test time, all frame elements for a given frame are decoded at once, and beam search is used to ensure that no roles overlap.
 
 \nss{cost-augmented hinge rather than log loss, train with adadelta. runtime improvement, accuracies almost the same}
 
