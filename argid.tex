@@ -430,6 +430,21 @@ at boosting argument identification performance.\nss{SOTA (without constraints)?
 
 \nss{w/in each mention: genre/overall vocabulary; coverage and distributions of predicates, FE labels; oracle coverage of FT test}
 
+\subsection{Full-text Annotations}
+
+Contemporary frame-semantic parsers are trained and evaluated on the \textbf{full-text (FT)}\footnote{Though these 
+were \emph{annotated} and the document level, and train/dev/test splits are by document, the frame-semantic parsing 
+is currently restricted to the sentence level.} portion 
+of the FrameNet corpus. This consists of documents for which annotators made an effort 
+to assign frames and arguments to as many words as possible. 
+In some cases, this involved creating a new frame or adding a new lexical unit to an existing frame. 
+In other cases, words that in principle should be considered to evoke a frame were left unannotated 
+because they did not match any existing lexical units.
+
+Genres, sizes
+
+Annotation density: (proportion of tokens evoking a frame. breakdown by POS?)
+
 \subsection{Exemplars}
 
 \nss{how different from FT}
@@ -489,20 +504,21 @@ We use a linearly parametrized model \st{this should probably be talked about ea
 \end{equation}
 Let $(x^{(i)}, y^{(i)})$ be the $i^{th}$ training example.
 Then the structured hinge loss on the $i^{th}$ example is given by:
-\begin{equation}
-\text{Hinge}_\mathbf{w}(i) = 
-\max_y{\{\mathbf{w}^\top \mathbf{f}(x^{(i)}, y) + \text{cost}(y, y^{(i)})\}} - \mathbf{w}^\top \mathbf{f}(x^{(i)}, y^{(i)})
-\end{equation}
+\begin{align*}
+\lefteqn{\textit{Hinge}_\mathbf{w}(i) =} \\
+&&\max_y{\{\mathbf{w}^\top \mathbf{f}(x^{(i)}, y) + \text{cost}(y, y^{(i)})\}} - \mathbf{w}^\top \mathbf{f}(x^{(i)}, y^{(i)})
+\end{align*}
 and squared hinge loss is:
 \begin{equation}
-\text{SquaredHinge}_\mathbf{w}(i) =
-\text{Hinge}_\mathbf{w}(i)^2.
+\textit{SquaredHinge}_\mathbf{w}(i) =
+\textit{Hinge}_\mathbf{w}(i)^2.
 \end{equation}
 In our experiments, we use $\text{cost}(y, y^{(i)}) = \indicator{y \ne y^{(i)}}$ \st{define}\footnote{We experimented with recall-oriented training, where errors of omission are assigned a higher cost, but found that while recall increased, overall $F_1$ went down\nss{or: failed to improve?}.}.
 
 During training, each frame element is treated as an independent training instance.
 But at test time, all frame elements for a given frame are decoded at once, and beam search is used to ensure that no roles\nss{arguments?} overlap.\nss{does beam search require normalizing to probabilities?}
 
+\nss{what preprocessing? MSTParser?}
 
 \nss{can mention recall-oriented experiments in a footnote}
 
