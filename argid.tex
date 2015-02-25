@@ -423,7 +423,71 @@ into SEMAFOR \citep{das-14}, the leading open-source frame-semantic parser for E
 The results show that some of these sources of evidence succeed 
 at boosting argument identification performance.\nss{SOTA (without constraints)?}
 
-\section{Results}
+\section{Resources}
+
+\nss{incl. data analysis of differences from full-text}
+
+\nss{w/in each mention: genre/overall vocabulary; coverage and distributions of predicates, FE labels; oracle coverage of FT test}
+
+\subsection{Exemplars}
+
+\nss{how different from FT}
+
+\subsection{PropBank}
+
+\nss{how different from FN}
+
+\subsection{SemLink}
+
+\nss{limitations!}
+
+\subsection{Illinois SRL system}
+
+\section{Learning from multiple domains and representations}
+
+\nss{Domain adaptation/multitask learning techniques}
+
+\subsection{Augmenting the Training Data}
+
+\subsection{Frustratingly Easy}
+
+\subsection{2-stage}
+
+\subsection{Type-level hierarchy features}
+
+\section{Experiments}
+
+\nss{tuning regularizer for all experiments}
+
+\subsection{Baseline}
+
+\nss{cost-augmented hinge rather than log loss, train with adadelta. runtime improvement, accuracies almost the same}
+
+\nss{can mention recall-oriented experiments in a footnote}
+
+\nss{same FN 1.5 splits as Dipanjan}
+
+\nss{beam search decoding, not fancy hard constraints}
+
+\nss{preprocessing issues: removing duplicate sentences, merging adjacent split args in exemplars, OntoNotes PropBank preprocessing (NLTK), token-level SemLink details (such as filtering out sentences without mappable annotations; copy from WS paper)}
+
+\subsection{Evaluation}
+
+\nss{main eval: FT test; new eval: exemplars}
+
+\subsection{Results}
+
+\nss{results table without hierarchy features}
+
+\nss{hierarchy features: which ones work best (decided on baseline), how do they improve best result so far}
+
+\nss{Sam's curves on per-FE F1}
+
+\nss{comparison to prior work (baseline, best result). args+frames score vs. args only}
+
+\nss{discussion throughout}
+
+
 
 \begin{table*}
 \begin{small}
@@ -462,10 +526,17 @@ at boosting argument identification performance.\nss{SOTA (without constraints)?
 \end{figure}
 
 
+\section{Related Work}
 
+\nss{Dipanjan's other papers; mention other PB SRL work?; anything using SemLink or combining resources for SRL?}
+
+\nss{multitask learning?}
 
 \section{Conclusion}
 
+\nss{overall findings}
+
+\nss{future work: testing ground for improvements to PB and SemLink; automatic mappings between resources}
 
 \finalversion{\section*{Acknowledgments}
 
