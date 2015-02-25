@@ -1,7 +1,7 @@
 |Source              |Training Data++       |Frustratingly Easy   |2-stage Features     | ... + Hier Features |
 |--------------------|:--------------------:|:-------------------:|:-------------------:|:-------------------:|
 |1 Baseline          |    N/A               |  N/A                |  N/A                |   +                 |
-|2 Exemplars         |        +             |  (+)                |    TODO             |  ++                 |
+|2 Exemplars         |        +             |  (+)                | + (< combined)      |  ++                 |
 |3 PB + SemLink      |       −              | TODO?               |   TODO              |  TODO?              |
 |4 PB SRL            |       N/A            | TODO?               |  +                  |  TODO?              |
 
