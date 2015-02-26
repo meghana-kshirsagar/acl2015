@@ -619,10 +619,10 @@ It uses a linearly parametrized model that scores each candidate span given a fr
 \begin{equation}
 \text{score}_\mathbf{w}(y \mid x) = \mathbf{w}^\top \mathbf{f}(x, y)
 \end{equation}
-Automatic syntactic parses \st{from where? are we using the MST-stacked dep parses?} are used to narrow the set of candidate spans considered, and as input to feature extraction.
+Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} are used to narrow the set of candidate spans considered, and as input to feature extraction.
 
-During training, each frame element is treated as an independent multiclass logistic regression\nss{I think when people say logistic regression they usually mean 
-the set of possible outputs is shared across instances. Because the candidate arguments are instance-specific, better to call it log-linear/MaxEnt classification?} instance, with the set of candidate spans (including the \textsc{NULL} span) as its output space.
+During training, each frame element is treated as an independent log-linear classification instance, with the set of candidate spans (including the \textsc{NULL} span) as its output space.
+\st{something about L2 regularization}
 But at test time, it chooses a joint assignment of all arguments that maximizes probability under the model, while satisfying the following constraints:
 \begin{enumerate}
   \item an argument may be assigned to at most one span \st{theta criterion, Chomsky}, and
@@ -638,7 +638,7 @@ We have made several modifications to SEMAFOR's training in order to speed up ex
   Using hinge loss, there is no longer a need to calculate a partition function.
   Gradients, and hence parameters, are sparser than in logistic regression, allowing us to use a sparse vector implementation.
   \item We use the online optimization method AdaDelta \citep{zeiler-12} with minibatches\nss{minibatch size?}, instead of the batch method L-BFGS \citep{liu-89}.
-  \item We use elastic net ($\ell_1 + \ell_2$) regularization. Adding $\ell_1$ also has the effect of keeping the parameter vector sparse.\nss{what hyperparameter(s)? are $\ell_1$ and $\ell_2$ tuned separately?}
+%   \item We use elastic net ($\ell_1 + \ell_2$) regularization. Adding $\ell_1$ also has the effect of keeping the parameter vector sparse.\nss{what hyperparameter(s)? are $\ell_1$ and $\ell_2$ tuned separately?}
 \end{itemize}
 We use these changes for all systems, including the baseline.
 While the impact on full-text performance is negligible, 
@@ -671,7 +671,7 @@ In our experiments, we use $\text{cost}(y, y^{(i)}) = \indicator{y \ne y^{(i)}}$
 \nss{preprocessing issues: removing duplicate sentences, merging adjacent split args in exemplars, OntoNotes PropBank preprocessing (NLTK), token-level SemLink details (such as filtering out sentences without mappable annotations; copy from WS paper)}
 
 \nss{tuning regularizer for all experiments}
-We tune the regularization parameter $\lambda$ \mk{What shall I call it Sam?} on the held-out set. We searched over the following
+We tune the $\ell_2$ regularization parameter $\lambda$ on the held-out set. We searched over the following
 values: 10$^{-5}$, 10$^{-7}$, 10$^{-9}$, 10$^{-12}$ (note that our loss is normalized).
 We also use the performance on the held-out set to determine the stopping criterion for the stochastic optimization.
 
