@@ -539,7 +539,7 @@ We define the \textbf{local classifier} as:
 \textit{arg}(\mathbf{x}, p, f, r) = \argmax_{a \in \textit{spans}(\mathbf{x}, p, f) \cup \{\emptyset\}} \text{score}_{\mathbf{w}}(a \mid \mathbf{x}, p, f, r)
 \end{equation}
 This is used to choose an argument for every role $r$ 
-of frame $f$: note that in many cases the role will be empty, denoted $\emptyset$. 
+of frame $f$: note that in many cases the role will be empty (non-overt), denoted $\emptyset$. 
 The classifier chooses the best value of $\text{score}_{\mathbf{w}}$, a linear function scoring the compatibility 
 of a candidate role--argument pair, whose parameters (feature weights) $\mathbf{w}$ are learned from data.
 \nss{mention global inference step}
