@@ -529,7 +529,7 @@ Annotation density: (proportion of tokens evoking a frame. breakdown by POS?)
 
 
 \mk{introduce this as a supervised domain adaptation problem? What is the source and what's the target?}
-\mk{Let $D_{ft}$ represent the full-text data and $D_{ex}$ the exemplars?}
+\mk{Let $D_{ft}$ represent the FT data and $D_{ex}$ the exemplars?}
 
 We experiment with several techniques for modifying the model-fitting portion of 
 the argument identification model's local learning objective 
@@ -545,7 +545,7 @@ and use beam search with \nss{hyperparam value} for joint decoding of arguments.
 \subsection{Frustratingly Easy}
 \cite{daume-2009} proposed a simple feature augmentation approach that was shown to work well in supervised domain adaptation scenarios, 
 such as ours. We apply their method to incorporate the exemplars data by introducing a feature mapping $\Phi^{ft}(x) = (x, x)$ for the
-full-text annotations $x \in D_{ft}$, and $\Phi^{ex}(x) = (x, 0)$ for the exemplars $x \in D_{ex}$. The resulting transformed data 
+FT annotations $x \in D_{ft}$, and $\Phi^{ex}(x) = (x, 0)$ for the exemplars $x \in D_{ex}$. The resulting transformed data 
 from the two domains is then used to learn a single model. The intuition here is that by replicating the features, we allow for
 each feature to contribute both ``general'' and domain-specific weights to the model depending on whether the feature
 behaves similarly in both domains or not.
@@ -557,7 +557,7 @@ The idea is to use a supervised model built on the source domain to augment feat
 the source domain (for instance, the PropBank data). For every target instance $x$, we introduce ``guide'' features which use the output $M_s(x)$
 obtained by applying $M_s$ on $x$, which consists of the role labels assigned to various text spans in $x$. Two types of guide features were used,
 one to indicate that a span $s_x$ was assigned a role and the other encoding the role label $r_g$ itself. In the case where $M_s$ produces labels
-that belong to the same schema as the target domain (for instance, the exemplars use the same schema as the full-text annotations), an additional
+that belong to the same schema as the target domain (for instance, the exemplars use the same schema as the FT annotations), we use an additional
 feature $f_{match}(r_t,r_g)$ to indicate that the `guide' role label $r_g$ of the span $s_x$ is the same as it's true label $r_t$.
 
 
@@ -566,7 +566,7 @@ feature $f_{match}(r_t,r_g)$ to indicate that the `guide' role label $r_g$ of th
 \mk{How many total types of relations? Cleanup writeup based on NSS's notation.}
 
 Frames in FrameNet are connected to each other by relations such as inheritance, temporal ordering, causality. 
-For instance, the frame \fnf{Robbery} inherits from the more abstract frame \textit{Committing\_crime}, the 
+For instance, the frame \fnf{Robbery} inherits from the more abstract frame \fnf{Committing\_crime}, the 
 frame \fnf{Fall\_asleep} is preceeded by the frame \fnf{Being\_awake}. The roles of related frames have 
 also been mapped to indicate the correspondence between them: \fnf{Robbery}.\fnr{Perpetrator} is mapped to 
 \fnf{Committing\_crime}.\fnr{Perpetrator}, which in turn maps to \fnf{Misdeed}.\fnr{Wrongdoer}. Frames and roles that are far
@@ -662,6 +662,9 @@ We also use the performance on the held-out set to determine the stopping criter
 \subsection{Evaluation}
 
 \nss{main eval: FT test; new eval: exemplars}
+The methods are evaluated on two criteria based on their performance measured using F-score: FT test data and Exemplars test.
+\mk{Characteristics of data in a table?}
+
 
 \subsection{Results}
 
