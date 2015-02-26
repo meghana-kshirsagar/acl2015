@@ -485,7 +485,18 @@ is currently restricted to the sentence level.} portion
 of the FrameNet corpus. This consists of documents for which annotators made an effort 
 to assign frames and arguments to as many words as possible. 
 \Cref{fig:harbor-fn} gives an example sentence from the FT portion of the corpus. 
-It has 4~frame annotations: \nss{explain the figure}.
+It has 4~frame annotations. \fnf{Body\_movement}, as described in the previous section, 
+is evoked by \textit{crane}, and 3~of its roles are filled by overt arguments: 
+the 2~core roles (\fnr{Agent}, \fnr{Body\_part}) happen to be filled by noun phrases 
+(\textit{passengers}, \textit{their necks}), while the non-core role \fnr{Purpose} is filled by a 
+prepositional phrase adjunct (\textit{for dizzying glimpses of the harbor}).
+The frame defines 19~additional non-core roles, none of which have an argument in the example.
+In frame semantics, non-core roles are considered to be \emph{conceptually} optional; 
+core roles may or may not be \emph{syntactically} optional, but if not locally specified they are 
+expected to be available from context, or else implicit.
+For example, \fnf{Punctual\_perception}---evoked in this case by \textit{glimpses}---is annotated 
+as missing 2~of its core roles. A human listener would resolve the identity of the \fnr{Perceiver} 
+from the wider context and the \fnr{Body\_part} from world knowledge. 
 
 In some cases, FT annotation involved creating a new frame or adding a new lexical unit to an existing frame. 
 In other cases, words that in principle should be considered to evoke a frame were left unannotated 
