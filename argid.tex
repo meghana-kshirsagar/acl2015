@@ -385,7 +385,7 @@ so as to leverage additional resources internal and external to FrameNet (e.g., 
 Frame-semantic parsing \citep{das-14} is a case in point.
 This is the task of automating the rich linguistic structure analyses 
 of the FrameNet lexicon and corpus \citep{baker-98}.\footnote{\url{http://framenet.icsi.berkeley.edu/}}
-FrameNet represents kinds of events and other scenarios 
+FrameNet represents kinds of events, scenarios, and relationships 
 with an inventory of \textbf{frames} (\nss{examples}). 
 Each frame is associated with lexical \textbf{predicates} (verbs, nouns, adjectives, and adverbs) capable of 
 evoking the scenario, and a set of \textbf{roles} (or \textbf{frame elements}) 
@@ -433,6 +433,7 @@ In this paper, we address the \textbf{argument identification}
 subtask of finding and labeling arguments 
 given a predicate in context and the frame it evokes.
 This is a form of semantic role labeling (SRL).
+\st{cite Gildea, Roth, Toutanova, etc.}
 Notably, another resource, \textbf{PropBank} \citep{propbank}, has been widely used for SRL \citep{palmer-10}. 
 PropBank annotations capture shallower lexical frames and arguments; 
 additionally, PropBank provides \nss{millions?} of words of fully annotated English sentences
@@ -453,6 +454,7 @@ in order to integrate evidence from all of these sources
 into SEMAFOR \citep{das-14}, the leading open-source frame-semantic parser for English.\footnote{\url{http://www.ark.cs.cmu.edu/SEMAFOR/}} 
 The results show that some of these sources of evidence succeed 
 at boosting argument identification performance.\nss{SOTA (without constraints)?}
+
 
 \section{Resources}
 
@@ -521,7 +523,11 @@ Annotation density: (proportion of tokens evoking a frame. breakdown by POS?)
 
 \subsection{Illinois SRL system}
 
+
+
 \section{Learning from multiple domains and representations}
+
+
 
 We experiment with several techniques for modifying the model-fitting portion of 
 the argument identification model's local learning objective 
@@ -539,14 +545,57 @@ and use beam search with \nss{hyperparam value} for joint decoding of arguments.
 \subsection{2-stage}
 
 \subsection{Type-level hierarchy features}
+\mk{Types of relations and the number of relations of each type used: Inheritance and Subframe. How many types of relations?}
+
+Frames in FrameNet are connected to each other by relations such as inheritance, temporal ordering, causality. 
+For instance, the frame \textit{Robbery} inherits from the more abstract frame \textit{Committing\_crime}, the 
+frame \textit{Fall\_asleep} is preceeded by the frame \textit{Being\_awake}. The roles of related frames have 
+also been mapped to indicate the correspondence between them: \textit{Robbery.Perpetrator} is mapped to 
+\textit{Committing\_crime.Perpetrator} which in turn maps to \textit{Misdeed.Wrongdoer}. Frames and roles that are far
+apart in this hierarchy are less related than say neighbours.
+This hierarchy can be exploited to share information across related roles, thereby benefiting the roles 
+that have few annotations \mk{say something about a greater variety of contexts is available for each role}. 
+A simple mechanism to share information is via shared model parameters between related roles. Towards this, we define two types of
+hierarchical features: (1) `siblings', where for every feature $f_i$ that fires for an argument $a$, we add a feature which is the conjunction: 
+$(f_i \wedge \textrm{parent.frame} \wedge \textrm{parent.role} \wedge I_{hier})$ where parent.frame = parent(frame($a$)). 
+$I_{hier}$ is an indicator to distinguish this feature from the regular conjunction features that use frame names and roles.
+(2) `parents', where the addendum is the feature: $(f_i \wedge \textrm{frame} \wedge \textrm{frame.role} \wedge I_{hier})$.
+We use only the `Inheritance' and 'Subframe' relations between the roles, of which there are 4138 and 589 respectively.
+
 
 \section{Experiments}
 
 \nss{tuning regularizer for all experiments}
 
+
+
+
 \subsection{Baseline}
 
-As a baseline, we compare to SEMAFOR \citep{das-14}.
+% In FrameNet parlance, a \term{target} is a contiguous span of tokens in a sentence that evokes a \term{frame}.
+% Each frame has its own fixed set of possible role names, or \term{frame elements}, that can either be realized or not.
+% If they are realized, the span of tokens filling the role are annotated.
+% If not, the frame element is said to have a \term{null instantiation}\st{check my terminology}.
+% \st{example?}
+% The \term{argument identification} task is to automatically generate these frame element annotations, given a gold-standard target and its evoked frame.
+
+Our baseline system is SEMAFOR \citep{das-14}.
+SEMAFOR treats the argument identification task as a structured prediction problem.
+It uses a linearly parametrized model that scores each candidate span given a frame element\st{this should probably be talked about earlier?}:
+\begin{equation}
+\text{score}_\mathbf{w}(y \mid x) = \mathbf{w}^\top \mathbf{f}(x, y)
+\end{equation}
+Automatic syntactic parses \st{from where? are we using the MST-stacked dep parses?} are used to narrow the set of candidate spans considered, and as input to feature extraction.
+
+During training, each frame element is treated as an independent multiclass logistic regression instance, with the set of candidate spans (including the \textsc{NULL} span) as its output space.
+But at test time, it chooses a joint assignment of all arguments that maximizes probability under the model, while satisfying the following constraints:
+\begin{enumerate}
+  \item an argument may be assigned to at most one span \st{theta criterion, Chomsky}, and
+  \item spans of realized arguments must not overlap.
+\end{enumerate}
+Beam search, with a beam size of 100, is used to choose the maximum joint assignment with no overlapping arguments.
+\nss{does beam search require normalizing to probabilities?}
+
 We have made several modifications to SEMAFOR's training that do not affect performance, but do speed up experiments:
 
 \begin{itemize}
@@ -557,13 +606,9 @@ We have made several modifications to SEMAFOR's training that do not affect perf
   \item We use elastic net ($\ell_1 + \ell_2$) regularization. Adding $\ell_1$ also has the effect of keeping the parameter vector sparse.\nss{what hyperparameter(s)? are $\ell_1$ and $\ell_2$ tuned separately?}
 \end{itemize}
 We use these changes for all systems, including the baseline.
-While performance is not significantly affected\st{we checked this, right?}\nss{meghana should have P/R/F and runtime numbers}, these changes enabled us to run more experiments with the larger exemplar dataset and expanded feature space. 
+While performance is not significantly affected \mk{P/R/F numbers are in the table (see rows 1 and 2). Times: 12 hrs 9 mins for the earlier algorithm to converge. That took 290 iterations. An equivalent number of iterations took 45 minutes for the new system. Running till convergence (about 700 iterations) took 82 minutes, thus giving a speed-up of $\approx$ 9X. The P/R/F on exemplars improves (row 2); I believe it is due to the regularization in Sam's objective.}, these changes enabled us to run more experiments with the larger exemplar dataset and expanded feature space. 
 
 The details of squared hinge loss are as follows.
-We use a linearly parametrized model \st{this should probably be talked about earlier}:
-\begin{equation}
-\text{score}_\mathbf{w}(y \mid x) = \mathbf{w}^\top \mathbf{f}(x, y)
-\end{equation}
 Let $(x^{(i)}, y^{(i)})$ be the $i^{th}$ training example.
 Then the structured hinge loss on the $i^{th}$ example is given by:
 \begin{align*}
@@ -577,16 +622,9 @@ and squared hinge loss is:
 \end{equation}
 In our experiments, we use $\text{cost}(y, y^{(i)}) = \indicator{y \ne y^{(i)}}$ \st{define}\footnote{We experimented with recall-oriented training, where errors of omission are assigned a higher cost, but found that while recall increased, overall $F_1$ went down\nss{or: failed to improve?}.}.
 
-During training, each frame element is treated as an independent training instance.
-But at test time, all frame elements for a given frame are decoded at once, and beam search is used to ensure that no roles\nss{arguments?} overlap.\nss{does beam search require normalizing to probabilities?}
-
-\nss{what preprocessing? MSTParser?}
-
-\nss{can mention recall-oriented experiments in a footnote}
 
 \nss{same FN 1.5 splits as Dipanjan}
 
-\nss{beam search decoding, not fancy hard constraints}
 
 \nss{preprocessing issues: removing duplicate sentences, merging adjacent split args in exemplars, OntoNotes PropBank preprocessing (NLTK), token-level SemLink details (such as filtering out sentences without mappable annotations; copy from WS paper)}
 
@@ -606,25 +644,26 @@ But at test time, all frame elements for a given frame are decoded at once, and 
 
 \nss{discussion throughout}
 
-\input{results.tex}
+% \input{results.tex}
 
 \begin{table*}
 \begin{small}
 \begin{tabular}{|l|c|c|c|c|c|c|}\hline
 & \multicolumn{3}{c|}{\textbf{Test on FN}} & \multicolumn{3}{c|}{\textbf{Test on Exemplars}} \\ \hline
  & P & R & $F_1$ & P & R & $F_1$ \\ \hline
- Semafor baseline (trained on FN) & 0.6603 & 0.5379 & 0.5929 & & & \\ \hline
+ Semafor baseline (Ddas' model) & 0.6603 & 0.5379 & 0.5929 & 0.64933 & 0.33582 & 0.44269 \\ \hline
+ Semafor baseline (Sam's code) & 0.65569 & 0.53820 & 0.59116 & 0.6263 & 0.3765 & 0.4703 \\ \hline
  baseline trained on combined &  0.66061 & 0.58234 & 0.61901 & 0.75443 & 0.65107 & 0.69895 \\ \hline
  trained only on exemplars & 0.61084 & 0.49049 & 0.54409 & 0.77010 & 0.65958 & 0.71057 \\ \hline
- trained on FN + exemplars guide features & 0.65241 & 0.55960 & 0.60245 &  & & \\ \hline
+ trained on FN + exemplars guide features & 0.65241 & 0.55960 & 0.60245 & 0.67709 & 0.48076 & 0.56228 \\ \hline
  frust$^\dagger$ on combined &  0.65702 & 0.59043 & 0.62195 & 0.73876 & 0.61397 & 0.67061\\ \hline
  siblings$^\ddagger$ on FN & 0.67244 & 0.54763 & 0.60365 &  0.64815 & 0.39088 & 0.48766 \\ \hline
  siblings, trained on combined &  0.65991 & 0.60406 & 0.63075 & 0.76140 & 0.67713 & 0.71679 \\ \hline
  parents$^\star$ on FN &  0.67672 & 0.52790 & 0.59312 & 0.65250 & 0.38184 & 0.48176 \\ \hline
  parents, trained on combined &  0.65920 & 0.60382 & 0.63029 & 0.76143 & 0.68317 & 0.72018 \\ \hline
- trained on semlink & 0.44433 & 0.10533 & 0.17029 & & & \\ \hline
- trained on FN + semlink guide features & 0.64671 & 0.54533 & 0.59171 & & & \\ \hline
- trained on FN+SemLink & 0.655 & 0.3776 & 0.4791 &  &  &  \\ \hline
+ trained on semlink & 0.44433 & 0.10533 & 0.17029 & 0.48119 & 0.12498 & 0.19842 \\ \hline
+ trained on FN + semlink guide features & 0.64671 & 0.54533 & 0.59171 & 0.60951 & 0.38922 & 0.47507 \\ \hline
+ trained on FN+SemLink & 0.655 & 0.3776 & 0.4791 & 0.57148 & 0.20780 & 0.30478 \\ \hline
  with SRL augmented spans and features & 0.70550 & 0.53178 & 0.60644 &  & &  \\ \hline
  \multicolumn{7}{l}{}\\
  \multicolumn{7}{l}{\textbf{combined}: FN + Exemplars training data}\\ \hline
