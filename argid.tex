@@ -619,7 +619,7 @@ But at test time, it chooses a joint assignment of all arguments that maximizes 
 Beam search, with a beam size of 100, is used to choose the maximum joint assignment with no overlapping arguments.
 \nss{does beam search require normalizing to probabilities?}
 
-We have made several modifications to SEMAFOR's training that do not affect performance, but do speed up experiments:
+We have made several modifications to SEMAFOR's training in order to speed up experiments:
 
 \begin{itemize}
   \item We use squared structured hinge loss (defined below) instead of multiclass logistic regression.
@@ -629,11 +629,18 @@ We have made several modifications to SEMAFOR's training that do not affect perf
   \item We use elastic net ($\ell_1 + \ell_2$) regularization. Adding $\ell_1$ also has the effect of keeping the parameter vector sparse.\nss{what hyperparameter(s)? are $\ell_1$ and $\ell_2$ tuned separately?}
 \end{itemize}
 We use these changes for all systems, including the baseline.
-While performance is not significantly affected \mk{P/R/F numbers are in the table (see rows 1 and 2). Times: 12 hrs 9 mins for the earlier algorithm to converge. That took 290 iterations. An equivalent number of iterations took 45 minutes for the new system. Running till convergence (about 700 iterations) took 82 minutes, thus giving a speed-up of $\approx$ 9X. The P/R/F on exemplars improves (row 2); I believe it is due to the regularization in Sam's objective.}, these changes enabled us to run more experiments with the larger exemplar dataset and expanded feature space. 
+While the impact on full-text performance is negligible, 
+these changes enabled us to run more experiments with the larger exemplar dataset and expanded feature space.\footnote{With SEMAFOR's original features and training data, 
+the result of the above changes is that full-text $F_1$ decreases from 59.3\% to 59.1\%, 
+while training time (running optimization to convergence) 
+decreases from 729 minutes to 82 minutes\nss{say something about hardware this was tested on?}.%
+%\mk{P/R/F numbers are in the table (see rows 1 and 2). Times: 12 hrs 9 mins for the earlier algorithm to converge. That took 290 iterations. An equivalent number of iterations took 45 minutes for the new system. Running till convergence (about 700 iterations) took 82 minutes, thus giving a speed-up of $\approx$ 9X. The P/R/F on exemplars improves (row 2); I believe it is due to the regularization in Sam's objective.}
+} 
+
 
 The details of squared hinge loss are as follows.
-Let $(x^{(i)}, y^{(i)})$ be the $i^{th}$ training example.
-Then the structured hinge loss on the $i^{th}$ example is given by:
+Let $(x^{(i)}, y^{(i)})$ be the $i^{\text{th}}$ training example.
+Then the structured hinge loss on the $i^{\text{th}}$ example is given by:
 \begin{align*}
 \lefteqn{\textit{Hinge}_\mathbf{w}(i) =} \\
 &&\max_y{\{\mathbf{w}^\top \mathbf{f}(x^{(i)}, y) + \text{cost}(y, y^{(i)})\}} - \mathbf{w}^\top \mathbf{f}(x^{(i)}, y^{(i)})
