@@ -533,7 +533,7 @@ and use beam search with \nss{hyperparam value} for joint decoding of arguments.
 \subsection{2-stage}
 
 \subsection{Type-level hierarchy features}
-\mk{Types of relations and the number of relations of each type used: Inheritance () and Subframe (). How many types of relations?}
+\mk{Types of relations and the number of relations of each type used: Inheritance and Subframe. How many types of relations?}
 
 Frames in FrameNet are connected to each other by relations such as inheritance, temporal ordering, causality. 
 For instance, the frame \textit{Robbery} inherits from the more abstract frame \textit{Committing\_crime}, the 
@@ -548,6 +548,7 @@ hierarchical features: (1) `siblings', where for every feature $f_i$ that fires 
 $(f_i \wedge \textrm{parent.frame} \wedge \textrm{parent.role} \wedge I_{hier})$ where parent.frame = parent(frame($a$)). 
 $I_{hier}$ is an indicator to distinguish this feature from the regular conjunction features that use frame names and roles.
 (2) `parents', where the addendum is the feature: $(f_i \wedge \textrm{frame} \wedge \textrm{frame.role} \wedge I_{hier})$.
+We use only the `Inheritance' and 'Subframe' relations between the roles, of which there are 4138 and 589 respectively.
 
 
 \section{Experiments}
