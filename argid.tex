@@ -533,6 +533,22 @@ and use beam search with \nss{hyperparam value} for joint decoding of arguments.
 \subsection{2-stage}
 
 \subsection{Type-level hierarchy features}
+\mk{Types of relations and the number of relations of each type used: Inheritance () and Subframe (). How many types of relations?}
+
+Frames in FrameNet are connected to each other by relations such as inheritance, temporal ordering, causality. 
+For instance, the frame \textit{Robbery} inherits from the more abstract frame \textit{Committing\_crime}, the 
+frame \textit{Fall\_asleep} is preceeded by the frame \textit{Being\_awake}. The roles of related frames have 
+also been mapped to indicate the correspondence between them: \textit{Robbery.Perpetrator} is mapped to 
+\textit{Committing\_crime.Perpetrator} which in turn maps to \textit{Misdeed.Wrongdoer}. Frames and roles that are far
+apart in this hierarchy are less related than say neighbours.
+This hierarchy can be exploited to share information across related roles, thereby benefiting the roles 
+that have few annotations \mk{say something about a greater variety of contexts is available for each role}. 
+A simple mechanism to share information is via shared model parameters between related roles. Towards this, we define two types of
+hierarchical features: (1) `siblings', where for every feature $f_i$ that fires for an argument $a$, we add a feature which is the conjunction: 
+$(f_i \wedge \textrm{parent.frame} \wedge \textrm{parent.role} \wedge I_{hier})$ where parent.frame = parent(frame($a$)). 
+$I_{hier}$ is an indicator to distinguish this feature from the regular conjunction features that use frame names and roles.
+(2) `parents', where the addendum is the feature: $(f_i \wedge \textrm{frame} \wedge \textrm{frame.role} \wedge I_{hier})$.
+
 
 \section{Experiments}
 
@@ -577,7 +593,7 @@ We have made several modifications to SEMAFOR's training that do not affect perf
   \item We use elastic net ($\ell_1 + \ell_2$) regularization. Adding $\ell_1$ also has the effect of keeping the parameter vector sparse.\nss{what hyperparameter(s)? are $\ell_1$ and $\ell_2$ tuned separately?}
 \end{itemize}
 We use these changes for all systems, including the baseline.
-While performance is not significantly affected\st{we checked this, right?}\nss{meghana should have P/R/F and runtime numbers}, these changes enabled us to run more experiments with the larger exemplar dataset and expanded feature space. 
+While performance is not significantly affected \mk{P/R/F numbers are in the table (see rows 1 and 2). Times: 12 hrs 9 mins for the earlier algorithm to converge. That took 290 iterations. An equivalent number of iterations took 45 minutes for the new system. Running till convergence (about 700 iterations) took 82 minutes, thus giving a speed-up of $\approx$ 9X. The P/R/F on exemplars improves (row 2); I believe it is due to the regularization in Sam's objective.}, these changes enabled us to run more experiments with the larger exemplar dataset and expanded feature space. 
 
 The details of squared hinge loss are as follows.
 Let $(x^{(i)}, y^{(i)})$ be the $i^{th}$ training example.
