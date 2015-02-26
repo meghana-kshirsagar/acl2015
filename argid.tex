@@ -621,7 +621,8 @@ It uses a linearly parametrized model that scores each candidate span given a fr
 \end{equation}
 Automatic syntactic parses \st{from where? are we using the MST-stacked dep parses?} are used to narrow the set of candidate spans considered, and as input to feature extraction.
 
-During training, each frame element is treated as an independent multiclass logistic regression instance, with the set of candidate spans (including the \textsc{NULL} span) as its output space.
+During training, each frame element is treated as an independent multiclass logistic regression\nss{I think when people say logistic regression they usually mean 
+the set of possible outputs is shared across instances. Because the candidate arguments are instance-specific, better to call it log-linear/MaxEnt classification?} instance, with the set of candidate spans (including the \textsc{NULL} span) as its output space.
 But at test time, it chooses a joint assignment of all arguments that maximizes probability under the model, while satisfying the following constraints:
 \begin{enumerate}
   \item an argument may be assigned to at most one span \st{theta criterion, Chomsky}, and
