@@ -528,6 +528,8 @@ Annotation density: (proportion of tokens evoking a frame. breakdown by POS?)
 \section{Learning from multiple domains and representations}
 
 
+\mk{introduce this as a supervised domain adaptation problem? What is the source and what's the target?}
+\mk{Let $D_{ft}$ represent the full-text data and $D_{ex}$ the exemplars?}
 
 We experiment with several techniques for modifying the model-fitting portion of 
 the argument identification model's local learning objective 
@@ -541,11 +543,27 @@ and use beam search with \nss{hyperparam value} for joint decoding of arguments.
 \subsection{Augmenting the Training Data}
 
 \subsection{Frustratingly Easy}
+\cite{daume-2009} proposed a simple feature augmentation approach that was shown to work well in supervised domain adaptation scenarios, 
+such as ours. We apply their method to incorporate the exemplars data by introducing a feature mapping $\Phi^{ft}(x) = (x, x)$ for the
+full-text annotations $x \in D_{ft}$, and $\Phi^{ex}(x) = (x, 0)$ for the exemplars $x \in D_{ex}$. The resulting transformed data 
+from the two domains is then used to learn a single model. The intuition here is that by replicating the features, we allow for
+each feature to contribute both ``general'' and domain-specific weights to the model depending on whether the feature
+behaves similarly in both domains or not.
 
 \subsection{2-stage}
+\mk{What do we want to call it? guide features or is 2-stage an accepted term? Clean up notation based on NSS}
+Another approach to introduce supervision for domain adaptation, which does not combine the labeled data from the two domains, is via model stacking.
+The idea is to use a supervised model built on the source domain to augment features in the target domain. Let $M_{s}$ be the model built on
+the source domain (for instance, the PropBank data). For every target instance $x$, we introduce ``guide'' features which use the output $M_s(x)$
+obtained by applying $M_s$ on $x$, which consists of the role labels assigned to various text spans in $x$. Two types of guide features were used,
+one to indicate that a span $s_x$ was assigned a role and the other encoding the role label $r_g$ itself. In the case where $M_s$ produces labels
+that belong to the same schema as the target domain (for instance, the exemplars use the same schema as the full-text annotations), an additional
+feature $f_{match}(r_t,r_g)$ to indicate that the `guide' role label $r_g$ of the span $s_x$ is the same as it's true label $r_t$.
+
 
 \subsection{Type-level hierarchy features}
-\mk{Types of relations and the number of relations of each type used: Inheritance and Subframe. How many types of relations?}
+\mk{NSS: notation for the frame/role/features etc?}
+\mk{How many total types of relations? Cleanup writeup based on NSS's notation.}
 
 Frames in FrameNet are connected to each other by relations such as inheritance, temporal ordering, causality. 
 For instance, the frame \fnf{Robbery} inherits from the more abstract frame \textit{Committing\_crime}, the 
@@ -556,16 +574,21 @@ apart in this hierarchy are less related than say neighbours.
 This hierarchy can be exploited to share information across related roles, thereby benefiting the roles 
 that have few annotations \mk{say something about a greater variety of contexts is available for each role}. 
 A simple mechanism to share information is via shared model parameters between related roles. Towards this, we define two types of
-hierarchical features: (1) `siblings', where for every feature $f_i$ that fires for an argument $a$, we add a feature which is the conjunction: 
+hierarchical features: (1) `siblings', where roles that have a common parent share features. For every feature $f_i$ 
+that fires for an argument $a$, we add a feature which is the conjunction: 
 $(f_i \wedge \textrm{parent.frame} \wedge \textrm{parent.role} \wedge I_{hier})$ where parent.frame = parent(frame($a$)). 
-$I_{hier}$ is an indicator to distinguish this feature from the regular conjunction features that use frame names and roles.
-(2) `parents', where the addendum is the feature: $(f_i \wedge \textrm{frame} \wedge \textrm{frame.role} \wedge I_{hier})$.
+$I_{hier}$ is an indicator to distinguish this feature from the regular conjunction features in Semafor that use frame names and roles.
+(2) `parents+siblings', where roles share features with their parents and siblings. In addition to the `siblings' feature, 
+we fire the following conjunction: $(f_i \wedge \textrm{frame} \wedge \textrm{frame.role} \wedge I_{hier})$.
 We use only the `Inheritance' and 'Subframe' relations between the roles, of which there are 4138 and 589 respectively.
 
+We found that using more than one level of the hierarchy, does not produce any improvements in the performance at the cost of
+increased computation due to the greater number of features.
+
+\mk{Write about the number of features in all models somewhere.. 
+Baseline: 2709128, Combined training: 12972404, Frust-easy: 15681531, 'Parents+siblings': 34282958}
 
 \section{Experiments}
-
-\nss{tuning regularizer for all experiments}
 
 
 
@@ -627,6 +650,14 @@ In our experiments, we use $\text{cost}(y, y^{(i)}) = \indicator{y \ne y^{(i)}}$
 
 
 \nss{preprocessing issues: removing duplicate sentences, merging adjacent split args in exemplars, OntoNotes PropBank preprocessing (NLTK), token-level SemLink details (such as filtering out sentences without mappable annotations; copy from WS paper)}
+
+\nss{tuning regularizer for all experiments}
+We tune the regularization parameter $\lambda$ \mk{What shall I call it Sam?} on the held-out set. We searched over the following
+values: 10$^{-5}$, 10$^{-7}$, 10$^{-9}$, 10$^{-12}$ (note that our loss is normalized).
+We also use the performance on the held-out set to determine the stopping criterion for the stochastic optimization.
+
+
+
 
 \subsection{Evaluation}
 
