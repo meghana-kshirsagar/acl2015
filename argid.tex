@@ -290,6 +290,7 @@
 
 \newcommand{\fnf}[1]{\textsc{#1}} % FrameNet frame
 \newcommand{\fnr}[1]{\textbf{#1}} % FrameNet role (frame element name)
+\newcommand{\fnlu}[1]{\textsf{#1}} % FrameNet lexical unit (predicate)
 
 %\newcommand{\lex}[1]{\textsmaller{\textsf{\textcolor{slate}{\textbf{#1}}}}}	% example lexical item
 \newcommand{\lex}[1]{\textit{#1}} % lexical item/lexical example
@@ -398,7 +399,7 @@ An example appears in \cref{fig:harbor-fn}; it will be explained in detail in \c
 \begin{figure}
 \includegraphics[width=\columnwidth]{harbor-fn.pdf}
 \caption{Example sentence from FrameNet full-text annotation. 
-Three frames and their arguments are shown: 
+3~frames and their arguments are shown: 
 \fnf{Body\_movement} is evoked by \textit{crane},
 \fnf{Observable\_body\_parts} by \textit{necks}, 
 and \fnf{Punctual\_perception} by \textit{glimpse}.
@@ -457,6 +458,23 @@ at boosting argument identification performance.\nss{SOTA (without constraints)?
 \nss{incl. data analysis of differences from full-text}
 
 \nss{w/in each mention: genre/overall vocabulary; coverage and distributions of predicates, FE labels; oracle coverage of FT test}
+
+\subsection{The FrameNet Lexicon}\label{sec:lex}
+
+Each frame in the Berkeley FrameNet lexicon is intended to represent a gestalt scene. 
+The frame definition includes: a descriptive name; 
+a set of \textbf{core roles} representing participants and props that are crucial 
+to understanding the scene; and a set of \textbf{non-core roles} such as circumstantial 
+information (time, place, manner, purpose, etc.); 
+an English textual description of the scene and how its roles relate to one another;
+and a set of English predicates that can evoke the scene.
+For example, the \fnf{Body\_movement} frame has \fnr{Agent} and \fnr{Body\_part} as its core roles; 
+the frame description states,
+``This frame contains words for motions or actions an \fnr{Agent} performs using some part of his/her body.''
+Predicates listed under this frame include verbs such as \fnlu{bend}, \fnlu{blink}, \fnlu{crane}, and \fnlu{curtsy}, 
+plus the noun use of \fnlu{curtsy}.
+
+\nss{hierarchy}
 
 \subsection{Full-text Annotations}\label{sec:ft}
 
