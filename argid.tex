@@ -551,16 +551,19 @@ But at test time, all frame elements for a given frame are decoded at once, and 
 \begin{tabular}{|l|c|c|c|c|c|c|}\hline
 & \multicolumn{3}{c|}{\textbf{Test on FN}} & \multicolumn{3}{c|}{\textbf{Test on Exemplars}} \\ \hline
  & P & R & $F_1$ & P & R & $F_1$ \\ \hline
- Semafor baseline (trained on FN) & 0.6603 & 0.5379 & 0.5929 & 0.649 & 0.336 & 0.4427 \\ \hline
- baseline trained on combined &  0.66061 & 0.58234 & 0.61901 & 0.75639 & 0.65446 & 0.70174 \\ \hline
- trained only on exemplars & 0.61084 & 0.49049 & 0.54409 & 0.77279 & 0.66228 & 0.71328 \\ \hline
- frust$^\dagger$ on combined &  0.65702 & 0.59043 & 0.62195 & 0.74018 & 0.61610 & 0.67247 \\ \hline
- siblings$^\ddagger$ on FN & 0.67244 & 0.54763 & 0.60365 &  0.64922 & 0.39011 & 0.48737 \\ \hline
- siblings, trained on combined &  0.65991 & 0.60406 & 0.63075 &  0.76369 & 0.68019 & 0.71952 \\ \hline
- parents$^\star$ on FN &  0.67672 & 0.52790 & 0.59312 & 0.65440 & 0.38199 & 0.48239 \\ \hline
- parents, trained on combined &  0.65920 & 0.60382 & 0.63029 & 0.76405 & 0.68616 & 0.72302 \\ \hline\hline
- trained on FN+SemLink & 0.655 & 0.3776 & 0.4791 & - & - & - \\ \hline
- with SRL augmented spans and features & 0.70550 & 0.53178 & 0.60644 & - & - & - \\ \hline
+ Semafor baseline (trained on FN) & 0.6603 & 0.5379 & 0.5929 & & & \\ \hline
+ baseline trained on combined &  0.66061 & 0.58234 & 0.61901 & 0.75443 & 0.65107 & 0.69895 \\ \hline
+ trained only on exemplars & 0.61084 & 0.49049 & 0.54409 & 0.77010 & 0.65958 & 0.71057 \\ \hline
+ trained on FN + exemplars guide features & 0.65241 & 0.55960 & 0.60245 &  & & \\ \hline
+ frust$^\dagger$ on combined &  0.65702 & 0.59043 & 0.62195 & 0.73876 & 0.61397 & 0.67061\\ \hline
+ siblings$^\ddagger$ on FN & 0.67244 & 0.54763 & 0.60365 &  0.64815 & 0.39088 & 0.48766 \\ \hline
+ siblings, trained on combined &  0.65991 & 0.60406 & 0.63075 & 0.76140 & 0.67713 & 0.71679 \\ \hline
+ parents$^\star$ on FN &  0.67672 & 0.52790 & 0.59312 & 0.65250 & 0.38184 & 0.48176 \\ \hline
+ parents, trained on combined &  0.65920 & 0.60382 & 0.63029 & 0.76143 & 0.68317 & 0.72018 \\ \hline
+ trained on semlink & 0.44433 & 0.10533 & 0.17029 & & & \\ \hline
+ trained on FN + semlink guide features & 0.64671 & 0.54533 & 0.59171 & & & \\ \hline
+ trained on FN+SemLink & 0.655 & 0.3776 & 0.4791 &  &  &  \\ \hline
+ with SRL augmented spans and features & 0.70550 & 0.53178 & 0.60644 &  & &  \\ \hline
  \multicolumn{7}{l}{}\\
  \multicolumn{7}{l}{\textbf{combined}: FN + Exemplars training data}\\ \hline
  \multicolumn{7}{l}{$\dagger$: feature augmentation from the frustratingly easy DA paper}\\ \hline
