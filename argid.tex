@@ -550,15 +550,26 @@ from the two domains is then used to learn a single model. The intuition here is
 each feature to contribute both ``general'' and domain-specific weights to the model depending on whether the feature
 behaves similarly in both domains or not.
 
-\subsection{2-stage}
-\mk{What do we want to call it? guide features or is 2-stage an accepted term? Clean up notation based on NSS}
-Another approach to introduce supervision for domain adaptation, which does not combine the labeled data from the two domains, is via model stacking.
-The idea is to use a supervised model built on the source domain to augment features in the target domain. Let $M_{s}$ be the model built on
-the source domain (for instance, the PropBank data). For every target instance $x$, we introduce ``guide'' features which use the output $M_s(x)$
-obtained by applying $M_s$ on $x$, which consists of the role labels assigned to various text spans in $x$. Two types of guide features were used,
-one to indicate that a span $s_x$ was assigned a role and the other encoding the role label $r_g$ itself. In the case where $M_s$ produces labels
-that belong to the same schema as the target domain (for instance, the exemplars use the same schema as the FT annotations), we use an additional
-feature $f_{match}(r_t,r_g)$ to indicate that the `guide' role label $r_g$ of the span $s_x$ is the same as it's true label $r_t$.
+\subsection{Guide Features}
+Another approach to introduce supervision for domain adaptation, 
+which does not combine the labeled data from the two domains, 
+to use a supervised model built on the source domain to augment features in the target domain.
+When training and testing in the target domain, 
+the source domain model is effectively just a form of preprocessing to provide 
+additional features, known as \textbf{guide features} \citep{johansson-13,kong-14}.\footnote{This is related to the technique
+of model stacking, where successively richer models are trained by cross-validation on the same dataset 
+\citet[e.g.,][]{cohen-05,nivre-08,martins-08}.}
+Formally: let $M_{s}$ be the model built on
+the source domain (for instance, the PropBank data). 
+For every target instance $x$, we introduce ``guide'' features which use the output $M_s(x)$
+obtained by applying $M_s$ on $x$, which consists of the role labels assigned to various text spans in $x$. 
+Two types of guide features were used,
+one to indicate that a span $s_x$ was assigned a role and the other encoding the role label $r_g$ itself. 
+In the case where $M_s$ produces labels
+that belong to the same schema as the target domain 
+(for instance, the exemplars use the same schema as the FT annotations), 
+we use an additional feature $f_{match}(r_t,r_g)$ to indicate that 
+the `guide' role label $r_g$ of the span $s_x$ is the same as it's true label $r_t$.
 
 
 \subsection{Type-level hierarchy features}
