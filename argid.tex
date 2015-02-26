@@ -288,6 +288,9 @@
 \newcommand{\dataset}[1]{\mbox{\textsc{#1}}}	% one of the datasets in our experiments
 \newcommand{\datasplit}[1]{\mbox{\textbf{#1}}}	% portion one of the datasets in our experiments
 
+\newcommand{\fnf}[1]{\textsc{#1}} % FrameNet frame
+\newcommand{\fnr}[1]{\textbf{#1}} % FrameNet role (frame element name)
+
 %\newcommand{\lex}[1]{\textsmaller{\textsf{\textcolor{slate}{\textbf{#1}}}}}	% example lexical item
 \newcommand{\lex}[1]{\textit{#1}} % lexical item/lexical example
 \newcommand{\pex}[1]{\textit{#1}} % phrasal example - don't index by default
@@ -389,7 +392,22 @@ These roles may be implicit,
 but are frequently realized linguistically in the same sentence as the predicate.
 Given a sentence, frame-semantic parsing is the task of mapping tokens in the sentences
 to evoked frames, and for each evoked frame, finding and labeling its \textbf{argument} phrases 
-with roles.\nss{example}
+with roles. 
+An example appears in \cref{fig:harbor-fn}; it will be explained in detail in \cref{sec:ft}.
+
+\begin{figure}
+\includegraphics[width=\columnwidth]{harbor-fn.pdf}
+\caption{Example sentence from FrameNet full-text annotation. 
+Three frames and their arguments are shown: 
+\fnf{Body\_movement} is evoked by \textit{crane},
+\fnf{Observable\_body\_parts} by \textit{necks}, 
+and \fnf{Punctual\_perception} by \textit{glimpse}.
+(Further, \textit{harbor} is annotated as evoking the \fnf{Locale\_by\_use} frame 
+and doubles as its sole argument.) 
+Horizontal lines representing argument spans 
+are labeled with role names.}
+\label{fig:harbor-fn}
+\end{figure}
 
 FrameNet~1.5 defines a structured hierarchy of over 1,000 frames associated with \nss{\#}~English lexical predicates, 
 and also provides annotations for \nss{\# targets annotated total} attestations 
@@ -402,6 +420,13 @@ and have thus far not been exploited successfully for frame-semantic parsing.
 Here, we seek to leverage these exemplar sentences 
 as well as the (type-level) hierarchical structure of the FrameNet lexicon. 
 
+\begin{figure}
+\includegraphics[width=\columnwidth]{harbor-pb.pdf}
+\caption{Ideal PropBank annotations for verbs. Though PB uses lexical frames rather than deep frames,
+there are clear similarities to the FrameNet annotations in \cref{fig:harbor-fn}.}
+\label{fig:harbor-pb}
+\end{figure}
+
 In this paper, we address the \textbf{argument identification} 
 subtask of finding and labeling arguments 
 given a predicate in context and the frame it evokes.
@@ -410,6 +435,9 @@ Notably, another resource, \textbf{PropBank} \citep{propbank}, has been widely u
 PropBank annotations capture shallower lexical frames and arguments; 
 additionally, PropBank provides \nss{millions?} of words of fully annotated English sentences
 (annotation is much less expensive, but also potentially less valuable, because of the shallower representation).
+Despite a number of differences in the representations and annotation conventions, 
+for many predicates FrameNet and PropBank are really quite similar: 
+\cref{fig:harbor-fn} and \cref{fig:harbor-pb} show this for the verb \textit{crane}.
 To get the best of both worlds, we aim to tap into PropBank's vast resources 
 as indirect token-level supervision for FrameNet-style analysis. 
 We hypothesize that PropBank analyses can serve as a weak signal for the FrameNet SRL task, 
@@ -430,30 +458,34 @@ at boosting argument identification performance.\nss{SOTA (without constraints)?
 
 \nss{w/in each mention: genre/overall vocabulary; coverage and distributions of predicates, FE labels; oracle coverage of FT test}
 
-\subsection{Full-text Annotations}
+\subsection{Full-text Annotations}\label{sec:ft}
 
 Contemporary frame-semantic parsers are trained and evaluated on the \textbf{full-text (FT)}\footnote{Though these 
 were \emph{annotated} and the document level, and train/dev/test splits are by document, the frame-semantic parsing 
 is currently restricted to the sentence level.} portion 
 of the FrameNet corpus. This consists of documents for which annotators made an effort 
 to assign frames and arguments to as many words as possible. 
-In some cases, this involved creating a new frame or adding a new lexical unit to an existing frame. 
+\Cref{fig:harbor-fn} gives an example sentence from the FT portion of the corpus. 
+It has 4~frame annotations: \nss{explain the figure}.
+
+In some cases, FT annotation involved creating a new frame or adding a new lexical unit to an existing frame. 
 In other cases, words that in principle should be considered to evoke a frame were left unannotated 
-because they did not match any existing lexical units.
+because they did not match any existing lexical units. 
+This was the case for \textit{passengers} and \textit{dizzying} in \cref{fig:harbor-fn}.
 
 Genres, sizes
 
 Annotation density: (proportion of tokens evoking a frame. breakdown by POS?)
 
-\subsection{Exemplars}
+\subsection{Exemplars}\label{sec:exemplars}
 
 \nss{how different from FT}
 
-\subsection{PropBank}
+\subsection{PropBank}\label{sec:pb}
 
 \nss{how different from FN}
 
-\subsection{SemLink}
+\subsection{SemLink}\label{sec:semlink}
 
 \nss{limitations!}
 
