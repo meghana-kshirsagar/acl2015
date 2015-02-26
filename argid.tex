@@ -192,7 +192,7 @@
 \newcommand\bmmax{0} % magic to avoid 'too many math alphabets' error
 \usepackage{bm}
 \definecolor{orange}{rgb}{1,0.5,0}
-\definecolor{mdgreen}{rgb}{0.1,0.5,0.1}
+\definecolor{mdgreen}{rgb}{0.05,0.6,0.05}
 \definecolor{mdblue}{rgb}{0,0,0.7}
 \definecolor{dkblue}{rgb}{0,0,0.5}
 \definecolor{dkgray}{rgb}{0.3,0.3,0.3}
@@ -684,6 +684,21 @@ We also use the performance on the held-out set to determine the stopping criter
 The methods are evaluated on two criteria based on their performance measured using F-score: FT test data and Exemplars test.
 \mk{Characteristics of data in a table?}
 
+\begin{table}\centering\small
+\begin{tabular}{>{\itshape}crr}
+\toprule
+\normalfont & \textbf{Full-Text} & \textbf{Exemplars} \\
+\midrule
+Sentences in training & 2,780 & 145,838 \\
+Roles in train data & 15,019 & 137,511 \\
+Roles (types) in training & 2,644 & 4,821 \\
+Sentences in test data & 2,420 & 4,132 \\
+Roles in test data & 4,458 & 4,132 \\
+Roles (types) in test data & 1,420 & 1,224 \\
+Unseen roles (types) in test data & 219 & 38 \\
+\end{tabular}
+\end{table}
+
 
 \subsection{Results}
 
@@ -717,7 +732,8 @@ The methods are evaluated on two criteria based on their performance measured us
  trained on semlink & 0.44433 & 0.10533 & 0.17029 & 0.48119 & 0.12498 & 0.19842 \\ \hline
  trained on FN + semlink guide features & 0.64671 & 0.54533 & 0.59171 & 0.60951 & 0.38922 & 0.47507 \\ \hline
  trained on FN+SemLink & 0.655 & 0.3776 & 0.4791 & 0.57148 & 0.20780 & 0.30478 \\ \hline
- with SRL augmented spans and features & 0.70550 & 0.53178 & 0.60644 &  & &  \\ \hline
+ with SRL augmented spans and features (loglinear) & 0.70550 & 0.53178 & 0.60644 & 0.65996 & 0.33351 & 0.44310 \\ \hline
+ with SRL augmented spans and features (hinge) & & & & & & \\ \hline
  \multicolumn{7}{l}{}\\
  \multicolumn{7}{l}{\textbf{combined}: FN + Exemplars training data}\\ \hline
  \multicolumn{7}{l}{$\dagger$: feature augmentation from the frustratingly easy DA paper}\\ \hline
