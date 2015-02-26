@@ -1,0 +1,33 @@
+\begin{table*}\centering\small
+\begin{tabular}{>{\itshape}clrrr@{~~}r@{~~}rrr}
+\toprule
+\normalfont\textbf{Additional} & & \multicolumn{3}{c}{\textbf{Full-Text}} && \multicolumn{3}{c}{\textbf{Exemplars}} \\
+\cline{3-5}\cline{7-9}
+\normalfont\textbf{Resource} & \textbf{Training Configuration (Features)} & P\hphantom{11} & R\hphantom{11} & $F_1$\hphantom{0} && P\hphantom{11} & R\hphantom{11} & $F_1$\hphantom{0} \\
+\midrule
+(Baseline) & FT (Basic) & 66.03 & 53.79 & 59.29 && 64.90 & 33.60 & 44.27 \\
+\midrule
+\multirow{2}{*}{FN Hierarchy} & FT (siblings) \\
+          & FT (siblings+parents) \\
+\midrule
+& Exemplars $\xrightarrow{\text{guide}}$ FT \\
+Exemplars & FT+Exemplars (Basic) \\
+& FT+Exemplars (EasyAdapt) \\
+\midrule
+\multirow{2}{*}{SemLink} & SemLink $\xrightarrow{\text{guide}}$ FT \\
+& FT+SemLink \\
+\midrule
+PB-SRL & FT (PB-SRL) \\
+\bottomrule
+\end{tabular}
+\caption{Results on two test sets: Baseline vs.~individual other resources. 
+Precision, recall, and $F_1$ are given as percentages.}
+\label{tbl:results}
+\end{table*}
+
+\begin{table*}\centering\small
+FT+Exemplars (Hier: siblings+parents) \\
+FT+Exemplars (PB-SRL) \\
+FT+Exemplars (PB-SRL, Hier: siblings+parents) \\
+\caption{Combining best techniques across resources \nss{TODO}}
+\end{table*}
