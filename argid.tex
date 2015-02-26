@@ -527,6 +527,22 @@ Annotation density: (proportion of tokens evoking a frame. breakdown by POS?)
 
 \section{Learning from multiple domains and representations}
 
+We consider the argument identification task as statistical classification 
+for each role of the frame in context. 
+Let the classification input be a dependency-parsed sentence $\mathbf{x}$, 
+the token(s) $p$ constituting the predicate in question, and the frame $f$ evoked by $p$
+(as determined by frame identification). 
+Suppose we have a heuristic procedure for extracting candidate argument spans 
+for the predicate: call this $\textit{spans}(\mathbf{x}, p, f)$.
+We define the \textbf{local classifier} as:
+\begin{equation}
+\textit{arg}(\mathbf{x}, p, f, r) = \argmax_{a \in \textit{spans}(\mathbf{x}, p, f) \cup \{\emptyset\}} \text{score}_{\mathbf{w}}(a \mid \mathbf{x}, p, f, r)
+\end{equation}
+This is used to choose an argument for every role $r$ 
+of frame $f$: note that in many cases the role will be empty, denoted $\emptyset$. 
+The classifier chooses the best value of $\text{score}_{\mathbf{w}}$, a linear function scoring the compatibility 
+of a candidate role--argument pair, whose parameters (feature weights) $\mathbf{w}$ are learned from data.
+\nss{mention global inference step}
 
 \mk{introduce this as a supervised domain adaptation problem? What is the source and what's the target?}
 \mk{Let $D_{ft}$ represent the FT data and $D_{ex}$ the exemplars?}
