@@ -671,7 +671,7 @@ We expand the feature space by concatenating the original feature vector with a 
 &&
 \left[\begin{array}{c}
 \phi(a, \mathbf{x}, p, f, r) \\
-\phi(a, \mathbf{x}, p, f, r) \wedge I_{\textit{domain}}(\mathbf{x})
+\phi(a, \mathbf{x}, p, f, r) \text{ \& } I_{\textit{domain}}(\mathbf{x})
 \end{array}
 \right]
 % \left[\phi(a, \mathbf{x}, p, f, r) ; \phi(a, \mathbf{x}, p, f, r) \wedge I_{\textit{domain}}(\mathbf{x}) \right]
@@ -680,10 +680,10 @@ We expand the feature space by concatenating the original feature vector with a 
 
 % FT annotations $x \in \mathcal{D}_{ft}$, and $\Phi^{ex}(x) = (x, 0)$ for the exemplars $x \in D_{ex}$. The resulting transformed data 
 % from the two domains is then used to learn a single model.
-The intuition here is that by replicating the features, we allow for
-each feature to contribute both ``general'' and domain-specific weights to the model depending on whether the feature
+The intuition is that by replicating the features, we allow for
+each feature to contribute both ``general'' and ``domain-specific'' weights to the model depending on whether the feature
 behaves similarly in both domains or not.
-Since the ``general'' feature contributes to both domains, regularization will encourage the model to use the ``general'' version over the ``specific" version of a feature whenever possible.
+Since the general feature contributes to both domains, regularization will encourage the model to use the general version over the domain-specific version of a feature whenever possible.
 
 \subsection{Guide Features}
 \label{sec:guide}
@@ -713,24 +713,32 @@ the `guide' role label $r_g$ of the span $s_x$ is the same as it's true label $r
 \mk{How many total types of relations? Cleanup writeup based on NSS's notation.}
 
 Frames in FrameNet are connected to each other by relations such as inheritance, temporal ordering, causality. 
-For instance, the frame \fnf{Robbery} inherits from the more abstract frame \fnf{Committing\_crime}, the 
+For instance, the frame \fnf{Robbery} inherits from the more abstract frame \fnf{Committing\_crime}, and the
 frame \fnf{Fall\_asleep} is preceeded by the frame \fnf{Being\_awake}. The roles of related frames have 
 also been mapped to indicate the correspondence between them: \fnf{Robbery}.\fnr{Perpetrator} is mapped to 
 \fnf{Committing\_crime}.\fnr{Perpetrator}, which in turn maps to \fnf{Misdeed}.\fnr{Wrongdoer}. Frames and roles that are far
 apart in this hierarchy are less related than say neighbours.
 This hierarchy can be exploited to share information across related roles, thereby benefiting the roles 
 that have few annotations \mk{say something about a greater variety of contexts is available for each role}. 
-A simple mechanism to share information is via shared model parameters between related roles. Towards this, we define two types of
-hierarchical features: (1) `siblings', where roles that have a common parent share features. For every feature $f_i$ 
-that fires for an argument $a$, we add a feature which is the conjunction: 
-$(f_i \wedge \textrm{parent.frame} \wedge \textrm{parent.role} \wedge I_{hier})$ where parent.frame = parent(frame($a$)). 
-$I_{hier}$ is an indicator to distinguish this feature from the regular conjunction features in Semafor that use frame names and roles.
-(2) `parents+siblings', where roles share features with their parents and siblings. In addition to the `siblings' feature, 
-we fire the following conjunction: $(f_i \wedge \textrm{frame} \wedge \textrm{frame.role} \wedge I_{hier})$.
-We use only the Inheritance and Subframe relations between the roles (\cref{sec:lex}), of which there are 4138 and 589 respectively.
+We say that the $\textit{parent}$ of a role is one that has either the \textbf{Inheritance} or \textbf{Subframe} relation to it (\cref{sec:lex}).
+There are 4138 \textbf{Inheritance} and 589 \textbf{Subframe} links between role types in FrameNet 1.5.
 
-We found that using more than one level of the hierarchy, does not produce any improvements in the performance at the cost of
-increased computation due to the greater number of features.
+A simple mechanism to share information is via shared model parameters between related roles. Towards this, we experiment with two variations of
+hierarchical feature types:
+
+\noindent\textbf{(1) siblings}: Roles that have a common parent share features.
+For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a new feature which is the conjunction: 
+$\text{"sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge \textit{parent}(r)$. 
+% $I_{hier}$ is an indicator to distinguish this feature from the regular conjunction features in Semafor that use frame names and roles.
+
+\noindent\textbf{(2) parent+siblings}: Roles share features with their parent and siblings. 
+For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a two new features:
+
+\noindent$\text{"par+sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge \textit{parent}(r)$, and
+
+\noindent$\text{"par+sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge r$.
+
+We experimented with using more than one level of the hierarchy (grandparents, e.g.), but found that it does not produce any improvements in the performance, yet increased computation cost due to the greater number of features.
 
 \mk{Write about the number of features in all models somewhere.. 
 Baseline: 2709128, Combined training: 12972404, Frust-easy: 15681531, 'Parents+siblings': 34282958}
