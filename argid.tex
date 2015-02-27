@@ -697,7 +697,7 @@ of model stacking, where successively richer models are trained by cross-validat
 \citet[e.g.,][]{cohen-05,nivre-08,martins-08}.}
 
 In our case, we treat the full text annotations as our target domain, and experiment with using PropBank, SemLink, and the exemplars data as our source domain\st{MK, please check this. you need to write more about how SemLink was used, b/c I have no idea.}.
-Each of the three source models produces SRL-style output, where predicates are assigned frames or role-sets, and for each predicate, spans are assigned role labels.
+Each of the three source models produces SRL-style output, where predicates are assigned frames or rolesets, and for each predicate, spans are assigned role labels.
 But they differ in the labels used for roles.
 \st{talk about Illinois SRL, whatever-we-did-with-SemLink here?}
 
@@ -709,7 +709,7 @@ Two types of guide features were used:
 one indicates that a span $a$ was assigned \emph{any} role, and the other encodes the role label $r_g$ itself.
 In the case where $M_s$ produces labels
 that belong to the same schema as the target domain 
-(for instance, the exemplars use the same schema as the FT annotations), 
+(for instance, the exemplars use the same schema as the FT annotations \st{our set of source domains is small enough that we can enumerate which ones this applies to. Is it exemplars + SemLink?}), 
 we use an additional feature $\phi_{match}(r_t,r_g)$ to indicate that 
 the `guide' role label $r_g$ of the span $a$ is the same as it's true\st{you mean ``target''?} label $r_t$.
 
@@ -763,25 +763,14 @@ Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} a
 \subsection{Learning}
 \label{sec:learning}
 
-\st{TODO: local classifier is only used in my SVM version, not in Das's log-linear version.}
-We define the \textbf{local classifier} as:
-\begin{equation}
-\textit{arg}(\mathbf{x}, p, f, r) = \argmax_{a \in \textit{spans}(\mathbf{x}, p, f)%\cup \{\emptyset\}
-} \textit{score}_{\mathbf{w}}(a \mid \mathbf{x}, p, f, r)
-\end{equation}
-% This is used to choose an argument for every role $r$ of frame $f$.
-We use the local classifier during training.
-
-\st{talk about learning here?}
-\st{something about L2 regularization}
-
-
+Following SEMAFOR, we train using a \term{local} objective instead of using a global classifier.
+In other words, we treat each role and span pair as an independent training instance.
 % SEMAFOR treats the argument identification task as a structured prediction problem.
 % It uses a linearly parametrized model that scores each candidate span given a frame element\st{this should probably be talked about earlier?}:
 % \begin{equation}
 % \textit{score}_\mathbf{w}(y \mid x) = \mathbf{w}^\top \mathbf{f}(x, y)
 % \end{equation}
-
+%
 % During training, each frame element is treated as an independent log-linear classification instance, with the set of candidate spans (including the \textsc{NULL} span) as its output space.
 % \st{something about L2 regularization}
 % But at test time, it chooses a joint assignment of all arguments that maximizes probability under the model, while satisfying the following constraints:
@@ -791,14 +780,14 @@ We use the local classifier during training.
 % \end{enumerate}
 % Beam search, with a beam size of 100, is used to choose the maximum joint assignment with no overlapping arguments.
 % \nss{does beam search require normalizing to probabilities?}\st{no. maybe it should, but SEMAFOR didn't, and we don't.}
-
-We have made several modifications to SEMAFOR's training in order to speed up experiments:
+But we have made several modifications to SEMAFOR's training in order to speed up experiments:
 
 \begin{itemize}
-  \item We use squared structured hinge loss (defined below) instead of multiclass logistic regression.
+  \item We minimize squared structured hinge loss (defined below) instead of a log-linear loss.
   Using hinge loss, there is no longer a need to calculate a partition function.
   Gradients, and hence parameters, are sparser than in logistic regression, allowing us to use a sparse vector implementation.
-  \item We use the online optimization method AdaDelta \citep{zeiler-12} with minibatches\nss{minibatch size?}, instead of the batch method L-BFGS \citep{liu-89}.
+  \item We use the online optimization method AdaDelta \citep{zeiler-12} with minibatches, instead of the batch method L-BFGS \citep{liu-89}.
+  We use minibatches of size 4,000  on the full text data, and 40,000 on the exemplar data.
 %   \item We use elastic net ($\ell_1 + \ell_2$) regularization. Adding $\ell_1$ also has the effect of keeping the parameter vector sparse.\nss{what hyperparameter(s)? are $\ell_1$ and $\ell_2$ tuned separately?}
 \end{itemize}
 We use these changes for all systems, including the baseline.
@@ -810,20 +799,38 @@ decreases from 729 minutes to 82 minutes\nss{say something about hardware this w
 %\mk{P/R/F numbers are in the table (see rows 1 and 2). Times: 12 hrs 9 mins for the earlier algorithm to converge. That took 290 iterations. An equivalent number of iterations took 45 minutes for the new system. Running till convergence (about 700 iterations) took 82 minutes, thus giving a speed-up of $\approx$ 9X. The P/R/F on exemplars improves (row 2); I believe it is due to the regularization in Sam's objective.}
 } 
 
+% \st{TODO: local classifier is only used in my SVM version, not in Das's log-linear version.}
+% We define the \textbf{local classifier} as:
+% \begin{equation}
+% \textit{arg}(\mathbf{x}, p, f, r) = \argmax_{a \in \textit{spans}(\mathbf{x}, p, f)
+% } \textit{score}_{\mathbf{w}}(a \mid \mathbf{x}, p, f, r)
+% \end{equation}
+% 
+% \st{something about L2 regularization}
 
 The details of squared hinge loss are as follows.
-Let $(x^{(i)}, y^{(i)})$ be the $i^{\text{th}}$ training example.
+Let $(r^{(i)}, a^{(i)})$ be the $i^{\text{th}}$ training example.
 Then the structured hinge loss on the $i^{\text{th}}$ example is given by:
 \begin{align*}
 \lefteqn{\textit{Hinge}_\mathbf{w}(i) =} \\
-&&\max_y{\{\mathbf{w}^\top \mathbf{f}(x^{(i)}, y) + \text{cost}(y, y^{(i)})\}} - \mathbf{w}^\top \mathbf{f}(x^{(i)}, y^{(i)})
+&&\max_r{\{\mathbf{w}^\top \mathbf{\phi}(a^{(i)}, \mathbf{x}, p, f, r) + \text{cost}(r, r^{(i)})\}} - \\
+&&\mathbf{w}^\top \mathbf{\phi}(a^{(i)}, \mathbf{x}, p, f, r^{(i)})
 \end{align*}
 and squared hinge loss is:
 \begin{equation}
-\textit{SquaredHinge}_\mathbf{w}(i) =
+\textit{SqHinge}_\mathbf{w}(i) =
 \textit{Hinge}_\mathbf{w}(i)^2.
 \end{equation}
-In our experiments, we use $\text{cost}(y, y^{(i)}) = \indicator{y \ne y^{(i)}}$ \st{define}\footnote{We experimented with recall-oriented training, where errors of omission are assigned a higher cost, but found that while recall increased, overall $F_1$ went down\nss{or: failed to improve?}.}.
+We use $\text{cost}(r, r^{(i)}) = \indicator{r \ne r^{(i)}}$.\footnote{We experimented with recall-oriented training, where errors of omission are assigned a higher cost, but found that while recall increased, overall $F_1$ went down\nss{or: failed to improve?}.}
+
+We learn $\mathbf{w}$ by minimizing the $\ell_2$-regularized average cost on the dataset:
+\begin{equation}
+\mathbf{w^*} = \argmin_\mathbf{w}{
+    \frac{1}{N}\sum_{i = 1}^N{
+        \textit{SqHinge}_\mathbf{w}(i)
+    } + \frac{1}{2} \lambda \| \mathbf{w} \|_2
+}
+\end{equation}
 
 
 \nss{same FN 1.5 splits as Dipanjan}
