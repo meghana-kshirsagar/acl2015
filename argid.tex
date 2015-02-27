@@ -584,7 +584,7 @@ can reap rewards for frame SRL.
 \subsection{Base model}
 
 We use the model from SEMAFOR \citep{das-14} as a basis.
-We treat the argument identification task as a structured prediction problem.
+The argument identification task is treated as a structured prediction problem.
 % We consider the argument identification task as statistical classification 
 % for each role of the frame in context.
 Let the classification input be a dependency-parsed sentence $\mathbf{x}$, 
@@ -592,62 +592,55 @@ the token(s) $p$ constituting the predicate in question, and the frame $f$ evoke
 (as determined by frame identification). 
 We use a heuristic procedure \st{cite} for extracting candidate argument spans 
 for the predicate; call this $\textit{spans}(\mathbf{x}, p, f)$.
+$\textit{spans}$ always includes a special span denoting an empty or non-overt role, denoted $\emptyset$. 
 For each candidate span $a \in \textit{spans}(\mathbf{x}, p, f)$, we extract a binary feature vector 
 $\mathbf{\phi}(a, \mathbf{x}, p, f)$.
 We describe the features in \S\ref{sec:features}.
 We use a linear model, parametrized by the weight vector $\mathbf{w}$, to score $a$:
 \begin{equation}
-\text{score}_\mathbf{w}(a \mid \mathbf{x}, p, f, r) = \mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r)
+\textit{score}_\mathbf{w}(a \mid \mathbf{x}, p, f, r) = \mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r)
 \end{equation}
-$\text{score}_\mathbf{w}$ models the compatibility  of a candidate role--argument pair.
-Its parameters (feature weights) $\mathbf{w}$ are learned from data (\S\ref{sec:learning}).
-We define the \textbf{local classifier} as:
-\begin{equation}
-\textit{arg}(\mathbf{x}, p, f, r) = \argmax_{a \in \textit{spans}(\mathbf{x}, p, f) \cup \{\emptyset\}} \text{score}_{\mathbf{w}}(a \mid \mathbf{x}, p, f, r)
-\end{equation}
-This is used to choose an argument for every role $r$ of frame $f$.
-Note that in many cases the role will be empty (non-overt), denoted $\emptyset$. 
-We use the local classifier during training.
-\nss{mention global inference step}
+$\textit{score}_\mathbf{w}$ models the compatibility  of a candidate
+role--argument pair, and its parameters (feature weights) $\mathbf{w}$ are
+learned from data (\S\ref{sec:learning}).
 
 At inference time, we use a \term{global classifier}.
-The global classifier chooses a joint assignment of all arguments of a frame that maximizes the sum of scores under the model, while satisfying the following constraints:
+The global classifier chooses a joint assignment of all arguments of a frame, while respecting the following constraints:
 \begin{enumerate}
   \item a role may be assigned to at most one span, and
   \item spans of overt arguments must not overlap.
 \end{enumerate}
-More concretely, let $\mathbf{a} = \{ (r, a) \mid r \in \text{roles}(f) \}$ be a joint assigment, and let $A$ be the set of all such assignments.
+Concretely, let a joint assigment be represented as a function $\mathbf{a}: \textit{roles}(f) \rightarrow \textit{spans}(\mathbf{x}, p, f)$, % \cup \{\emptyset\}$, %= \{ (r, a) \mid r \in \textit{roles}(f) \}$
+ and let $\mathcal{A}$ be the set of all non-overlapping assignments.
 We give $\mathbf{a}$ the score
 \begin{equation}
-\text{score}_{\mathbf{w}}(\mathbf{a} \mid \mathbf{x}, p, f) =
-    \sum_{(r, a) \in \mathbf{a}}{\text{score}_\mathbf{x}(a \mid \mathbf{x}, p, f, r)}
+\textit{score}_{\mathbf{w}}(\mathbf{a} \mid \mathbf{x}, p, f) =
+    \sum_{r \in \textit{roles}(f)}{\textit{score}_\mathbf{x}(\mathbf{a}(r) \mid \mathbf{x}, p, f, r)}
 \end{equation}
 And choose the joint assignment
 \begin{equation}
 \textit{args}(\mathbf{x}, p, f) =
-    \argmax_{\mathbf{a} \in A} \text{score}_{\mathbf{w}}(\mathbf{a} \mid \mathbf{x}, p, f, r)
+    \argmax_{\mathbf{a} \in \mathcal{A}} {
+        \textit{score}_{\mathbf{w}}(\mathbf{a} \mid \mathbf{x}, p, f, r)
+    }
 \end{equation}
-Beam search, with a beam size of 100, is used to choose the maximum joint assignment with no overlapping arguments.
-\st{something about DP in Täckström et al, TACL}
-
-\st{talk about learning here?}
-\st{something about L2 regularization}
+Beam search, with a beam size of 100, is used to find this $\argmax$.%
+\footnote{Recent work has improved upon global decoding techniques \st{cite Täckström et al, TACL}; we expect such improvements to be complementary to the gains due to the added features and data reported here.}
 
 \mk{introduce this as a supervised domain adaptation problem? What is the source and what's the target?}
 \mk{Let $D_{ft}$ represent the FT data and $D_{ex}$ the exemplars?}
 
-We experiment with several techniques for modifying the model-fitting portion of 
-the argument identification model's local learning objective 
-(training data, features). All of our experiments use the same form of regularization, 
-condition on the same frame predictions\nss{not oracle, right? these are SEMAFOR's current frame ID model, so not state of the art?} 
-and syntactic preprocessing\nss{does this match Dipanjan's latest experiments?}, 
-and use beam search with \nss{hyperparam value} for joint decoding of arguments.\footnote{\nss{recent work has improved upon global decoding techniques; we expect such improvements to be complementary to the gains due to the local model reported here}}
+We experiment with several techniques for augmenting the model's training data (\S\ref{sec:aug_data}) and feature space $\mathbf{\phi}$ (\S\ref{sec:frust}--%,\ref{sec:frust},\ref{sec:guide},
+\ref{sec:hierfeats}).
+% modifying the model-fitting portion of the argument identification model's local learning objective  (training data, features).
 
 \nss{Domain adaptation/multitask learning techniques}
 
 \subsection{Augmenting the Training Data}
+\label{sec:aug_data}
 
 \subsection{Frustratingly Easy}
+\label{sec:frust}
 \cite{daume-2009} proposed a simple feature augmentation approach that was shown to work well in supervised domain adaptation scenarios, 
 such as ours. We apply their method to incorporate the exemplars data by introducing a feature mapping $\Phi^{ft}(x) = (x, x)$ for the
 FT annotations $x \in D_{ft}$, and $\Phi^{ex}(x) = (x, 0)$ for the exemplars $x \in D_{ex}$. The resulting transformed data 
@@ -656,6 +649,7 @@ each feature to contribute both ``general'' and domain-specific weights to the m
 behaves similarly in both domains or not.
 
 \subsection{Guide Features}
+\label{sec:guide}
 Another approach to introduce supervision for domain adaptation, 
 which does not combine the labeled data from the two domains, 
 to use a supervised model built on the source domain to augment features in the target domain.
@@ -706,16 +700,33 @@ Baseline: 2709128, Combined training: 12972404, Frust-easy: 15681531, 'Parents+s
 
 \section{Experiments}
 
-Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} are used to narrow the set of candidate spans considered, and as input to feature extraction.
+All of our experiments use the same form of regularization, 
+condition on the same oracle frame predictions, 
+and syntactic preprocessing\nss{does this match Dipanjan's latest experiments?}, 
+and use beam search with a beam size of 100 for joint decoding of arguments.
+Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} are used. % to narrow the set of candidate spans considered, and as input to feature extraction.
 
 
+\subsection{Learning}
+\label{sec:learning}
 
-\subsection{Training}
+\st{TODO: local classifier is only used in my SVM version, not in Das's log-linear version.}
+We define the \textbf{local classifier} as:
+\begin{equation}
+\textit{arg}(\mathbf{x}, p, f, r) = \argmax_{a \in \textit{spans}(\mathbf{x}, p, f)%\cup \{\emptyset\}
+} \textit{score}_{\mathbf{w}}(a \mid \mathbf{x}, p, f, r)
+\end{equation}
+% This is used to choose an argument for every role $r$ of frame $f$.
+We use the local classifier during training.
+
+\st{talk about learning here?}
+\st{something about L2 regularization}
+
 
 % SEMAFOR treats the argument identification task as a structured prediction problem.
 % It uses a linearly parametrized model that scores each candidate span given a frame element\st{this should probably be talked about earlier?}:
 % \begin{equation}
-% \text{score}_\mathbf{w}(y \mid x) = \mathbf{w}^\top \mathbf{f}(x, y)
+% \textit{score}_\mathbf{w}(y \mid x) = \mathbf{w}^\top \mathbf{f}(x, y)
 % \end{equation}
 
 % During training, each frame element is treated as an independent log-linear classification instance, with the set of candidate spans (including the \textsc{NULL} span) as its output space.
