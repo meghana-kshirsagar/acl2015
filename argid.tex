@@ -602,7 +602,7 @@ for the predicate; call this $\textit{spans}(\mathbf{x}, p, f)$.
 $\textit{spans}$ always includes a special span denoting an empty or non-overt role, denoted $\emptyset$. 
 For each candidate span $a \in \textit{spans}(\mathbf{x}, p, f)$, we extract a binary feature vector 
 $\mathbf{\phi}(a, \mathbf{x}, p, f)$.
-We describe the features in \S\ref{sec:features}.
+We describe the features in \S\ref{sec:features}.\st{are we going to describe the baseline semafor features?}
 We use a linear model, parametrized by the weight vector $\mathbf{w}$, to score $a$:
 \begin{equation}
 \textit{score}_\mathbf{w}(a \mid \mathbf{x}, p, f, r) = \mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r)
@@ -687,25 +687,31 @@ Since the general feature contributes to both domains, regularization will encou
 
 \subsection{Guide Features}
 \label{sec:guide}
-Another approach to introduce supervision for domain adaptation, 
-which does not combine the labeled data from the two domains, 
-to use a supervised model built on the source domain to augment features in the target domain.
-When training and testing in the target domain, 
-the source domain model is effectively just a form of preprocessing to provide 
-additional features, known as \textbf{guide features} \citep{johansson-13,kong-14}.\footnote{This is related to the technique
+Another approach to introduce supervision for domain adaptation %, 
+% which does not combine the labeled data from the two domains, 
+is to train a supervised model on a source domain, make predictions using that model on the training data of the target domain, then use those predictions as additional features while training a new model on the target domain.
+% is to use a supervised model built on the source domain to augment features in the target domain.
+% When training and testing in the target domain, 
+The source domain model is effectively a form of preprocessing, and the features from its output are known as \textbf{guide features} \citep{johansson-13,kong-14}.\footnote{This is related to the technique
 of model stacking, where successively richer models are trained by cross-validation on the same dataset 
 \citet[e.g.,][]{cohen-05,nivre-08,martins-08}.}
-Formally: let $M_{s}$ be the model built on
+
+In our case, we treat the full text annotations as our target domain, and experiment with using PropBank, SemLink, and the exemplars data as our source domain\st{MK, please check this. you need to write more about how SemLink was used, b/c I have no idea.}.
+Each of the three source models produces SRL-style output, where predicates are assigned frames or role-sets, and for each predicate, spans are assigned role labels.
+But they differ in the labels used for roles.
+\st{talk about Illinois SRL, whatever-we-did-with-SemLink here?}
+
+Formally, let $M_{s}$ be the model built on
 the source domain (for instance, the PropBank data). 
-For every target instance $x$, we introduce ``guide'' features which use the output $M_s(x)$
-obtained by applying $M_s$ on $x$, which consists of the role labels assigned to various text spans in $x$. 
-Two types of guide features were used,
-one to indicate that a span $s_x$ was assigned a role and the other encoding the role label $r_g$ itself. 
+For every target domain sentence $\x$, we introduce ``guide'' features which use the output $M_s(\x)$
+obtained by applying $M_s$ on $\x$, which consists of the role labels assigned to various text spans in $\x$.
+Two types of guide features were used:
+one indicates that a span $a$ was assigned \emph{any} role, and the other encodes the role label $r_g$ itself.
 In the case where $M_s$ produces labels
 that belong to the same schema as the target domain 
 (for instance, the exemplars use the same schema as the FT annotations), 
-we use an additional feature $f_{match}(r_t,r_g)$ to indicate that 
-the `guide' role label $r_g$ of the span $s_x$ is the same as it's true label $r_t$.
+we use an additional feature $\phi_{match}(r_t,r_g)$ to indicate that 
+the `guide' role label $r_g$ of the span $a$ is the same as it's true\st{you mean ``target''?} label $r_t$.
 
 
 \subsection{Type-level hierarchy features}\label{sec:hierfeats}
@@ -726,22 +732,24 @@ There are 4138 \textbf{Inheritance} and 589 \textbf{Subframe} links between role
 A simple mechanism to share information is via shared model parameters between related roles. Towards this, we experiment with two variations of
 hierarchical feature types:
 
-\noindent\textbf{(1) siblings}: Roles that have a common parent share features.
+\begin{itemize}
+  \item 
+\noindent\textbf{siblings}: Roles that have a common parent share features.
 For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a new feature which is the conjunction: 
 $\text{"sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge \textit{parent}(r)$. 
 % $I_{hier}$ is an indicator to distinguish this feature from the regular conjunction features in Semafor that use frame names and roles.
 
-\noindent\textbf{(2) parent+siblings}: Roles share features with their parent and siblings. 
+  \item\noindent\textbf{parent+siblings}: Roles share features with their parent and siblings. 
 For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a two new features:
 
 \noindent$\text{"par+sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge \textit{parent}(r)$, and
 
 \noindent$\text{"par+sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge r$.
+\end{itemize}
 
 We experimented with using more than one level of the hierarchy (grandparents, e.g.), but found that it does not produce any improvements in the performance, yet increased computation cost due to the greater number of features.
 
-\mk{Write about the number of features in all models somewhere.. 
-Baseline: 2709128, Combined training: 12972404, Frust-easy: 15681531, 'Parents+siblings': 34282958}
+
 
 \section{Experiments}
 
