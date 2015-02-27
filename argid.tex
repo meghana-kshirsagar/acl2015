@@ -569,15 +569,12 @@ The major benefit to PropBank is that it includes a large and comprehensively an
 We hypothesize that leveraging this large corpus indirectly 
 can reap rewards for FrameNet-style SRL. 
 
-\subsection{Illinois SRL system}\label{sec:pbsrl}
-
-\subsection{SemLink}\label{sec:semlink}
-
-\nss{limitations!}
-
-
-
-
+Very little data is annotated with both PropBank and FrameNet analyses.
+Therefore, to bridge between the PropBank and FrameNet corpora, 
+we explore two approaches: (a)~running a PropBank-trained semantic role labeler 
+on the FrameNet data as an additional form of preprocessing; and 
+(b)~leveraging SemLink \citep{bonial-13}, a partial and semi-automatic augmentation 
+of the PropBank corpus's roleset annotations with mappings to FrameNet and VerbNet.
 
 \section{Learning from multiple domains and representations}
 
@@ -602,7 +599,7 @@ for the predicate; call this $\textit{spans}(\mathbf{x}, p, f)$.
 $\textit{spans}$ always includes a special span denoting an empty or non-overt role, denoted $\emptyset$. 
 For each candidate span $a \in \textit{spans}(\mathbf{x}, p, f)$, we extract a binary feature vector 
 $\mathbf{\phi}(a, \mathbf{x}, p, f)$.
-We describe the features in \S\ref{sec:features}.\st{are we going to describe the baseline semafor features?}
+We describe the features in \S\ref{sec:features}.\st{are we going to describe the baseline semafor features?}\nss{i suggest just mention the kinds of things features look at---POS, syntax, etc.---and that many of them are at multiple levels of granularity (role-specific, role name--specific)}
 We use a linear model, parametrized by the weight vector $\mathbf{w}$, to score $a$:
 \begin{equation}
 \textit{score}_\mathbf{w}(a \mid \mathbf{x}, p, f, r) = \mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r)
@@ -701,7 +698,7 @@ of model stacking, where successively richer models are trained by cross-validat
 In our case, we treat the full text annotations as our target domain, and experiment with using PropBank, SemLink, and the exemplars data as our source domain\st{MK, please check this. you need to write more about how SemLink was used, b/c I have no idea.}.
 Each of the three source models produces SRL-style output, where predicates are assigned frames or rolesets, and for each predicate, spans are assigned role labels.
 But they differ in the labels used for roles.
-\st{talk about Illinois SRL, whatever-we-did-with-SemLink here?}
+\st{talk about Illinois SRL \citep{punyakanok-08}\footnote{\url{http://cogcomp.cs.illinois.edu/page/software_view/SRL}}, whatever-we-did-with-SemLink here?}
 
 Formally, let $M_{s}$ be the model built on
 the source domain (for instance, the PropBank data). 
@@ -883,20 +880,24 @@ both sets of data will certainly benefit in performance.
 
 
 \begin{table}\centering\small
-\begin{tabular}{p{4cm}rr}
-\toprule
-\normalfont & \textbf{Full-Text} & \textbf{Exemplars} \\
+\begin{tabular}{@{}p{2cm}r@{~~}r@{~~}r@{~~}r@{}}
+%\toprule
+\normalfont & \multicolumn{2}{c}{\textbf{\hspace{40pt}Full-Text}} & \multicolumn{2}{c}{\textbf{Exemplars}} \\
+& \multicolumn{1}{c}{\hspace{40pt}\textit{train}} & \multicolumn{1}{c}{\textit{test}} & \multicolumn{1}{c}{\textit{train}} & \multicolumn{1}{c}{\textit{test}} \\
 \midrule
-Sentences in training & 2,780 & 145,838 \\
-Roles in train data & 15,019 & 137,511 \\
-Roles (types) in training & 2,644 & 4,821 \\
-Sentences in test data & 2,420 & 4,132 \\
-Roles in test data & 4,458 & 4,132 \\
-Roles (types) in test data & 1,420 & 1,224 \\
-Unseen frames (types) in test data & 46 & 0 \\
-Roles (types) in unseen frames & 178 & 0 \\
-Unseen roles (types) in test data & 289 & 38 \\
-Unseen roles (types) in test w.r.t (FT+Exemplars) & 103 & 32 \\
+Sentences  & 2,780 & 2,420 & 145,838 & 4,132 \\
+Frames & 15,019 & 4,458 & 137,511 & 4,132 \\
+Overt args & \nss{TODO} & & \nss{\^{} ??} \\
+\midrule
+\multicolumn{5}{c}{\textsc{types}} \\
+Roles & 2,644 & 1,420 & 4,821 & 1,224 \\
+%Sentences in test data & 2,420 & 4,132 \\
+%Roles in test data & 4,458 & 4,132 \\
+%Roles (types) in test data & 1,420 & 1,224 \\
+\multicolumn{2}{@{}l}{Unseen frames  \quad \textit{vs.~train:}} & 46 & & 0 \\
+\multicolumn{2}{@{}l}{Roles in unseen frames \quad \textit{vs.~train:}} & 178 & & 0 \\
+\multicolumn{2}{@{}l}{Unseen roles \quad \textit{vs.~train:}} & 289 & & 38 \\
+\multicolumn{2}{@{}l}{Unseen roles \quad \textit{vs.~combined train:}} & 103 & & 32 \\
 \end{tabular}
 \caption{Characteristics of the training and test data}
 \label{tbl:datastats}
@@ -910,18 +911,18 @@ an indication of how well a model generalizes.
 
 \nss{comparison to prior work (baseline, best result). args+frames score vs. args only}
 
-We present precision, recall, and F1-measure microaveraged across the test instances in Table \ref{tbl:results}, for all the approaches that we tried.
+We present precision, recall, and $F_1$-measure microaveraged across the test instances in Table \ref{tbl:results}, for all the approaches that we tried.
 The first column classifies the approaches based on what resource we use and the second column indicates what training data was used. 
 For each resource (one multi-row in the table) we show results obtained by various methods of combining it with the FT data.
 The marker `$\xrightarrow{\text{guide}}$' on some of the methods refers to the feature augmentation discussed in \cref{sec:guide},
-`Hier' represents the hierarchical features from \cref{sec:hier} and `EasyAdapt' is described in \cref{sec:frust}.
+`Hier' represents the hierarchical features from \cref{sec:hier} and `EasyAdapt' is described in \cref{sec:frust}.\nss{if using the term EasyAdapt, define it above}
 
 \input{results.tex}
 
 The first resource that we consider is `FN Hierarchy'. We find that adding the sibling-level hierarchical features to the baseline FT model improves 
 the fscore by 1.2 and 1.7 points on FT-test and exemplars-test respectively,
 with benefits to both precision and recall. The `siblings+parents' features which consider two levels of the hierarchy produce unnoticeable benefits,
-suggesting that higher levels in the hierarchy can be too general \mk{give example?} and cause very dissimilar roles firing the same hierarchy features.
+suggesting that higher levels in the hierarchy can be too general \mk{give example?} and cause very dissimilar roles firing the same hierarchy features.%
 \footnote{We also tried adding grand-parents and found only minor improvements. Using an expert-pruned hierarchy with relations that are
 most likely to help can give greater benefits, and is beyond the focus of this work.}
 
@@ -930,12 +931,12 @@ which drops the f-score by a whopping 11.2 and 16.5 points below baseline on FT-
 of the SemLink annotations, giving a minor increase over the baseline. 
 %\mk{resulting in a graceful but prompt exit for this resource from further consideration.}
 
-With the exemplars resource, we find that the guide features give us a modest improvement of 1.12 in F1 on FT-test, 
+With the exemplars resource, we find that the guide features give us a modest improvement of 1.12 in $F_1$ on FT-test, 
 while using it as gold-standard training data results in a bigger increase of 2.8 points. 
-On the exemplars-test we observe a similar trend, where the (FT+Exemplars) model delivers a massive increase of $\approx$23 f-points and a 
+On the exemplars-test we observe a similar trend, where the (FT+Exemplars) model delivers a massive increase of $\approx$23 $F_1$-points and a 
 much smaller increase is seen with the guide features. This contrasts with what we observed for SemLink.
 The frustratingly easy domain adaptation approach to incorporate the Exemplars
-further improves the F1 by a minor 0.3 on the FT-test and a decent 2.8 on the exemplars-test.
+further improves the $F_1$ by a minor 0.3 on the FT-test and a decent 2.8 on the exemplars-test.
 
 Finally, using the PB-SRL data in the form of guide features also results in small improvements over the baseline. 
 Overall we observe that an additional resource that is very similar to the original resource helps more as training data than as a `guide model'.
@@ -967,7 +968,7 @@ best precision. This result is intuitive because we expect the hierarchy to help
 
 
 \subsection{FE-level evaluation}
-The results so far have discussed the overall improvement in F1-score, but do not present a detailed picture of how we gain from the additional
+The results so far have discussed the overall improvement in $F_1$-score, but do not present a detailed picture of how we gain from the additional
 coverage. Towards this, we present a frame-element i.e role type level analysis comparing the best results with the baseline.
 The first plot in Figure \ref{fig:num_inst} shows the frequency of all roles that appear in the FT-test set.
 Figure \ref{fig:coolplot} shows the $F_1$ per role-type, for the baseline and the two models from Table \ref{tbl:bestTech}.
