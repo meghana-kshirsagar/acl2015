@@ -292,6 +292,8 @@
 \newcommand{\fnf}[1]{\textsc{\textsf{#1}}} % FrameNet frame
 \newcommand{\fnr}[1]{\textbf{\textsf{#1}}} % FrameNet role (frame element name)
 \newcommand{\fnlu}[1]{\textsf{#1}} % FrameNet lexical unit (predicate)
+\newcommand{\pbf}[1]{\mbox{\textsf{#1}}} % PropBank frame (roleset)
+\newcommand{\pbr}[1]{\textbf{\textsf{#1}}} % PropBank role (numbered or modifier argument label)
 
 %\newcommand{\lex}[1]{\textsmaller{\textsf{\textcolor{slate}{\textbf{#1}}}}}	% example lexical item
 \newcommand{\lex}[1]{\textit{#1}} % lexical item/lexical example
@@ -538,15 +540,42 @@ This was the case for \textit{passengers} and \textit{dizzying} in \cref{fig:har
 
 \subsection{PropBank}\label{sec:pb}
 
-\nss{how different from FN}
+PropBank \citep[PB;][]{palmer-05} is a lexicon and corpus of predicate--argument structures
+that takes a shallower approach than FrameNet. Whereas FrameNet frames cluster 
+lexical predicates that evoke similar kinds of scenarios (with the same kinds of roles), 
+and these frames are organized in a network, 
+PropBank frames are purely lexical and there are no formal relations between different predicates 
+or their roles.
+PropBank does represent lexical ambiguity---e.g., the verb \textit{order} is ambiguous 
+in PropBank between \pbf{order-v-01} ``impelled action'' and \pbf{order-v-02} ``request to be delivered''---but
+PropBank's sense distinctions are generally coarser-grained than FrameNet's.
 
-The conventions of PropBank and FrameNet were compared in greater detail by \citep{ellsworth-04}.
+Within sense-disambiguated PropBank frames, or \textbf{rolesets}, 
+core roles are defined with textual descriptions and assigned numbers. 
+E.g., \pbf{order-v-02} defines: \pbr{A0} ``orderer'', 
+\pbr{A1} ``thing ordered'', \pbr{A2} ``benefactive, ordered-for'', 
+and \pbr{A3} ``source''.
+Following \citeposs{dowty-91} theory of proto-roles, PropBank rolesets use \pbr{A0} for proto-agents 
+and \pbr{A1} for proto-patients, but in general, there is much less consistency 
+in interpretation of core roles across lexical predicates for PropBank than there is for FrameNet.
+Another difference is that PropBank's non-core roles---named \pbr{AM-*}, 
+such as \pbr{AM-PRP} for purposes---are not frame-specific.\footnote{\Citet{ellsworth-04} 
+has a more extensive discussion of differences between PropBank's and FrameNet's conventions.}
+
+Despite all these differences, there is often a great deal in common between 
+FrameNet-style and PropBank-style analyses, as should be apparent from comparing 
+\cref{fig:harbor-fn} and \cref{fig:harbor-pb}. 
+The major benefit to PropBank is that it includes a large and comprehensively annotated corpus.
+We hypothesize that leveraging this large corpus indirectly 
+can reap rewards for frame SRL. 
+
+\subsection{Illinois SRL system}\label{sec:pbsrl}
 
 \subsection{SemLink}\label{sec:semlink}
 
 \nss{limitations!}
 
-\subsection{Illinois SRL system}
+
 
 
 
