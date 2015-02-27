@@ -10,7 +10,7 @@
 %\usepackage{latexsym}
 
 \usepackage{microtype}
-
+\usepackage{ dsfont }
 \usepackage[boxed]{algorithm2e}
 \renewcommand\AlCapFnt{\small}
 \usepackage[small,bf,skip=5pt]{caption}
@@ -37,7 +37,7 @@
 \usepackage{xspace}
 \usepackage{xparse} % for fancy custom macros (\NewDocumentEnvironment, etc.)
 
-\newcommand{\indicator}[1]{\boldsymbol{1}\{#1\}}
+\newcommand{\indicator}[1]{I_{\{#1\}}} %{\mathds{1}_{\{#1\}}}
 
 
 \usepackage{textcomp}
@@ -602,7 +602,7 @@ for the predicate; call this $\textit{spans}(\mathbf{x}, p, f)$.
 $\textit{spans}$ always includes a special span denoting an empty or non-overt role, denoted $\emptyset$. 
 For each candidate span $a \in \textit{spans}(\mathbf{x}, p, f)$, we extract a binary feature vector 
 $\mathbf{\phi}(a, \mathbf{x}, p, f)$.
-We describe the features in \S\ref{sec:features}.
+We describe the features in \S\ref{sec:features}.\st{are we going to describe the baseline semafor features?}
 We use a linear model, parametrized by the weight vector $\mathbf{w}$, to score $a$:
 \begin{equation}
 \textit{score}_\mathbf{w}(a \mid \mathbf{x}, p, f, r) = \mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r)
@@ -650,21 +650,22 @@ We expect such improvements to be complementary to the gains due to the added fe
 such as ours.
 Let $\mathcal{D}_{FT}$ be the full text data, and $\mathcal{D}_{ex}$ be the exemplar data.
 We %apply their method to incorporate the exemplars data  by introducing
-introduce a domain feature $I_{\textit{domain}}(\mathbf{x}) = \indicator{\mathbf{x} \in \mathcal{D}_{FT}}$,
-where $\indicator{\cdot}$ is the indicator function, \[
-\indicator{P} = \left\{\begin{array}{lr}
-1, & \text{ if } P \\
-0, & \text{ otherwise}. \\
-\end{array}
-\right.
-\]
+introduce a domain indicator %$I_{\textit{domain}}(\mathbf{x}) =
+$\indicator{\mathbf{x} \in \mathcal{D}_{FT}}$,
+where $\indicator{P}$ is the indicator function, with value 1 if $P$ is true, 0 otherwise.
+% \[
+% \indicator{P} = \left\{\begin{array}{lr}
+% 1, & \text{ if } P \\
+% 0, & \text{ otherwise}. \\
+% \end{array}
+% \right.
+% \]
 We expand the feature space by concatenating the original feature vector with a version of the feature vector that has been element-wise conjoined with the domain indicator:
 % We apply their method to incorporate the exemplars data  by introducing a feature mapping $\Phi : \mathds{R}^d \rightarrow \mathds{R}^{2d}$ given by
 % \begin{equation}
 % \Phi(\mathbf{\phi}(a, \mathbf{x}, p, f, r)) = [x; x * ]
 % \end{equation}
 %  for the
-\begin{equation}
 \begin{align*}
 \lefteqn{
 \phi_{\textit{frust}}(a, \mathbf{x}, p, f, r) =
@@ -672,42 +673,47 @@ We expand the feature space by concatenating the original feature vector with a 
 &&
 \left[\begin{array}{c}
 \phi(a, \mathbf{x}, p, f, r) \\
-\phi(a, \mathbf{x}, p, f, r) \wedge I_{\textit{domain}}(\mathbf{x})
+\phi(a, \mathbf{x}, p, f, r) \text{ \& } \indicator{\mathbf{x} \in \mathcal{D}_{FT}}%I_{\textit{domain}}(\mathbf{x})
 \end{array}
 \right]
 % \left[\phi(a, \mathbf{x}, p, f, r) ; \phi(a, \mathbf{x}, p, f, r) \wedge I_{\textit{domain}}(\mathbf{x}) \right]
 \end{align*}
-\end{equation}
-
+\st{this ``vector concatenation'' view is sort of inconsistent with the ``adding features" view in the guide/hierarchy sections}
 
 % FT annotations $x \in \mathcal{D}_{ft}$, and $\Phi^{ex}(x) = (x, 0)$ for the exemplars $x \in D_{ex}$. The resulting transformed data 
 % from the two domains is then used to learn a single model.
-The intuition here is that by replicating the features, we allow for
-each feature to contribute both ``general'' and domain-specific weights to the model depending on whether the feature
+The intuition is that by replicating the features, we allow for
+each feature to contribute both ``general'' and ``domain-specific'' weights to the model depending on whether the feature
 behaves similarly in both domains or not.
-Since the ``general'' feature contributes to both domains, regularization will encourage the model to use the ``general'' version over the ``specific" version of a feature whenever possible.
+Since the general feature contributes to both domains, regularization will encourage the model to use the general version over the domain-specific version of a feature whenever possible.
 
 \subsection{Guide Features}
 \label{sec:guide}
-Another approach to introduce supervision for domain adaptation, 
-which does not combine the labeled data from the two domains, 
-to use a supervised model built on the source domain to augment features in the target domain.
-When training and testing in the target domain, 
-the source domain model is effectively just a form of preprocessing to provide 
-additional features, known as \textbf{guide features} \citep{johansson-13,kong-14}.\footnote{This is related to the technique
+Another approach to introduce supervision for domain adaptation %, 
+% which does not combine the labeled data from the two domains, 
+is to train a supervised model on a source domain, make predictions using that model on the training data of the target domain, then use those predictions as additional features while training a new model on the target domain.
+% is to use a supervised model built on the source domain to augment features in the target domain.
+% When training and testing in the target domain, 
+The source domain model is effectively a form of preprocessing, and the features from its output are known as \textbf{guide features} \citep{johansson-13,kong-14}.\footnote{This is related to the technique
 of model stacking, where successively richer models are trained by cross-validation on the same dataset 
 \citet[e.g.,][]{cohen-05,nivre-08,martins-08}.}
-Formally: let $M_{s}$ be the model built on
+
+In our case, we treat the full text annotations as our target domain, and experiment with using PropBank, SemLink, and the exemplars data as our source domain\st{MK, please check this. you need to write more about how SemLink was used, b/c I have no idea.}.
+Each of the three source models produces SRL-style output, where predicates are assigned frames or rolesets, and for each predicate, spans are assigned role labels.
+But they differ in the labels used for roles.
+\st{talk about Illinois SRL, whatever-we-did-with-SemLink here?}
+
+Formally, let $M_{s}$ be the model built on
 the source domain (for instance, the PropBank data). 
-For every target instance $x$, we introduce ``guide'' features which use the output $M_s(x)$
-obtained by applying $M_s$ on $x$, which consists of the role labels assigned to various text spans in $x$. 
-Two types of guide features were used,
-one to indicate that a span $s_x$ was assigned a role and the other encoding the role label $r_g$ itself. 
+For every target domain sentence $\x$, we introduce ``guide'' features which use the output $M_s(\x)$
+obtained by applying $M_s$ on $\x$, which consists of the role labels assigned to various text spans in $\x$.
+Two types of guide features were used:
+one indicates that a span $a$ was assigned \emph{any} role, and the other encodes the role label $r_g$ itself.
 In the case where $M_s$ produces labels
 that belong to the same schema as the target domain 
-(for instance, the exemplars use the same schema as the FT annotations), 
-we use an additional feature $f_{match}(r_t,r_g)$ to indicate that 
-the `guide' role label $r_g$ of the span $s_x$ is the same as it's true label $r_t$.
+(for instance, the exemplars use the same schema as the FT annotations \st{our set of source domains is small enough that we can enumerate which ones this applies to. Is it exemplars + SemLink?}), 
+we use an additional feature $\phi_{match}(r_t,r_g)$ to indicate that 
+the `guide' role label $r_g$ of the span $a$ is the same as it's true\st{you mean ``target''?} label $r_t$.
 
 
 \subsection{Type-level hierarchy features}\label{sec:hierfeats}
@@ -715,27 +721,37 @@ the `guide' role label $r_g$ of the span $s_x$ is the same as it's true label $r
 \mk{How many total types of relations? Cleanup writeup based on NSS's notation.}
 
 Frames in FrameNet are connected to each other by relations such as inheritance, temporal ordering, causality. 
-For instance, the frame \fnf{Robbery} inherits from the more abstract frame \fnf{Committing\_crime}, the 
+For instance, the frame \fnf{Robbery} inherits from the more abstract frame \fnf{Committing\_crime}, and the
 frame \fnf{Fall\_asleep} is preceeded by the frame \fnf{Being\_awake}. The roles of related frames have 
 also been mapped to indicate the correspondence between them: \fnf{Robbery}.\fnr{Perpetrator} is mapped to 
 \fnf{Committing\_crime}.\fnr{Perpetrator}, which in turn maps to \fnf{Misdeed}.\fnr{Wrongdoer}. Frames and roles that are far
 apart in this hierarchy are less related than say neighbours.
 This hierarchy can be exploited to share information across related roles, thereby benefiting the roles 
 that have few annotations \mk{say something about a greater variety of contexts is available for each role}. 
-A simple mechanism to share information is via shared model parameters between related roles. Towards this, we define two types of
-hierarchical features: (1) `siblings', where roles that have a common parent share features. For every feature $f_i$ 
-that fires for an argument $a$, we add a feature which is the conjunction: 
-$(f_i \wedge \textrm{parent.frame} \wedge \textrm{parent.role} \wedge I_{hier})$ where parent.frame = parent(frame($a$)). 
-$I_{hier}$ is an indicator to distinguish this feature from the regular conjunction features in Semafor that use frame names and roles.
-(2) `parents+siblings', where roles share features with their parents and siblings. In addition to the `siblings' feature, 
-we fire the following conjunction: $(f_i \wedge \textrm{frame} \wedge \textrm{frame.role} \wedge I_{hier})$.
-We use only the Inheritance and Subframe relations between the roles (\cref{sec:lex}), of which there are 4138 and 589 respectively.
+We say that the $\textit{parent}$ of a role is one that has either the \textbf{Inheritance} or \textbf{Subframe} relation to it (\cref{sec:lex}).
+There are 4138 \textbf{Inheritance} and 589 \textbf{Subframe} links between role types in FrameNet 1.5.
 
-We found that using more than one level of the hierarchy, does not produce any improvements in the performance at the cost of
-increased computation due to the greater number of features.
+A simple mechanism to share information is via shared model parameters between related roles. Towards this, we experiment with two variations of
+hierarchical feature types:
 
-\mk{Write about the number of features in all models somewhere.. 
-Baseline: 2709128, Combined training: 12972404, Frust-easy: 15681531, 'Parents+siblings': 34282958}
+\begin{itemize}
+  \item 
+\noindent\textbf{siblings}: Roles that have a common parent share features.
+For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a new feature which is the conjunction: 
+$\text{"sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge \textit{parent}(r)$. 
+% $I_{hier}$ is an indicator to distinguish this feature from the regular conjunction features in Semafor that use frame names and roles.
+
+  \item\noindent\textbf{parent+siblings}: Roles share features with their parent and siblings. 
+For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a two new features:
+
+\noindent$\text{"par+sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge \textit{parent}(r)$, and
+
+\noindent$\text{"par+sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge r$.
+\end{itemize}
+
+We experimented with using more than one level of the hierarchy (grandparents, e.g.), but found that it does not produce any improvements in the performance, yet increased computation cost due to the greater number of features.
+
+
 
 \section{Experiments}
 
@@ -749,25 +765,14 @@ Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} a
 \subsection{Learning}
 \label{sec:learning}
 
-\st{TODO: local classifier is only used in my SVM version, not in Das's log-linear version.}
-We define the \textbf{local classifier} as:
-\begin{equation}
-\textit{arg}(\mathbf{x}, p, f, r) = \argmax_{a \in \textit{spans}(\mathbf{x}, p, f)%\cup \{\emptyset\}
-} \textit{score}_{\mathbf{w}}(a \mid \mathbf{x}, p, f, r)
-\end{equation}
-% This is used to choose an argument for every role $r$ of frame $f$.
-We use the local classifier during training.
-
-\st{talk about learning here?}
-\st{something about L2 regularization}
-
-
+Following SEMAFOR, we train using a \term{local} objective instead of using a global classifier.
+In other words, we treat each role and span pair as an independent training instance.
 % SEMAFOR treats the argument identification task as a structured prediction problem.
 % It uses a linearly parametrized model that scores each candidate span given a frame element\st{this should probably be talked about earlier?}:
 % \begin{equation}
 % \textit{score}_\mathbf{w}(y \mid x) = \mathbf{w}^\top \mathbf{f}(x, y)
 % \end{equation}
-
+%
 % During training, each frame element is treated as an independent log-linear classification instance, with the set of candidate spans (including the \textsc{NULL} span) as its output space.
 % \st{something about L2 regularization}
 % But at test time, it chooses a joint assignment of all arguments that maximizes probability under the model, while satisfying the following constraints:
@@ -777,14 +782,14 @@ We use the local classifier during training.
 % \end{enumerate}
 % Beam search, with a beam size of 100, is used to choose the maximum joint assignment with no overlapping arguments.
 % \nss{does beam search require normalizing to probabilities?}\st{no. maybe it should, but SEMAFOR didn't, and we don't.}
-
-We have made several modifications to SEMAFOR's training in order to speed up experiments:
+But we have made several modifications to SEMAFOR's training in order to speed up experiments:
 
 \begin{itemize}
-  \item We use squared structured hinge loss (defined below) instead of multiclass logistic regression.
+  \item We minimize squared structured hinge loss (defined below) instead of a log-linear loss.
   Using hinge loss, there is no longer a need to calculate a partition function.
   Gradients, and hence parameters, are sparser than in logistic regression, allowing us to use a sparse vector implementation.
-  \item We use the online optimization method AdaDelta \citep{zeiler-12} with minibatches\nss{minibatch size?}, instead of the batch method L-BFGS \citep{liu-89}.
+  \item We use the online optimization method AdaDelta \citep{zeiler-12} with minibatches, instead of the batch method L-BFGS \citep{liu-89}.
+  We use minibatches of size 4,000  on the full text data, and 40,000 on the exemplar data.
 %   \item We use elastic net ($\ell_1 + \ell_2$) regularization. Adding $\ell_1$ also has the effect of keeping the parameter vector sparse.\nss{what hyperparameter(s)? are $\ell_1$ and $\ell_2$ tuned separately?}
 \end{itemize}
 We use these changes for all systems, including the baseline.
@@ -796,28 +801,64 @@ decreases from 729 minutes to 82 minutes\nss{say something about hardware this w
 %\mk{P/R/F numbers are in the table (see rows 1 and 2). Times: 12 hrs 9 mins for the earlier algorithm to converge. That took 290 iterations. An equivalent number of iterations took 45 minutes for the new system. Running till convergence (about 700 iterations) took 82 minutes, thus giving a speed-up of $\approx$ 9X. The P/R/F on exemplars improves (row 2); I believe it is due to the regularization in Sam's objective.}
 } 
 
+% \st{TODO: local classifier is only used in my SVM version, not in Das's log-linear version.}
+% We define the \textbf{local classifier} as:
+% \begin{equation}
+% \textit{arg}(\mathbf{x}, p, f, r) = \argmax_{a \in \textit{spans}(\mathbf{x}, p, f)
+% } \textit{score}_{\mathbf{w}}(a \mid \mathbf{x}, p, f, r)
+% \end{equation}
+% 
+% \st{something about L2 regularization}
 
 The details of squared hinge loss are as follows.
-Let $(x^{(i)}, y^{(i)})$ be the $i^{\text{th}}$ training example.
+
+Let $((\mathbf{x}, p, f, r), a)$ %$(r^{(i)}, a^{(i)})$
+be the $i^{\text{th}}$ training example.
 Then the structured hinge loss on the $i^{\text{th}}$ example is given by:
-\begin{equation}
 \begin{align*}
 \lefteqn{\textit{Hinge}_\mathbf{w}(i) =} \\
-&&\max_y{\{\mathbf{w}^\top \mathbf{f}(x^{(i)}, y) + \text{cost}(y, y^{(i)})\}} - \mathbf{w}^\top \mathbf{f}(x^{(i)}, y^{(i)})
+&&\max_{r^\prime}{\{\mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r^\prime) + \text{cost}(r^\prime, r)\}} - \\
+&&\mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r)
 \end{align*}
-\end{equation}
 and squared hinge loss is:
 \begin{equation}
-\textit{SquaredHinge}_\mathbf{w}(i) =
+\textit{SqHinge}_\mathbf{w}(i) =
 \textit{Hinge}_\mathbf{w}(i)^2.
 \end{equation}
-In our experiments, we use $\text{cost}(y, y^{(i)}) = \indicator{y \ne y^{(i)}}$ \st{define}\footnote{We experimented with recall-oriented training, where errors of omission are assigned a higher cost, but found that while recall increased, overall $F_1$ went down\nss{or: failed to improve?}.}.
+We use $\text{cost}(r^\prime, r) = \indicator{r^\prime \ne r}$.%
+\footnote{We experimented with recall-oriented training, where errors of omission are assigned a higher cost, but found that while recall increased, overall $F_1$ went down\nss{or: failed to improve?}.}
+
+We learn $\mathbf{w}$ by minimizing the $\ell_2$-regularized average loss on the dataset:
+\begin{equation}
+\mathbf{w^*} = \argmin_\mathbf{w}{
+    \frac{1}{N}\sum_{i = 1}^N\{
+        \textit{SqHinge}_\mathbf{w}(i)
+    \} + \frac{1}{2} \lambda \| \mathbf{w} \|_2^2
+}
+\end{equation}
 
 
 \nss{same FN 1.5 splits as Dipanjan}
 
 
 \nss{preprocessing issues: removing duplicate sentences, merging adjacent split args in exemplars, OntoNotes PropBank preprocessing (NLTK), token-level SemLink details (such as filtering out sentences without mappable annotations; copy from WS paper)}
+
+\subsection{Preprocessing the data}
+
+
+\mk{NSS: hope you're not duplicating this in the earlier section! 
+We use the \emph{token-level parallel annotations} from SemLink, which are available for a subset of the PB-WSJ text, 
+hereafter referred to as SL-WSJ.} Of the available 74,977 SL-WSJ verbs, a majority cannot be mapped to FN frames for various reasons.
+Around 31\% of the predicates have the frame label \texttt{IN} (``indefinite'') where the mapping from VerbNet to FrameNet is ambiguous.
+About 20\% of the instances are labeled \texttt{NF} (``no frame''), indicating a coverage gap in FrameNet. 
+21\% of verbs have frame labels but no frame element annotations. Most of these are predicates with modifier arguments.
+Other arguments pointed to null anaphora that could not be resolved to overt arguments.
+This leaves 15,323 mappable instances with at least one overt argument, or 20\% of SL-WSJ verbs. This is a very small
+subset of the entire PB annotated data.
+
+We processed the exemplars data to remove duplicate sentences that already appear in the FT data. 
+
+
 
 \nss{tuning regularizer for all experiments}
 We tune the $\ell_2$ regularization parameter $\lambda$ on the held-out set. We searched over the following
@@ -829,14 +870,17 @@ We also use the performance on the held-out set to determine the stopping criter
 
 \subsection{Evaluation}
 The argument identification performance of the various methods is compared on two different test sets.
-(1) Full-text: the FrameNet 1.5 FT test split that was used in the evaluation in \cite{}. This data consists of sentences from 23 documents. 
+(1) Full-text: the FrameNet 1.5 FT test split that was used in the evaluation in \cite{das-14}. This data consists of sentences from 23 documents. 
 (2) Exemplars: a randomly sampled set of sentences from the exemplars data, with approximately the same number of targets as the FT test set.
-Statistics of both the test sets are given in Table \ref{tbl:datastats}. While the FT test set represents the benchmark set for evaluating the 
-performance of a frame semantic role labeling system, the exemplars test set being from a different distribution of text, give us
-an indication of how well a model generalizes.
-We present precision, recall, and F1-measure microaveraged across the test instances.
+Statistics of both the test sets are given in the lower half of Table \ref{tbl:datastats}. 
+The FT test set has 289 unseen role types, which is much higher than
+the 38 in the exemplars test set. There are no unseen frame types in the exemplars test data, whereas the FT test has 46 of them. 
+These differences are due to the manner in which the train and test splits were created, with document-level splits being used
+for FT and sentence-level splits for the exemplars.
+The last row of Table \ref{tbl:datastats} shows the unseen role types faced by a model that was built on both the FT and exemplars training data.
+In the FT test set it is 103, lower by $\approx$190 than what a FT-only model will see, thus leading us to expect that a model that combines
+both sets of data will certainly benefit in performance.
 
-\mk{Analyze the sparsity of the models? Which features have highest importance?}
 
 \begin{table}\centering\small
 \begin{tabular}{p{4cm}rr}
@@ -858,33 +902,82 @@ Unseen roles (types) in test w.r.t (FT+Exemplars) & 103 & 32 \\
 \label{tbl:datastats}
 \end{table}
 
+While the FT test set represents the benchmark set for evaluating the 
+performance of a frame semantic role labeling system, the exemplars test set being from a different distribution of text, gives us
+an indication of how well a model generalizes.
 
 \subsection{Results}
 
-\nss{results table without hierarchy features}
-
-\nss{hierarchy features: which ones work best (decided on baseline), how do they improve best result so far}
-
-\nss{Sam's curves on per-FE $F_1$}
-
 \nss{comparison to prior work (baseline, best result). args+frames score vs. args only}
 
-\nss{discussion throughout}
+We present precision, recall, and F1-measure microaveraged across the test instances in Table \ref{tbl:results}, for all the approaches that we tried.
+The first column classifies the approaches based on what resource we use and the second column indicates what training data was used. 
+For each resource (one multi-row in the table) we show results obtained by various methods of combining it with the FT data.
+The marker `$\xrightarrow{\text{guide}}$' on some of the methods refers to the feature augmentation discussed in \cref{sec:guide},
+`Hier' represents the hierarchical features from \cref{sec:hier} and `EasyAdapt' is described in \cref{sec:frust}.
 
 \input{results.tex}
 
+The first resource that we consider is `FN Hierarchy'. We find that adding the sibling-level hierarchical features to the baseline FT model improves 
+the fscore by 1.2 and 1.7 points on FT-test and exemplars-test respectively,
+with benefits to both precision and recall. The `siblings+parents' features which consider two levels of the hierarchy produce unnoticeable benefits,
+suggesting that higher levels in the hierarchy can be too general \mk{give example?} and cause very dissimilar roles firing the same hierarchy features.
+\footnote{We also tried adding grand-parents and found only minor improvements. Using an expert-pruned hierarchy with relations that are
+most likely to help can give greater benefits, and is beyond the focus of this work.}
 
+SemLink, as we remarked earlier is a noisy resource and we see a confirmation for this observation in the performance of the (FT+SemLink) model,
+which drops the f-score by a whopping 11.2 and 16.5 points below baseline on FT-test and exemplars resp. The guide features however modulate the influence
+of the SemLink annotations, giving a minor increase over the baseline. 
+%\mk{resulting in a graceful but prompt exit for this resource from further consideration.}
+
+With the exemplars resource, we find that the guide features give us a modest improvement of 1.12 in F1 on FT-test, 
+while using it as gold-standard training data results in a bigger increase of 2.8 points. 
+On the exemplars-test we observe a similar trend, where the (FT+Exemplars) model delivers a massive increase of $\approx$23 f-points and a 
+much smaller increase is seen with the guide features. This contrasts with what we observed for SemLink.
+The frustratingly easy domain adaptation approach to incorporate the Exemplars
+further improves the F1 by a minor 0.3 on the FT-test and a decent 2.8 on the exemplars-test.
+
+Finally, using the PB-SRL data in the form of guide features also results in small improvements over the baseline. 
+Overall we observe that an additional resource that is very similar to the original resource helps more as training data than as a `guide model'.
+Whereas the guide features help more when the additional resource is either unreliable (like SemLink) or too distinct (like PB). 
+To summarize the results, we find that adding the sibling-level hierarchical features, using Exemplars as gold-standard training data and 
+incorporating PB-SRL data in the form of guide features all help in improving the performance over the baseline on both FT-test and exemplars-test.
+ 
+\subsection{Combining all resources}
+
+We pick the techniques that performed best across the resources and combine them in two models. Table \ref{tbl:bestTech} shows the results on these.
+Both models use the optimal training data configuration: (FT+Exemplars). The first one integrates the FN Hierarchy using the `siblings' features
+and the second integrates PB-SRL data in the form of guide features. These two models outperform the models discussed in Table \ref{tbl:results}.
+On both test sets, we find that the model using the hierarchy achieves the best recall, and the PB-SRL guide features result in the 
+best precision. This result is intuitive because we expect the hierarchy to help \mk{insert good explanation here}.
 
 \begin{figure}[t]
 	\begin{subfigure}[b]{0.5\textwidth}
 		\includegraphics[width=\textwidth]{fig/num_instances}
+		\caption{Frequency of each role appearing in the test set.}\label{fig:num_inst}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.5\textwidth}
 		\vspace{-1cm}
 		\includegraphics[width=\textwidth]{fig/f1_sorted_by_num_instances}
+		\caption{$F_1$ of the two best methods compared with the baseline.}\label{fig:coolplot}
 	\end{subfigure}
 	\caption{Count and $F_1$ for each frame element appearing in the test set. $F_1$ values have been smoothed with \texttt{loess}, with a smoothing parameter of 0.2.}
 \end{figure}
+
+
+
+\subsection{FE-level evaluation}
+The results so far have discussed the overall improvement in F1-score, but do not present a detailed picture of how we gain from the additional
+coverage. Towards this, we present a frame-element i.e role type level analysis comparing the best results with the baseline.
+The first plot in Figure \ref{fig:num_inst} shows the frequency of all roles that appear in the FT-test set.
+Figure \ref{fig:coolplot} shows the $F_1$ per role-type, for the baseline and the two models from Table \ref{tbl:bestTech}.
+In both plots, each point on the x-axis represents one role, with the roles sorted in the decreasing order of their frequency.
+The $F_1$ curves clearly show that our models achieve the best improvements for the rarer roles and are at par with the baseline on the frequent roles.
+
+\mk{Analyze the sparsity of the models? Which features have highest importance?}
+In addition to the performance, we also show the sizes of the various models in the column `number of features'. All the models are quite sparse however,
+with $\approx$60-70 \% of the features assigned a zero weight. The larger models are also a lot slower to train, taking about 6 times
+as long as the baseline. 
 
 
 \section{Related Work}
