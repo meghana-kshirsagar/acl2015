@@ -581,22 +581,57 @@ can reap rewards for frame SRL.
 
 \section{Learning from multiple domains and representations}
 
-We consider the argument identification task as statistical classification 
-for each role of the frame in context. 
+\subsection{Base model}
+
+We use the model from SEMAFOR \citep{das-14} as a basis.
+We treat the argument identification task as a structured prediction problem.
+% We consider the argument identification task as statistical classification 
+% for each role of the frame in context.
 Let the classification input be a dependency-parsed sentence $\mathbf{x}$, 
 the token(s) $p$ constituting the predicate in question, and the frame $f$ evoked by $p$
 (as determined by frame identification). 
-Suppose we have a heuristic procedure for extracting candidate argument spans 
-for the predicate: call this $\textit{spans}(\mathbf{x}, p, f)$.
+We use a heuristic procedure \st{cite} for extracting candidate argument spans 
+for the predicate; call this $\textit{spans}(\mathbf{x}, p, f)$.
+For each candidate span $a \in \textit{spans}(\mathbf{x}, p, f)$, we extract a binary feature vector 
+$\mathbf{\phi}(a, \mathbf{x}, p, f)$.
+We describe the features in \S\ref{sec:features}.
+We use a linear model, parametrized by the weight vector $\mathbf{w}$, to score $a$:
+\begin{equation}
+\text{score}_\mathbf{w}(a \mid \mathbf{x}, p, f, r) = \mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r)
+\end{equation}
+$\text{score}_\mathbf{w}$ models the compatibility  of a candidate role--argument pair.
+Its parameters (feature weights) $\mathbf{w}$ are learned from data (\S\ref{sec:learning}).
 We define the \textbf{local classifier} as:
 \begin{equation}
 \textit{arg}(\mathbf{x}, p, f, r) = \argmax_{a \in \textit{spans}(\mathbf{x}, p, f) \cup \{\emptyset\}} \text{score}_{\mathbf{w}}(a \mid \mathbf{x}, p, f, r)
 \end{equation}
-This is used to choose an argument for every role $r$ 
-of frame $f$: note that in many cases the role will be empty (non-overt), denoted $\emptyset$. 
-The classifier chooses the best value of $\text{score}_{\mathbf{w}}$, a linear function scoring the compatibility 
-of a candidate role--argument pair, whose parameters (feature weights) $\mathbf{w}$ are learned from data.
+This is used to choose an argument for every role $r$ of frame $f$.
+Note that in many cases the role will be empty (non-overt), denoted $\emptyset$. 
+We use the local classifier during training.
 \nss{mention global inference step}
+
+At inference time, we use a \term{global classifier}.
+The global classifier chooses a joint assignment of all arguments of a frame that maximizes the sum of scores under the model, while satisfying the following constraints:
+\begin{enumerate}
+  \item a role may be assigned to at most one span, and
+  \item spans of overt arguments must not overlap.
+\end{enumerate}
+More concretely, let $\mathbf{a} = \{ (r, a) \mid r \in \text{roles}(f) \}$ be a joint assigment, and let $A$ be the set of all such assignments.
+We give $\mathbf{a}$ the score
+\begin{equation}
+\text{score}_{\mathbf{w}}(\mathbf{a} \mid \mathbf{x}, p, f) =
+    \sum_{(r, a) \in \mathbf{a}}{\text{score}_\mathbf{x}(a \mid \mathbf{x}, p, f, r)}
+\end{equation}
+And choose the joint assignment
+\begin{equation}
+\textit{args}(\mathbf{x}, p, f) =
+    \argmax_{\mathbf{a} \in A} \text{score}_{\mathbf{w}}(\mathbf{a} \mid \mathbf{x}, p, f, r)
+\end{equation}
+Beam search, with a beam size of 100, is used to choose the maximum joint assignment with no overlapping arguments.
+\st{something about DP in Täckström et al, TACL}
+
+\st{talk about learning here?}
+\st{something about L2 regularization}
 
 \mk{introduce this as a supervised domain adaptation problem? What is the source and what's the target?}
 \mk{Let $D_{ft}$ represent the FT data and $D_{ex}$ the exemplars?}
@@ -671,35 +706,27 @@ Baseline: 2709128, Combined training: 12972404, Frust-easy: 15681531, 'Parents+s
 
 \section{Experiments}
 
-
-
-
-\subsection{Baseline}
-
-% In FrameNet parlance, a \term{target} is a contiguous span of tokens in a sentence that evokes a \term{frame}.
-% Each frame has its own fixed set of possible role names, or \term{frame elements}, that can either be realized or not.
-% If they are realized, the span of tokens filling the role are annotated.
-% If not, the frame element is said to have a \term{null instantiation}\st{check my terminology}.
-% \st{example?}
-% The \term{argument identification} task is to automatically generate these frame element annotations, given a gold-standard target and its evoked frame.
-
-Our baseline system is SEMAFOR \citep{das-14}.
-SEMAFOR treats the argument identification task as a structured prediction problem.
-It uses a linearly parametrized model that scores each candidate span given a frame element\st{this should probably be talked about earlier?}:
-\begin{equation}
-\text{score}_\mathbf{w}(y \mid x) = \mathbf{w}^\top \mathbf{f}(x, y)
-\end{equation}
 Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} are used to narrow the set of candidate spans considered, and as input to feature extraction.
 
-During training, each frame element is treated as an independent log-linear classification instance, with the set of candidate spans (including the \textsc{NULL} span) as its output space.
-\st{something about L2 regularization}
-But at test time, it chooses a joint assignment of all arguments that maximizes probability under the model, while satisfying the following constraints:
-\begin{enumerate}
-  \item an argument may be assigned to at most one span \st{theta criterion, Chomsky}, and
-  \item spans of realized arguments must not overlap.
-\end{enumerate}
-Beam search, with a beam size of 100, is used to choose the maximum joint assignment with no overlapping arguments.
-\nss{does beam search require normalizing to probabilities?}
+
+
+\subsection{Training}
+
+% SEMAFOR treats the argument identification task as a structured prediction problem.
+% It uses a linearly parametrized model that scores each candidate span given a frame element\st{this should probably be talked about earlier?}:
+% \begin{equation}
+% \text{score}_\mathbf{w}(y \mid x) = \mathbf{w}^\top \mathbf{f}(x, y)
+% \end{equation}
+
+% During training, each frame element is treated as an independent log-linear classification instance, with the set of candidate spans (including the \textsc{NULL} span) as its output space.
+% \st{something about L2 regularization}
+% But at test time, it chooses a joint assignment of all arguments that maximizes probability under the model, while satisfying the following constraints:
+% \begin{enumerate}
+%   \item an argument may be assigned to at most one span \st{theta criterion, Chomsky}, and
+%   \item spans of realized arguments must not overlap.
+% \end{enumerate}
+% Beam search, with a beam size of 100, is used to choose the maximum joint assignment with no overlapping arguments.
+% \nss{does beam search require normalizing to probabilities?}\st{no. maybe it should, but SEMAFOR didn't, and we don't.}
 
 We have made several modifications to SEMAFOR's training in order to speed up experiments:
 
