@@ -581,46 +581,114 @@ can reap rewards for frame SRL.
 
 \section{Learning from multiple domains and representations}
 
-We consider the argument identification task as statistical classification 
-for each role of the frame in context. 
+We use the model from SEMAFOR \citep{das-14}, described in \S\ref{sec:base_model}, as a starting point.
+We experiment with several domain adaptation techniques, augmenting the model's training data (\S\ref{sec:aug_data}) and feature space %$\mathbf{\phi}$
+(\S\ref{sec:frust}--%,\ref{sec:frust},\ref{sec:guide},
+\ref{sec:hierfeats}).
+% modifying the model-fitting portion of the argument identification model's local learning objective  (training data, features).
+
+
+\subsection{Base model}
+\label{sec:base_model}
+
+The argument identification task is treated as a structured prediction problem.
+% We consider the argument identification task as statistical classification 
+% for each role of the frame in context.
 Let the classification input be a dependency-parsed sentence $\mathbf{x}$, 
 the token(s) $p$ constituting the predicate in question, and the frame $f$ evoked by $p$
 (as determined by frame identification). 
-Suppose we have a heuristic procedure for extracting candidate argument spans 
-for the predicate: call this $\textit{spans}(\mathbf{x}, p, f)$.
-We define the \textbf{local classifier} as:
+We use a heuristic procedure \st{cite} for extracting candidate argument spans 
+for the predicate; call this $\textit{spans}(\mathbf{x}, p, f)$.
+$\textit{spans}$ always includes a special span denoting an empty or non-overt role, denoted $\emptyset$. 
+For each candidate span $a \in \textit{spans}(\mathbf{x}, p, f)$, we extract a binary feature vector 
+$\mathbf{\phi}(a, \mathbf{x}, p, f)$.
+We describe the features in \S\ref{sec:features}.
+We use a linear model, parametrized by the weight vector $\mathbf{w}$, to score $a$:
 \begin{equation}
-\textit{arg}(\mathbf{x}, p, f, r) = \argmax_{a \in \textit{spans}(\mathbf{x}, p, f) \cup \{\emptyset\}} \text{score}_{\mathbf{w}}(a \mid \mathbf{x}, p, f, r)
+\textit{score}_\mathbf{w}(a \mid \mathbf{x}, p, f, r) = \mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r)
 \end{equation}
-This is used to choose an argument for every role $r$ 
-of frame $f$: note that in many cases the role will be empty (non-overt), denoted $\emptyset$. 
-The classifier chooses the best value of $\text{score}_{\mathbf{w}}$, a linear function scoring the compatibility 
-of a candidate role--argument pair, whose parameters (feature weights) $\mathbf{w}$ are learned from data.
-\nss{mention global inference step}
+$\textit{score}_\mathbf{w}$ models the compatibility  of a candidate
+role--argument pair, and its parameters (feature weights) $\mathbf{w}$ are
+learned from data (\S\ref{sec:learning}).
+
+At inference time, we use a \term{global classifier}.
+The global classifier chooses a joint assignment of all arguments of a frame, while respecting the following constraints:
+\begin{enumerate}
+  \item a role may be assigned to at most one span, and
+  \item spans of overt arguments must not overlap.
+\end{enumerate}
+Concretely, let a joint assigment be represented as a function $\mathbf{a}: \textit{roles}(f) \rightarrow \textit{spans}(\mathbf{x}, p, f)$, % \cup \{\emptyset\}$, %= \{ (r, a) \mid r \in \textit{roles}(f) \}$
+ and let $\mathcal{A}$ be the set of all non-overlapping assignments.
+We give $\mathbf{a}$ the score
+\begin{equation}
+\textit{score}_{\mathbf{w}}(\mathbf{a} \mid \mathbf{x}, p, f) =
+    \sum_{r \in \textit{roles}(f)}{\textit{score}_\mathbf{x}(\mathbf{a}(r) \mid \mathbf{x}, p, f, r)}
+\end{equation}
+And choose the joint assignment
+\begin{equation}
+\textit{args}(\mathbf{x}, p, f) =
+    \argmax_{\mathbf{a} \in \mathcal{A}} {
+        \textit{score}_{\mathbf{w}}(\mathbf{a} \mid \mathbf{x}, p, f, r)
+    }
+\end{equation}
+Beam search, with a beam size of 100, is used to find this $\argmax$.%
+\footnote{Recent work has improved upon global decoding techniques \st{cite Täckström et al, TACL}.
+We expect such improvements to be complementary to the gains due to the added features and data reported here.}
 
 \mk{introduce this as a supervised domain adaptation problem? What is the source and what's the target?}
 \mk{Let $D_{ft}$ represent the FT data and $D_{ex}$ the exemplars?}
 
-We experiment with several techniques for modifying the model-fitting portion of 
-the argument identification model's local learning objective 
-(training data, features). All of our experiments use the same form of regularization, 
-condition on the same frame predictions\nss{not oracle, right? these are SEMAFOR's current frame ID model, so not state of the art?} 
-and syntactic preprocessing\nss{does this match Dipanjan's latest experiments?}, 
-and use beam search with \nss{hyperparam value} for joint decoding of arguments.\footnote{\nss{recent work has improved upon global decoding techniques; we expect such improvements to be complementary to the gains due to the local model reported here}}
 
 \nss{Domain adaptation/multitask learning techniques}
 
 \subsection{Augmenting the Training Data}
+\label{sec:aug_data}
 
 \subsection{Frustratingly Easy}
+\label{sec:frust}
 \cite{daume-2009} proposed a simple feature augmentation approach that was shown to work well in supervised domain adaptation scenarios, 
-such as ours. We apply their method to incorporate the exemplars data by introducing a feature mapping $\Phi^{ft}(x) = (x, x)$ for the
-FT annotations $x \in D_{ft}$, and $\Phi^{ex}(x) = (x, 0)$ for the exemplars $x \in D_{ex}$. The resulting transformed data 
-from the two domains is then used to learn a single model. The intuition here is that by replicating the features, we allow for
+such as ours.
+Let $\mathcal{D}_{FT}$ be the full text data, and $\mathcal{D}_{ex}$ be the exemplar data.
+We %apply their method to incorporate the exemplars data  by introducing
+introduce a domain feature $I_{\textit{domain}}(\mathbf{x}) = \indicator{\mathbf{x} \in \mathcal{D}_{FT}}$,
+where $\indicator{\cdot}$ is the indicator function, \[
+\indicator{P} = \left\{\begin{array}{lr}
+1, & \text{ if } P \\
+0, & \text{ otherwise}. \\
+\end{array}
+\right.
+\]
+We expand the feature space by concatenating the original feature vector with a version of the feature vector that has been element-wise conjoined with the domain indicator:
+% We apply their method to incorporate the exemplars data  by introducing a feature mapping $\Phi : \mathds{R}^d \rightarrow \mathds{R}^{2d}$ given by
+% \begin{equation}
+% \Phi(\mathbf{\phi}(a, \mathbf{x}, p, f, r)) = [x; x * ]
+% \end{equation}
+%  for the
+\begin{equation}
+\begin{align*}
+\lefteqn{
+\phi_{\textit{frust}}(a, \mathbf{x}, p, f, r) =
+} \\
+&&
+\left[\begin{array}{c}
+\phi(a, \mathbf{x}, p, f, r) \\
+\phi(a, \mathbf{x}, p, f, r) \wedge I_{\textit{domain}}(\mathbf{x})
+\end{array}
+\right]
+% \left[\phi(a, \mathbf{x}, p, f, r) ; \phi(a, \mathbf{x}, p, f, r) \wedge I_{\textit{domain}}(\mathbf{x}) \right]
+\end{align*}
+\end{equation}
+
+
+% FT annotations $x \in \mathcal{D}_{ft}$, and $\Phi^{ex}(x) = (x, 0)$ for the exemplars $x \in D_{ex}$. The resulting transformed data 
+% from the two domains is then used to learn a single model.
+The intuition here is that by replicating the features, we allow for
 each feature to contribute both ``general'' and domain-specific weights to the model depending on whether the feature
 behaves similarly in both domains or not.
+Since the ``general'' feature contributes to both domains, regularization will encourage the model to use the ``general'' version over the ``specific" version of a feature whenever possible.
 
 \subsection{Guide Features}
+\label{sec:guide}
 Another approach to introduce supervision for domain adaptation, 
 which does not combine the labeled data from the two domains, 
 to use a supervised model built on the source domain to augment features in the target domain.
@@ -671,35 +739,44 @@ Baseline: 2709128, Combined training: 12972404, Frust-easy: 15681531, 'Parents+s
 
 \section{Experiments}
 
+All of our experiments use the same form of regularization, 
+condition on the same oracle frame predictions, 
+and syntactic preprocessing\nss{does this match Dipanjan's latest experiments?}, 
+and use beam search with a beam size of 100 for joint decoding of the test data.
+Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} are used, as in \cite{das-14}. % to narrow the set of candidate spans considered, and as input to feature extraction.
 
 
+\subsection{Learning}
+\label{sec:learning}
 
-\subsection{Baseline}
-
-% In FrameNet parlance, a \term{target} is a contiguous span of tokens in a sentence that evokes a \term{frame}.
-% Each frame has its own fixed set of possible role names, or \term{frame elements}, that can either be realized or not.
-% If they are realized, the span of tokens filling the role are annotated.
-% If not, the frame element is said to have a \term{null instantiation}\st{check my terminology}.
-% \st{example?}
-% The \term{argument identification} task is to automatically generate these frame element annotations, given a gold-standard target and its evoked frame.
-
-Our baseline system is SEMAFOR \citep{das-14}.
-SEMAFOR treats the argument identification task as a structured prediction problem.
-It uses a linearly parametrized model that scores each candidate span given a frame element\st{this should probably be talked about earlier?}:
+\st{TODO: local classifier is only used in my SVM version, not in Das's log-linear version.}
+We define the \textbf{local classifier} as:
 \begin{equation}
-\text{score}_\mathbf{w}(y \mid x) = \mathbf{w}^\top \mathbf{f}(x, y)
+\textit{arg}(\mathbf{x}, p, f, r) = \argmax_{a \in \textit{spans}(\mathbf{x}, p, f)%\cup \{\emptyset\}
+} \textit{score}_{\mathbf{w}}(a \mid \mathbf{x}, p, f, r)
 \end{equation}
-Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} are used to narrow the set of candidate spans considered, and as input to feature extraction.
+% This is used to choose an argument for every role $r$ of frame $f$.
+We use the local classifier during training.
 
-During training, each frame element is treated as an independent log-linear classification instance, with the set of candidate spans (including the \textsc{NULL} span) as its output space.
+\st{talk about learning here?}
 \st{something about L2 regularization}
-But at test time, it chooses a joint assignment of all arguments that maximizes probability under the model, while satisfying the following constraints:
-\begin{enumerate}
-  \item an argument may be assigned to at most one span \st{theta criterion, Chomsky}, and
-  \item spans of realized arguments must not overlap.
-\end{enumerate}
-Beam search, with a beam size of 100, is used to choose the maximum joint assignment with no overlapping arguments.
-\nss{does beam search require normalizing to probabilities?}
+
+
+% SEMAFOR treats the argument identification task as a structured prediction problem.
+% It uses a linearly parametrized model that scores each candidate span given a frame element\st{this should probably be talked about earlier?}:
+% \begin{equation}
+% \textit{score}_\mathbf{w}(y \mid x) = \mathbf{w}^\top \mathbf{f}(x, y)
+% \end{equation}
+
+% During training, each frame element is treated as an independent log-linear classification instance, with the set of candidate spans (including the \textsc{NULL} span) as its output space.
+% \st{something about L2 regularization}
+% But at test time, it chooses a joint assignment of all arguments that maximizes probability under the model, while satisfying the following constraints:
+% \begin{enumerate}
+%   \item an argument may be assigned to at most one span \st{theta criterion, Chomsky}, and
+%   \item spans of realized arguments must not overlap.
+% \end{enumerate}
+% Beam search, with a beam size of 100, is used to choose the maximum joint assignment with no overlapping arguments.
+% \nss{does beam search require normalizing to probabilities?}\st{no. maybe it should, but SEMAFOR didn't, and we don't.}
 
 We have made several modifications to SEMAFOR's training in order to speed up experiments:
 
@@ -723,10 +800,12 @@ decreases from 729 minutes to 82 minutes\nss{say something about hardware this w
 The details of squared hinge loss are as follows.
 Let $(x^{(i)}, y^{(i)})$ be the $i^{\text{th}}$ training example.
 Then the structured hinge loss on the $i^{\text{th}}$ example is given by:
+\begin{equation}
 \begin{align*}
 \lefteqn{\textit{Hinge}_\mathbf{w}(i) =} \\
 &&\max_y{\{\mathbf{w}^\top \mathbf{f}(x^{(i)}, y) + \text{cost}(y, y^{(i)})\}} - \mathbf{w}^\top \mathbf{f}(x^{(i)}, y^{(i)})
 \end{align*}
+\end{equation}
 and squared hinge loss is:
 \begin{equation}
 \textit{SquaredHinge}_\mathbf{w}(i) =
