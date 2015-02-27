@@ -740,6 +740,23 @@ In our experiments, we use $\text{cost}(y, y^{(i)}) = \indicator{y \ne y^{(i)}}$
 
 \nss{preprocessing issues: removing duplicate sentences, merging adjacent split args in exemplars, OntoNotes PropBank preprocessing (NLTK), token-level SemLink details (such as filtering out sentences without mappable annotations; copy from WS paper)}
 
+\subsection{Preprocessing the data}
+
+
+\mk{NSS: hope you're not duplicating this in the earlier section! 
+We use the \emph{token-level parallel annotations} from SemLink, which are available for a subset of the PB-WSJ text, 
+hereafter referred to as SL-WSJ.} Of the available 74,977 SL-WSJ verbs, a majority cannot be mapped to FN frames for various reasons.
+Around 31\% of the predicates have the frame label \texttt{IN} (``indefinite'') where the mapping from VerbNet to FrameNet is ambiguous.
+About 20\% of the instances are labeled \texttt{NF} (``no frame''), indicating a coverage gap in FrameNet. 
+21\% of verbs have frame labels but no frame element annotations. Most of these are predicates with modifier arguments.
+Other arguments pointed to null anaphora that could not be resolved to overt arguments.
+This leaves 15,323 mappable instances with at least one overt argument, or 20\% of SL-WSJ verbs. This is a very small
+subset of the entire PB annotated data.
+
+We processed the exemplars data to remove duplicate sentences that already appear in the FT data. 
+
+
+
 \nss{tuning regularizer for all experiments}
 We tune the $\ell_2$ regularization parameter $\lambda$ on the held-out set. We searched over the following
 values: 10$^{-5}$, 10$^{-7}$, 10$^{-9}$, 10$^{-12}$ (note that our loss is normalized).
@@ -750,14 +767,56 @@ We also use the performance on the held-out set to determine the stopping criter
 
 \subsection{Evaluation}
 The argument identification performance of the various methods is compared on two different test sets.
-(1) Full-text: the FrameNet 1.5 FT test split that was used in the evaluation in \cite{}. This data consists of sentences from 23 documents. 
+(1) Full-text: the FrameNet 1.5 FT test split that was used in the evaluation in \cite{das:2012}. This data consists of sentences from 23 documents. 
 (2) Exemplars: a randomly sampled set of sentences from the exemplars data, with approximately the same number of targets as the FT test set.
-Statistics of both the test sets are given in Table \ref{tbl:datastats}. While the FT test set represents the benchmark set for evaluating the 
+Statistics of both the test sets are given in the lower half of Table \ref{tbl:datastats}. 
+The FT test set has 289 unseen role types, which is much higher than
+the 38 in the exemplars test set. There are no unseen frame types in the exemplars test data, whereas the FT test has 46 of them. 
+These differences are due to the manner in which the train and test splits were created, with document-level splits being used
+for FT and sentence-level splits for the exemplars, and also the significantly larger (hence broader coverage) exemplars training set. 
+The last row of Table \ref{tbl:datastats} shows the unseen role types faced by a model that was built on both the FT and exemplars training data.
+In the FT test set it is 103, lower by $\approx$190 than what a FT-only model will see, thus leading us to expect that a model that combines
+both sets of data will certainly benefit in performance.
+
+While the FT test set represents the benchmark set for evaluating the 
 performance of a frame semantic role labeling system, the exemplars test set being from a different distribution of text, give us
 an indication of how well a model generalizes.
-We present precision, recall, and F1-measure microaveraged across the test instances.
+We present precision, recall, and F1-measure microaveraged across the test instances in Table \ref{tbl:results}, for all the approaches that we tried.
+The first column classifies the approaches based on what resource we use and the second column indicates what training data was used. 
+For each resource (one multi-row in the table) we show results obtained by various methods of combining it with the FT data.
+The $\xrightarrow{\text{guide}}$ refers to the feature augmentation discussed in Section \ref{sec:guides},
+`Hier' represents the hierarchical features from Section \ref{sec:hier} and `EasyAdapt' is described in Section \ref{sec:frust-easy}.
+
+To summarize the results, we find that adding the sibling-level hierarchical features, using Exemplars as gold-standard training data and 
+incorporating PB-SRL data in the form of guide features all help in improving the performance over the baseline on both FT-test and exemplars-test.
+
+Consulting the results in detail, adding the sibling-level hierarchical features to the baseline FT model improves 
+the fscore by 1.2 and 1.7 points on FT-test and exemplars-test respectively,
+with benefits to both precision and recall. The (siblings+parents) features which consider two levels of the hierarchy produce unnoticeable benefits,
+suggesting that higher levels in the hierarchy can be too general \mk{give example?}, resulting in very dissimilar roles firing the same hierarchy features.
+\footnotetext{We also tried adding grand-parents and found only minor improvements. Using an expert-pruned hierarchy with relations that are
+most likely to help can give greater benefits, and is beyond the focus of this work.}
+
+SemLink, as we remarked earlier is a noisy resource and we see a confirmation for this observation in the performance of the (FT+SemLink) model,
+which drops the f-score by a whopping 11.2 and 16.5 points below baseline on FT-test and exemplars resp. The guide features however modulate the influence
+of the SemLink annotations, giving a minor increase over the baseline. \mk{resulting in a graceful but prompt exit for this resource from further consideration.}
+
+With the exemplars resource, we find that the guide features give us a modest improvement of 1.12 in F1 on FT-test, 
+while using it as gold-standard training data results in a bigger increase of 2.8 points. 
+On the exemplars-test we observe a similar trend, where the (FT+Exemplars) model delivers a massive increase of $\approx$23 f-points and a 
+much smaller increase is seen with the guide features. This contrasts with what we observed for SemLink.
+The frustratingly easy domain adaptation approach to incorporate the Exemplars
+further improves the F1 by a minor 0.3 on the FT-test and a decent 2.8 on the exemplars-test.
+
+Finally, using the PB-SRL data in the form of guide features also results in small improvements over the baseline. Overall we observe that an
+additional resource that is very similar to the original resource helps more as training data than as a `guide model'.
+Whereas the guide features help more when the additional resource is either unreliable (like SemLink) or too distinct (like PB). 
 
 \mk{Analyze the sparsity of the models? Which features have highest importance?}
+In addition to the performance, we also show the sizes of the various models in the column `number of features'. All the models are quite sparse however,
+with $\approx$60-70 \% of the features assigned a zero weight. The larger models are also a lot slower to train, taking about 6 times
+as long as the baseline. 
+
 
 \begin{table}\centering\small
 \begin{tabular}{p{4cm}rr}
