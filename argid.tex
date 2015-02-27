@@ -477,7 +477,30 @@ the frame description states,
 Lexical entries in this frame include verbs such as \fnlu{bend}, \fnlu{blink}, \fnlu{crane}, and \fnlu{curtsy}, 
 plus the noun use of \fnlu{curtsy}.
 
-\nss{hierarchy. which relations do we care about---anything besides Inheritance?}
+The frame lexicon is organized as a network, with several kinds of \textbf{frame-to-frame relations} 
+linking pairs of frames and (subsets of) their arguments \citep{ruppenhofer-10}. 
+Among these kinds of frame-to-frame relations are:
+\begin{itemize}
+\item \textbf{Inheritance:} E.g., \fnf{Punctual\_perception} (e.g., \fnlu{glimpse.v}) inherits from 
+\fnf{Perception\_experience} (e.g., \fnlu{see.v}), which inherits from \fnf{Perception}. 
+Other frames inheriting from \fnf{Perception} include \fnf{Sensation} (e.g., \fnlu{sight.n}) and 
+\fnf{Becoming\_aware} (e.g., \fnlu{notice.v}). Crucially, roles in inheriting (conceptually more specific) frames are mapped 
+where they correspond to a role in the inherited frame: so \fnf{Punctual\_perception}.\fnr{Perceiver} links to \fnf{Perception\_experience}.\fnr{Perceiver\_passive}, 
+which links to \fnf{Perception}.\fnr{Perceiver}, which links to \fnf{Sensation}.\fnr{Perceiver\_passive} and \fnf{Becoming\_aware}.\fnr{Cognizer}.
+\item \textbf{Subframe:} This indicates a subevent within a complex event. 
+E.g., the \fnf{Criminal\_process} frame groups together subframes 
+\fnf{Arrest}, \fnf{Arraignment}, \fnf{Trial}, and \fnf{Sentencing}. 
+\fnf{Criminal\_process}.\fnr{Defendant}, for instance, is mapped to 
+\fnf{Arrest}.\fnr{Suspect}, \fnf{Arraignment}.\fnr{Defendant}, 
+\fnf{Trial}.\fnr{Defendant}, and \fnf{Sentencing}.\fnr{Convict}. 
+Other salient participants in the complex event (such as the crime for which someone is arrested, 
+tried, etc.)\ are similarly mapped via Subframe relations.
+This permits an inference that a person tried for a crime likely
+has been or will be arrested, arraigned, and sentenced for that crime.
+\end{itemize}
+In \cref{sec:hierfeats}, we experiment with features shared between related roles of related frames 
+in order to capture statistical generalizations about the kinds of arguments 
+seen in those roles and how they relate syntactically to the predicate.
 
 \subsection{Full-text Annotations}\label{sec:ft}
 
@@ -588,7 +611,7 @@ we use an additional feature $f_{match}(r_t,r_g)$ to indicate that
 the `guide' role label $r_g$ of the span $s_x$ is the same as it's true label $r_t$.
 
 
-\subsection{Type-level hierarchy features}
+\subsection{Type-level hierarchy features}\label{sec:hierfeats}
 \mk{NSS: notation for the frame/role/features etc?}
 \mk{How many total types of relations? Cleanup writeup based on NSS's notation.}
 
@@ -607,7 +630,7 @@ $(f_i \wedge \textrm{parent.frame} \wedge \textrm{parent.role} \wedge I_{hier})$
 $I_{hier}$ is an indicator to distinguish this feature from the regular conjunction features in Semafor that use frame names and roles.
 (2) `parents+siblings', where roles share features with their parents and siblings. In addition to the `siblings' feature, 
 we fire the following conjunction: $(f_i \wedge \textrm{frame} \wedge \textrm{frame.role} \wedge I_{hier})$.
-We use only the `Inheritance' and 'Subframe' relations between the roles, of which there are 4138 and 589 respectively.
+We use only the Inheritance and Subframe relations between the roles (\cref{sec:lex}), of which there are 4138 and 589 respectively.
 
 We found that using more than one level of the hierarchy, does not produce any improvements in the performance at the cost of
 increased computation due to the greater number of features.
