@@ -664,7 +664,6 @@ We expand the feature space by concatenating the original feature vector with a 
 % \Phi(\mathbf{\phi}(a, \mathbf{x}, p, f, r)) = [x; x * ]
 % \end{equation}
 %  for the
-\begin{equation}
 \begin{align*}
 \lefteqn{
 \phi_{\textit{frust}}(a, \mathbf{x}, p, f, r) =
@@ -677,7 +676,6 @@ We expand the feature space by concatenating the original feature vector with a 
 \right]
 % \left[\phi(a, \mathbf{x}, p, f, r) ; \phi(a, \mathbf{x}, p, f, r) \wedge I_{\textit{domain}}(\mathbf{x}) \right]
 \end{align*}
-\end{equation}
 
 
 % FT annotations $x \in \mathcal{D}_{ft}$, and $\Phi^{ex}(x) = (x, 0)$ for the exemplars $x \in D_{ex}$. The resulting transformed data 
@@ -800,12 +798,10 @@ decreases from 729 minutes to 82 minutes\nss{say something about hardware this w
 The details of squared hinge loss are as follows.
 Let $(x^{(i)}, y^{(i)})$ be the $i^{\text{th}}$ training example.
 Then the structured hinge loss on the $i^{\text{th}}$ example is given by:
-\begin{equation}
 \begin{align*}
 \lefteqn{\textit{Hinge}_\mathbf{w}(i) =} \\
 &&\max_y{\{\mathbf{w}^\top \mathbf{f}(x^{(i)}, y) + \text{cost}(y, y^{(i)})\}} - \mathbf{w}^\top \mathbf{f}(x^{(i)}, y^{(i)})
 \end{align*}
-\end{equation}
 and squared hinge loss is:
 \begin{equation}
 \textit{SquaredHinge}_\mathbf{w}(i) =
