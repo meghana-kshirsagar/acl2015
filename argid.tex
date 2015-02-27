@@ -10,7 +10,7 @@
 %\usepackage{latexsym}
 
 \usepackage{microtype}
-
+\usepackage{ dsfont }
 \usepackage[boxed]{algorithm2e}
 \renewcommand\AlCapFnt{\small}
 \usepackage[small,bf,skip=5pt]{caption}
@@ -37,7 +37,7 @@
 \usepackage{xspace}
 \usepackage{xparse} % for fancy custom macros (\NewDocumentEnvironment, etc.)
 
-\newcommand{\indicator}[1]{\boldsymbol{1}\{#1\}}
+\newcommand{\indicator}[1]{I_{\{#1\}}} %{\mathds{1}_{\{#1\}}}
 
 
 \usepackage{textcomp}
@@ -650,14 +650,16 @@ We expect such improvements to be complementary to the gains due to the added fe
 such as ours.
 Let $\mathcal{D}_{FT}$ be the full text data, and $\mathcal{D}_{ex}$ be the exemplar data.
 We %apply their method to incorporate the exemplars data  by introducing
-introduce a domain feature $I_{\textit{domain}}(\mathbf{x}) = \indicator{\mathbf{x} \in \mathcal{D}_{FT}}$,
-where $\indicator{\cdot}$ is the indicator function, \[
-\indicator{P} = \left\{\begin{array}{lr}
-1, & \text{ if } P \\
-0, & \text{ otherwise}. \\
-\end{array}
-\right.
-\]
+introduce a domain indicator %$I_{\textit{domain}}(\mathbf{x}) =
+$\indicator{\mathbf{x} \in \mathcal{D}_{FT}}$,
+where $\indicator{P}$ is the indicator function, with value 1 if $P$ is true, 0 otherwise.
+% \[
+% \indicator{P} = \left\{\begin{array}{lr}
+% 1, & \text{ if } P \\
+% 0, & \text{ otherwise}. \\
+% \end{array}
+% \right.
+% \]
 We expand the feature space by concatenating the original feature vector with a version of the feature vector that has been element-wise conjoined with the domain indicator:
 % We apply their method to incorporate the exemplars data  by introducing a feature mapping $\Phi : \mathds{R}^d \rightarrow \mathds{R}^{2d}$ given by
 % \begin{equation}
@@ -671,12 +673,12 @@ We expand the feature space by concatenating the original feature vector with a 
 &&
 \left[\begin{array}{c}
 \phi(a, \mathbf{x}, p, f, r) \\
-\phi(a, \mathbf{x}, p, f, r) \text{ \& } I_{\textit{domain}}(\mathbf{x})
+\phi(a, \mathbf{x}, p, f, r) \text{ \& } \indicator{\mathbf{x} \in \mathcal{D}_{FT}}%I_{\textit{domain}}(\mathbf{x})
 \end{array}
 \right]
 % \left[\phi(a, \mathbf{x}, p, f, r) ; \phi(a, \mathbf{x}, p, f, r) \wedge I_{\textit{domain}}(\mathbf{x}) \right]
 \end{align*}
-
+\st{this ``vector concatenation'' view is sort of inconsistent with the ``adding features" view in the guide/hierarchy sections}
 
 % FT annotations $x \in \mathcal{D}_{ft}$, and $\Phi^{ex}(x) = (x, 0)$ for the exemplars $x \in D_{ex}$. The resulting transformed data 
 % from the two domains is then used to learn a single model.
