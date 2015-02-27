@@ -749,12 +749,18 @@ We also use the performance on the held-out set to determine the stopping criter
 
 
 \subsection{Evaluation}
+The argument identification performance of the various methods is compared on two different test sets.
+(1) Full-text: the FrameNet 1.5 FT test split that was used in the evaluation in \cite{}. This data consists of sentences from 23 documents. 
+(2) Exemplars: a randomly sampled set of sentences from the exemplars data, with approximately the same number of targets as the FT test set.
+Statistics of both the test sets are given in Table \ref{tbl:datastats}. While the FT test set represents the benchmark set for evaluating the 
+performance of a frame semantic role labeling system, the exemplars test set being from a different distribution of text, give us
+an indication of how well a model generalizes.
+We present precision, recall, and F1-measure microaveraged across the test instances.
 
-\nss{main eval: FT test; new eval: exemplars}
-The methods are evaluated on two criteria based on their performance measured using F-score: FT test data and Exemplars test.
+\mk{Analyze the sparsity of the models? Which features have highest importance?}
 
 \begin{table}\centering\small
-\begin{tabular}{lrr}
+\begin{tabular}{p{4cm}rr}
 \toprule
 \normalfont & \textbf{Full-Text} & \textbf{Exemplars} \\
 \midrule
@@ -770,6 +776,7 @@ Unseen roles (types) in test data & 289 & 38 \\
 Unseen roles (types) in test w.r.t (FT+Exemplars) & 103 & 32 \\
 \end{tabular}
 \caption{Characteristics of the training and test data}
+\label{tbl:datastats}
 \end{table}
 
 
@@ -787,34 +794,6 @@ Unseen roles (types) in test w.r.t (FT+Exemplars) & 103 & 32 \\
 
 \input{results.tex}
 
-\begin{table*}
-\begin{small}
-\begin{tabular}{|l|c|c|c|c|c|c|}\hline
-& \multicolumn{3}{c|}{\textbf{Test on FN}} & \multicolumn{3}{c|}{\textbf{Test on Exemplars}} \\ \hline
- & P & R & $F_1$ & P & R & $F_1$ \\ \hline
- Semafor baseline (Ddas' model) & 0.6603 & 0.5379 & 0.5929 & 0.64933 & 0.33582 & 0.44269 \\ \hline
- Semafor baseline (Sam's code) & 0.65569 & 0.53820 & 0.59116 & 0.6263 & 0.3765 & 0.4703 \\ \hline
- baseline trained on combined &  0.66061 & 0.58234 & 0.61901 & 0.75443 & 0.65107 & 0.69895 \\ \hline
- trained only on exemplars & 0.61084 & 0.49049 & 0.54409 & 0.77010 & 0.65958 & 0.71057 \\ \hline
- trained on FN + exemplars guide features & 0.65241 & 0.55960 & 0.60245 & 0.67709 & 0.48076 & 0.56228 \\ \hline
- frust$^\dagger$ on combined &  0.65702 & 0.59043 & 0.62195 & 0.73876 & 0.61397 & 0.67061\\ \hline
- siblings$^\ddagger$ on FN & 0.67244 & 0.54763 & 0.60365 &  0.64815 & 0.39088 & 0.48766 \\ \hline
- siblings, trained on combined &  0.65991 & 0.60406 & 0.63075 & 0.76140 & 0.67713 & 0.71679 \\ \hline
- parents$^\star$ on FN &  0.67672 & 0.52790 & 0.59312 & 0.65250 & 0.38184 & 0.48176 \\ \hline
- parents, trained on combined &  0.65920 & 0.60382 & 0.63029 & 0.76143 & 0.68317 & 0.72018 \\ \hline
- trained on semlink & 0.44433 & 0.10533 & 0.17029 & 0.48119 & 0.12498 & 0.19842 \\ \hline
- trained on FN + semlink guide features & 0.64671 & 0.54533 & 0.59171 & 0.60951 & 0.38922 & 0.47507 \\ \hline
- trained on FN+SemLink & 0.655 & 0.3776 & 0.4791 & 0.57148 & 0.20780 & 0.30478 \\ \hline
- with SRL augmented spans and features (loglinear) & 0.70550 & 0.53178 & 0.60644 & 0.65996 & 0.33351 & 0.44310 \\ \hline
- with SRL augmented spans and features (hinge) & 0.64961 & 0.54834 & 0.59470 & 0.61378 & 0.39141 & 0.47800 \\ \hline
- \multicolumn{7}{l}{}\\
- \multicolumn{7}{l}{\textbf{combined}: FN + Exemplars training data}\\ \hline
- \multicolumn{7}{l}{$\dagger$: feature augmentation from the frustratingly easy DA paper}\\ \hline
- \multicolumn{7}{p{14cm}}{$\ddagger$: for every feature $f_i$ that fires for an argument $a$, fire an additional feature which is the conjunction: $(f_i \wedge \textrm{parent.frame} \wedge \textrm{parent.role} \wedge I_{hier})$ where parent.frame = parent(frame($a$)). The parent's frame and role are obtained from the FN hierarchy. $I_{hier}$ is an indicator to distinguish this feature from the regular conjunction features that use frame names and roles.}\\ \hline
- \multicolumn{7}{p{14cm}}{$\star$: fire the siblings feature$^\ddagger$ and an additional feature: $(f_i \wedge \textrm{frame} \wedge \textrm{frame.role} \wedge I_{hier})$}\\ \hline
- \end{tabular}
- \end{small}
- \end{table*}
 
 
 \begin{figure}[t]
