@@ -336,7 +336,7 @@
 \hyphenation{shriv-eled}
 \hyphenation{Huddle-ston}
 
-\title{\nss{provisional title:}Leveraging Additional Resources for Frame-Semantic Role Labeling}
+\title{Leveraging Additional Resources for Frame-Semantic Role Labeling}
 
 % Nathan Schneider, Shay B. Cohen, and Noah A. Smith 
 % \author{Nathan Schneider \quad Emily Danchik \quad Chris Dyer \quad Noah A. Smith \\
@@ -432,8 +432,8 @@ there are clear similarities to the FrameNet annotations in \cref{fig:harbor-fn}
 In this paper, we address the \textbf{argument identification} 
 subtask of finding and labeling arguments 
 given a predicate in context and the frame it evokes.
-This is a form of semantic role labeling (SRL).
-\st{cite Gildea, Roth, Toutanova, etc.}
+This is a form of semantic role labeling (SRL), 
+a task introduced by \citet{gildea-02} using a much earlier version of FrameNet.
 Notably, another resource, \textbf{PropBank} \citep{propbank}, has been widely used for SRL \citep{palmer-10}. 
 PropBank annotations capture shallower lexical frames and arguments; 
 additionally, PropBank provides \nss{millions?} of words of fully annotated English sentences
@@ -778,6 +778,8 @@ Unseen roles (types) in test w.r.t (FT+Exemplars) & 103 & 32 \\
 \section{Related Work}
 
 \nss{Dipanjan's other papers; mention other PB SRL work?; anything using SemLink or combining resources for SRL?}
+
+\nss{be sure to cite: \citep{shi-05} (multiple resources), \citep{matsubayashi-09} (hierarchy)}
 
 \nss{multitask learning?}
 
