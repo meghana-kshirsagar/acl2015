@@ -581,9 +581,16 @@ can reap rewards for frame SRL.
 
 \section{Learning from multiple domains and representations}
 
-\subsection{Base model}
+We use the model from SEMAFOR \citep{das-14}, described in \S\ref{sec:base_model}, as a starting point.
+We experiment with several domain adaptation techniques, augmenting the model's training data (\S\ref{sec:aug_data}) and feature space %$\mathbf{\phi}$
+(\S\ref{sec:frust}--%,\ref{sec:frust},\ref{sec:guide},
+\ref{sec:hierfeats}).
+% modifying the model-fitting portion of the argument identification model's local learning objective  (training data, features).
 
-We use the model from SEMAFOR \citep{das-14} as a basis.
+
+\subsection{Base model}
+\label{sec:base_model}
+
 The argument identification task is treated as a structured prediction problem.
 % We consider the argument identification task as statistical classification 
 % for each role of the frame in context.
@@ -625,14 +632,12 @@ And choose the joint assignment
     }
 \end{equation}
 Beam search, with a beam size of 100, is used to find this $\argmax$.%
-\footnote{Recent work has improved upon global decoding techniques \st{cite Täckström et al, TACL}; we expect such improvements to be complementary to the gains due to the added features and data reported here.}
+\footnote{Recent work has improved upon global decoding techniques \st{cite Täckström et al, TACL}.
+We expect such improvements to be complementary to the gains due to the added features and data reported here.}
 
 \mk{introduce this as a supervised domain adaptation problem? What is the source and what's the target?}
 \mk{Let $D_{ft}$ represent the FT data and $D_{ex}$ the exemplars?}
 
-We experiment with several techniques for augmenting the model's training data (\S\ref{sec:aug_data}) and feature space $\mathbf{\phi}$ (\S\ref{sec:frust}--%,\ref{sec:frust},\ref{sec:guide},
-\ref{sec:hierfeats}).
-% modifying the model-fitting portion of the argument identification model's local learning objective  (training data, features).
 
 \nss{Domain adaptation/multitask learning techniques}
 
@@ -642,11 +647,45 @@ We experiment with several techniques for augmenting the model's training data (
 \subsection{Frustratingly Easy}
 \label{sec:frust}
 \cite{daume-2009} proposed a simple feature augmentation approach that was shown to work well in supervised domain adaptation scenarios, 
-such as ours. We apply their method to incorporate the exemplars data by introducing a feature mapping $\Phi^{ft}(x) = (x, x)$ for the
-FT annotations $x \in D_{ft}$, and $\Phi^{ex}(x) = (x, 0)$ for the exemplars $x \in D_{ex}$. The resulting transformed data 
-from the two domains is then used to learn a single model. The intuition here is that by replicating the features, we allow for
+such as ours.
+Let $\mathcal{D}_{FT}$ be the full text data, and $\mathcal{D}_{ex}$ be the exemplar data.
+We %apply their method to incorporate the exemplars data  by introducing
+introduce a domain feature $I_{\textit{domain}}(\mathbf{x}) = \indicator{\mathbf{x} \in \mathcal{D}_{FT}}$,
+where $\indicator{\cdot}$ is the indicator function, \[
+\indicator{P} = \left\{\begin{array}{lr}
+1, & \text{ if } P \\
+0, & \text{ otherwise}. \\
+\end{array}
+\right.
+\]
+We expand the feature space by concatenating the original feature vector with a version of the feature vector that has been element-wise conjoined with the domain indicator:
+% We apply their method to incorporate the exemplars data  by introducing a feature mapping $\Phi : \mathds{R}^d \rightarrow \mathds{R}^{2d}$ given by
+% \begin{equation}
+% \Phi(\mathbf{\phi}(a, \mathbf{x}, p, f, r)) = [x; x * ]
+% \end{equation}
+%  for the
+\begin{equation}
+\begin{align*}
+\lefteqn{
+\phi_{\textit{frust}}(a, \mathbf{x}, p, f, r) =
+} \\
+&&
+\left[\begin{array}{c}
+\phi(a, \mathbf{x}, p, f, r) \\
+\phi(a, \mathbf{x}, p, f, r) \wedge I_{\textit{domain}}(\mathbf{x})
+\end{array}
+\right]
+% \left[\phi(a, \mathbf{x}, p, f, r) ; \phi(a, \mathbf{x}, p, f, r) \wedge I_{\textit{domain}}(\mathbf{x}) \right]
+\end{align*}
+\end{equation}
+
+
+% FT annotations $x \in \mathcal{D}_{ft}$, and $\Phi^{ex}(x) = (x, 0)$ for the exemplars $x \in D_{ex}$. The resulting transformed data 
+% from the two domains is then used to learn a single model.
+The intuition here is that by replicating the features, we allow for
 each feature to contribute both ``general'' and domain-specific weights to the model depending on whether the feature
 behaves similarly in both domains or not.
+Since the ``general'' feature contributes to both domains, regularization will encourage the model to use the ``general'' version over the ``specific" version of a feature whenever possible.
 
 \subsection{Guide Features}
 \label{sec:guide}
@@ -703,8 +742,8 @@ Baseline: 2709128, Combined training: 12972404, Frust-easy: 15681531, 'Parents+s
 All of our experiments use the same form of regularization, 
 condition on the same oracle frame predictions, 
 and syntactic preprocessing\nss{does this match Dipanjan's latest experiments?}, 
-and use beam search with a beam size of 100 for joint decoding of arguments.
-Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} are used. % to narrow the set of candidate spans considered, and as input to feature extraction.
+and use beam search with a beam size of 100 for joint decoding of the test data.
+Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} are used, as in \cite{das-14}. % to narrow the set of candidate spans considered, and as input to feature extraction.
 
 
 \subsection{Learning}
@@ -761,10 +800,12 @@ decreases from 729 minutes to 82 minutes\nss{say something about hardware this w
 The details of squared hinge loss are as follows.
 Let $(x^{(i)}, y^{(i)})$ be the $i^{\text{th}}$ training example.
 Then the structured hinge loss on the $i^{\text{th}}$ example is given by:
+\begin{equation}
 \begin{align*}
 \lefteqn{\textit{Hinge}_\mathbf{w}(i) =} \\
 &&\max_y{\{\mathbf{w}^\top \mathbf{f}(x^{(i)}, y) + \text{cost}(y, y^{(i)})\}} - \mathbf{w}^\top \mathbf{f}(x^{(i)}, y^{(i)})
 \end{align*}
+\end{equation}
 and squared hinge loss is:
 \begin{equation}
 \textit{SquaredHinge}_\mathbf{w}(i) =
