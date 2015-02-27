@@ -809,26 +809,29 @@ decreases from 729 minutes to 82 minutes\nss{say something about hardware this w
 % \st{something about L2 regularization}
 
 The details of squared hinge loss are as follows.
-Let $(r^{(i)}, a^{(i)})$ be the $i^{\text{th}}$ training example.
+
+Let $((\mathbf{x}, p, f, r), a)$ %$(r^{(i)}, a^{(i)})$
+be the $i^{\text{th}}$ training example.
 Then the structured hinge loss on the $i^{\text{th}}$ example is given by:
 \begin{align*}
 \lefteqn{\textit{Hinge}_\mathbf{w}(i) =} \\
-&&\max_r{\{\mathbf{w}^\top \mathbf{\phi}(a^{(i)}, \mathbf{x}, p, f, r) + \text{cost}(r, r^{(i)})\}} - \\
-&&\mathbf{w}^\top \mathbf{\phi}(a^{(i)}, \mathbf{x}, p, f, r^{(i)})
+&&\max_{r^\prime}{\{\mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r^\prime) + \text{cost}(r^\prime, r)\}} - \\
+&&\mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r)
 \end{align*}
 and squared hinge loss is:
 \begin{equation}
 \textit{SqHinge}_\mathbf{w}(i) =
 \textit{Hinge}_\mathbf{w}(i)^2.
 \end{equation}
-We use $\text{cost}(r, r^{(i)}) = \indicator{r \ne r^{(i)}}$.\footnote{We experimented with recall-oriented training, where errors of omission are assigned a higher cost, but found that while recall increased, overall $F_1$ went down\nss{or: failed to improve?}.}
+We use $\text{cost}(r^\prime, r) = \indicator{r^\prime \ne r}$.%
+\footnote{We experimented with recall-oriented training, where errors of omission are assigned a higher cost, but found that while recall increased, overall $F_1$ went down\nss{or: failed to improve?}.}
 
-We learn $\mathbf{w}$ by minimizing the $\ell_2$-regularized average cost on the dataset:
+We learn $\mathbf{w}$ by minimizing the $\ell_2$-regularized average loss on the dataset:
 \begin{equation}
 \mathbf{w^*} = \argmin_\mathbf{w}{
-    \frac{1}{N}\sum_{i = 1}^N{
+    \frac{1}{N}\sum_{i = 1}^N\{
         \textit{SqHinge}_\mathbf{w}(i)
-    } + \frac{1}{2} \lambda \| \mathbf{w} \|_2
+    \} + \frac{1}{2} \lambda \| \mathbf{w} \|_2^2
 }
 \end{equation}
 
