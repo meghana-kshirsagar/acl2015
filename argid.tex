@@ -379,7 +379,7 @@ We augment supervised learning with additional
 so as to leverage additional resources internal and external to FrameNet (e.g., PropBank). 
 Experiments demonstrate that some of these resources are valuable for 
 more accurate and more robust frame SRL,
-with the best model \nss{main quantitative result}.
+with the best model achieving a 3.95 increase in $F_1$ over the state of the art. \nss{main quantitative result}.
 %with the best model achieving a 3.0 increase in $F_1$, or 7.5\% reduction in error, 
 %over the state of the art.\st{can you say that with F1?}\nss{sure, you can say error reduction, but how can we compare to state-of-the-art (unless you mean best reported result with gold frames)?}
 \end{abstract}
@@ -914,8 +914,11 @@ only to tune parameters and not as part of the model construction.
 
 
 \subsection{Evaluation}
-\nss{be sure to mention: gold frames}
-The argument identification performance of the various methods is compared on two different test sets.
+A complete semantic parsing system involves two main steps: frame identification and argument identification. Since the focus of this work is only 
+argument identification, we assume that the gold-standard frames are given and evaluate the models on their role labeling performance.
+The baseline model from \citet{das-14} that we compare against, is the current state-of-the-art for argument identification (i.e frame SRL).
+
+The performance of the various methods is compared on two different test sets.
 (1) Full-text: the FrameNet 1.5 FT test split that was used in the evaluation in \citet{das-14}. This data consists of sentences from 23 documents. 
 (2) Exemplars: a randomly sampled set of sentences from the exemplars data, with approximately the same number of targets as the FT test set.
 Statistics of both the test sets are given in the lower half of Table \ref{tbl:datastats}. 
@@ -956,14 +959,19 @@ an indication of how well a model generalizes.
 \subsection{Results}
 
 \nss{comparison to prior work (baseline, best result). args+frames score vs. args only}
-
+\nss{be sure to mention: gold frames}
 We present precision, recall, and $F_1$-measure microaveraged across the test instances in Table \ref{tbl:results}, for all the approaches that we tried.
 The first column classifies the approaches based on what resource we use and the second column indicates what training data was used. 
 For each resource (one multi-row in the table) we show results obtained by various methods of combining it with the FT data.
 The marker `$\xrightarrow{\text{guide}}$' on some of the methods refers to the feature augmentation discussed in \cref{sec:guide},
-`Hier' represents the hierarchical features from \cref{sec:hier} and `EasyAdapt' is described in \cref{sec:frust}.\nss{if using the term EasyAdapt, define it above}
+`Hier' represents the hierarchical features from \cref{sec:hierfeats} and `EasyAdapt' refers to the frustratingly easy domain adaptation model
+described in \cref{sec:frust}.%\nss{if using the term EasyAdapt, define it above}
 
 \input{results.tex}
+
+The baseline $F_1$ on argument identification published in \citet{das-14} on the FT test set includes adding `pseudo' scores for getting gold frames right. 
+However, this does not give us a true picture of the performance, hence we choose not to add frame-level scores while computing $F_1$. 
+In Table \ref{tbl:results}, the first row corresponds to the state-of-art $F_1$ from \citet{das-14}.
 
 The first resource that we consider is `FN Hierarchy'. We find that adding the sibling-level hierarchical features to the baseline FT model improves 
 $F_1$ by 1.2 and 1.7 points on FT-test and exemplars-test respectively,
@@ -996,7 +1004,9 @@ We pick the techniques that performed best across the resources and combine them
 Both models use the optimal training data configuration: (FT+Exemplars). The first one integrates the FN Hierarchy using the `siblings' features
 and the second integrates PB-SRL data in the form of guide features. These two models outperform the models discussed in Table \ref{tbl:results}.
 On both test sets, we find that the model using the hierarchy achieves the best recall, and the PB-SRL guide features result in the 
-best precision. This result is intuitive because we expect the hierarchy to help \mk{insert good explanation here}.
+best precision. %This result is intuitive because we expect the hierarchy to help \mk{insert good explanation here}.
+Our best result of 63.07 on the FT test set beats the baseline (59.12) by 3.95 F points.
+
 
 \begin{figure}[t]
 	\begin{subfigure}[b]{0.5\textwidth}
@@ -1006,9 +1016,9 @@ best precision. This result is intuitive because we expect the hierarchy to help
 	\begin{subfigure}[b]{0.5\textwidth}
 		\vspace{-1cm}
 		\includegraphics[width=\textwidth]{fig/f1_sorted_by_num_instances}
-		\caption{$F_1$ of the two best methods compared with the baseline.}\label{fig:coolplot}
+		\caption{$F_1$ of the best methods compared with the baseline.}\label{fig:coolplot}
 	\end{subfigure}
-	\caption{Count and $F_1$ for each frame element appearing in the test set. $F_1$ values have been smoothed with \texttt{loess}, with a smoothing parameter of 0.2.}
+	\caption{Count and $F_1$ for each role appearing in the test set. $F_1$ values have been smoothed with \texttt{loess}, with a smoothing parameter of 0.2.}
 \end{figure}
 
 \finalversion{\nss{impact of automatic frames?}}
