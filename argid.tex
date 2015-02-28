@@ -377,7 +377,7 @@ upon full-text annotations in the FrameNet resource.\nss{is this true? I think D
 We augment supervised learning with additional 
 ``indirect'' training data and features 
 so as to leverage additional resources internal and external to FrameNet (e.g., PropBank). 
-Our best model achieves a 3.0 increase in F1, or 7.5\% reduction in error, over state-of-the-art. \st{can you say that with F1?}
+Our best model achieves a 3.0 increase in F1, or 7.5\% reduction in error, over state-of-the-art.\st{can you say that with F1?}\nss{sure, you can say error reduction, but how can we compare to state-of-the-art (unless you mean best reported result with gold frames)?}
 \end{abstract}
 
 \section{Introduction}
@@ -910,6 +910,7 @@ to only tune parameters and not part of the model construction.
 
 
 \subsection{Evaluation}
+\nss{be sure to mention: gold frames}
 The argument identification performance of the various methods is compared on two different test sets.
 (1) Full-text: the FrameNet 1.5 FT test split that was used in the evaluation in \citet{das-14}. This data consists of sentences from 23 documents. 
 (2) Exemplars: a randomly sampled set of sentences from the exemplars data, with approximately the same number of targets as the FT test set.
@@ -1006,7 +1007,7 @@ best precision. This result is intuitive because we expect the hierarchy to help
 	\caption{Count and $F_1$ for each frame element appearing in the test set. $F_1$ values have been smoothed with \texttt{loess}, with a smoothing parameter of 0.2.}
 \end{figure}
 
-
+\finalversion{\nss{impact of automatic frames?}}
 
 \subsection{FE-level evaluation}
 The results so far have discussed the overall improvement in $F_1$-score, but do not present a detailed picture of how we gain from the additional
@@ -1018,7 +1019,7 @@ The $F_1$ curves clearly show that our models achieve the best improvements for 
 
 \mk{Analyze the sparsity of the models? Which features have highest importance?}
 In addition to the performance, we also show the sizes of the various models in the column `number of features'. All the models are quite sparse however,
-with $\approx$60-70 \% of the features assigned a zero weight. The larger models are also a lot slower to train, taking about 6 times
+with $\approx$60--70\% of the features assigned a zero weight. The larger models are also a lot slower to train, taking about 6 times
 as long as the baseline. 
 
 
