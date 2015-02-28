@@ -361,16 +361,17 @@
 %   	Ourcity, PQ, Canada A1A 1T2\\
 %   {\tt author2@abc.ca}}
 
-\date{}
+%\date{}
 
 \begin{document}
 \maketitle
 \begin{abstract}
 The high cost of semantic structure annotation is a major obstacle 
 to automating semantic analysis with broad coverage.
-The fully annotated datasets that exist are often small, 
-hindering the accuracy and domain robustness of models trained on them.
-However, low-resource tasks may benefit from exploiting \emph{out-of-domain} annotated data, 
+%The fully annotated datasets that exist are often small, 
+%hindering the accuracy and domain robustness of models trained on them.
+%However, 
+Low-resource tasks may benefit from exploiting \emph{out-of-domain} annotated data, 
 as well as data with \emph{different} (but related) forms of annotation,
 for additional training data or features.
 This paper considers the argument identification and classification subtask 
@@ -378,10 +379,10 @@ of frame-semantic parsing, which to date has relied exclusively
 upon full-text annotations in the FrameNet resource. %\nss{is this true? I think Dipanjan used exemplars for the latent variable frame ID model, but he hasn't used them at all for arg ID, right?}
 We augment supervised learning with additional 
 ``indirect'' training data and features 
-so as to leverage additional resources internal and external to FrameNet (e.g., PropBank). 
+so as to leverage resources internal and external to FrameNet (e.g., PropBank). 
 Experiments demonstrate that some of these resources are valuable for 
 more accurate and more robust frame SRL,
-with the best model achieving a 3.95 increase in $F_1$ over the state of the art. \nss{main quantitative result}.
+with the best model achieving a 3.95 increase in $F_1$ over the state of the art. \nss{main quantitative result}
 %with the best model achieving a 3.0 increase in $F_1$, or 7.5\% reduction in error, 
 %over the state of the art.\st{can you say that with F1?}\nss{sure, you can say error reduction, but how can we compare to state-of-the-art (unless you mean best reported result with gold frames)?}
 \end{abstract}
@@ -979,15 +980,14 @@ suggesting that higher levels in the hierarchy can be too general \mk{give examp
 most likely to help can give greater benefits, and is beyond the focus of this work.}
 
 SemLink, as we remarked in \cref{sec:preproc} is a noisy resource; we see a confirmation for this observation in the performance of the (FT+SemLink) model,
-which drops the $F_1$ by a whopping 11.2 and 16.5 points below baseline on FT-test and exemplars, respectively. 
+which drops $F_1$ by a whopping 11.2 and 16.5 points below the baseline on FT-test and exemplars, resp. 
 The guide features however modulate the influence
 of the SemLink annotations, giving a minor increase over the baseline. 
 %\mk{resulting in a graceful but prompt exit for this resource from further consideration.}
 
-With the exemplars resource, we find that the guide features give us a modest improvement of 1.12 in $F_1$ on FT-test, 
+With the exemplars resource, we find that the guide features give us a modest improvement of 1.1 points on FT-test, 
 while using it as gold-standard training data results in a bigger increase of 2.8 points. 
-On the exemplars-test we observe a similar trend, where the (FT+Exemplars) model delivers a massive increase of $\approx$23 $F_1$-points and a 
-much smaller increase is seen with the guide features. This contrasts with what we observed for SemLink.
+On the exemplars-test we observe a similar trend: guide features give a smaller benefit but the (FT+Exemplars) model increases $F_1$ by $\approx$23 $F_1$-points. This contrasts with what we observed for SemLink.
 `EasyAdapt', the frustratingly easy DA approach to incorporate the Exemplars
 gives a minor increase of 0.3 points on the FT-test but a reduction of 2.8 points on the exemplars-test.
 
