@@ -959,7 +959,11 @@ While the FT test set represents the benchmark set for evaluating the
 performance of a frame semantic role labeling system, the exemplars test set being from a different distribution of text, gives us
 an indication of how well a model generalizes.
 
+
 \subsection{Results}
+
+\input{results.tex}
+
 
 \nss{comparison to prior work (baseline, best result). args+frames score vs. args only}
 \nss{be sure to mention: gold frames}
@@ -970,7 +974,6 @@ The marker `$\xrightarrow{\text{guide}}$' on some of the methods refers to the f
 `Hier' represents the hierarchical features from \cref{sec:hierfeats} and `EasyAdapt' refers to the frustratingly easy DA model
 described in \cref{sec:frust}.%\nss{if using the term EasyAdapt, define it above}
 
-\input{results.tex}
 
 The baseline $F_1$ on argument identification published in \citet{das-14} on the FT test set includes adding `pseudo' scores for getting gold frames right. 
 However, this does not give us a true picture of the performance, hence we choose not to add frame-level scores while computing $F_1$. 
