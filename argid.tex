@@ -672,7 +672,7 @@ We expect such improvements to be complementary to the gains due to the added fe
 
 \subsection{Frustratingly Easy}
 \label{sec:frust}
-\cite{daume-2009} proposed a simple feature augmentation approach that was shown to work well in supervised domain adaptation scenarios, 
+\Citet{daume-07} proposed a simple feature augmentation approach that was shown to work well in supervised domain adaptation scenarios, 
 such as ours.
 Let $\mathcal{D}_{FT}$ be the full text data, and $\mathcal{D}_{ex}$ be the exemplar data.
 We %apply their method to incorporate the exemplars data  by introducing
@@ -785,7 +785,7 @@ All of our experiments use the same form of regularization,
 condition on the same oracle frame predictions, 
 and syntactic preprocessing\nss{does this match Dipanjan's latest experiments?}, 
 and use beam search with a beam size of 100 for joint decoding of the test data.
-Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} are used, as in \cite{das-14}. % to narrow the set of candidate spans considered, and as input to feature extraction.
+Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} are used, as in \citet{das-14}. % to narrow the set of candidate spans considered, and as input to feature extraction.
 
 
 \subsection{Learning}
@@ -865,14 +865,30 @@ We learn $\mathbf{w}$ by minimizing the $\ell_2$-regularized average loss on the
 
 
 
-\nss{OntoNotes PropBank preprocessing (NLTK)}
-
-\subsection{Preprocessing the data}
 
 
-\mk{NSS: hope you're not duplicating this in the earlier section! 
-We use the \emph{token-level parallel annotations} from SemLink, which are available for a subset of the PB-WSJ text, 
-hereafter referred to as SL-WSJ.} Of the available 74,977 SL-WSJ verbs, a majority cannot be mapped to FN frames for various reasons.
+\subsection{Preprocessing the Data}
+
+\paragraph{Full-Text.}
+For the FT annotations, we use the same FrameNet 1.5 data and train/test splits as \citet{das-14}, without any of our own processing.
+
+\paragraph{Exemplars.} 
+We processed the exemplars data (\cref{sec:exemplars}) to remove sentences which had no role annotations (under the assumption that these are likely to be
+incomplete annotations). Out of a total of 145838 sentences, $\approx$4000 had only frame annotations. 
+We further removed duplicate sentences that already appear in the FT data. 
+In the argument annotations, we merged spans which were adjacent and had the same argument label.
+
+\paragraph{SemLink.} 
+SemLink (see \cref{sec:pb}) contains two types of mappings. The \emph{sense-level mappings} give correspondences between the concepts
+from each resource---i.e., between `frames' from FN, `rolesets' from PB, and `roles' from VN. 
+Since they map different interpretations and granularities 
+of concepts, the sense-level mappings may be one-to-one, one-to-many, or many-to-many.
+PropBank and FrameNet are mapped indirectly via VerbNet. %, introducing additional coverage gaps and ambiguities.
+Second, SemLink provides some \emph{token-level parallel annotations} 
+for the 3~representations in a subset of the PB-WSJ text: hereafter SL-WSJ.
+
+We focus on using token-level SemLink version~1.2.2c annotations as a (disambiguated) mapping from PB to FN tokens.
+Of the available 74,977 SL-WSJ verbs, a majority cannot be mapped to FN frames for various reasons.
 Around 31\% of the predicates have the frame label \texttt{IN} (``indefinite'') where the mapping from VerbNet to FrameNet is ambiguous.
 About 20\% of the instances are labeled \texttt{NF} (``no frame''), indicating a coverage gap in FrameNet. 
 21\% of verbs have frame labels but no frame element annotations. Most of these are predicates with modifier arguments.
@@ -880,26 +896,22 @@ Other arguments pointed to null anaphora that could not be resolved to overt arg
 This leaves 15,323 mappable instances with at least one overt argument, or 20\% of SL-WSJ verbs. This is a very small
 subset of the entire PB annotated data.
 
-We processed the exemplars data to remove sentences which had no role annotations (under the assumption that these are likely to be
-incomplete annotations). Out of a total of 145838 sentences, $\approx$4000 had only frame annotations. 
-We further removed duplicate sentences that already appear in the FT data. 
-In the argument annotations, we merged spans which were adjacent and had the same argument label.
+\nss{OntoNotes PropBank preprocessing (NLTK)?}
 
-For the FT annotations, we use the same FrameNet 1.5 data and train/test splits as \cite{das-14}, without any of our own processing.
+\subsection{Hyperparameter Tuning}
 
-
-\nss{tuning regularizer for all experiments}
-We tune the $\ell_2$ regularization parameter $\lambda$ on the FT dev set. We searched over the following
+We tune the $\ell_2$ regularization parameter $\lambda$ on the FT dev set, searching over the following
 values: 10$^{-5}$, 10$^{-7}$, 10$^{-9}$, 10$^{-12}$ (note that our loss is normalized).
 We also use the performance on the FT dev set to determine the stopping criterion for the stochastic optimization. The FT dev set was used 
-to only tune parameters and not part of the model construction. Also note that we do not tune any parameters w.r.t the exemplars data.
-\mk{Do I need to mention this -- The model with the best performance on the FT dev set is used for all evaluation}
+to only tune parameters and not part of the model construction. 
+%Also note that we do not tune any parameters w.r.t the exemplars data.
+%\mk{Do I need to mention this -- The model with the best performance on the FT dev set is used for all evaluation}
 
 
 
 \subsection{Evaluation}
 The argument identification performance of the various methods is compared on two different test sets.
-(1) Full-text: the FrameNet 1.5 FT test split that was used in the evaluation in \cite{das-14}. This data consists of sentences from 23 documents. 
+(1) Full-text: the FrameNet 1.5 FT test split that was used in the evaluation in \citet{das-14}. This data consists of sentences from 23 documents. 
 (2) Exemplars: a randomly sampled set of sentences from the exemplars data, with approximately the same number of targets as the FT test set.
 Statistics of both the test sets are given in the lower half of Table \ref{tbl:datastats}. 
 The FT test set has 289 unseen role types, which is much higher than
