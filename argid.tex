@@ -612,7 +612,7 @@ of the PropBank corpus's roleset annotations with mappings to FrameNet and VerbN
 \section{Learning from multiple domains and representations}
 
 We use the model from SEMAFOR \citep{das-14}, described in \S\ref{sec:base_model}, as a starting point.
-We experiment with several domain adaptation techniques, augmenting the model's training data (\S\ref{sec:aug_data}) and feature space %$\mathbf{\phi}$
+We experiment with several domain adaptation (DA) techniques, augmenting the model's training data (\S\ref{sec:aug_data}) and feature space %$\mathbf{\phi}$
 (\S\ref{sec:frust}--%,\ref{sec:frust},\ref{sec:guide},
 \ref{sec:hierfeats}).
 % modifying the model-fitting portion of the argument identification model's local learning objective  (training data, features).
@@ -873,6 +873,7 @@ We learn $\mathbf{w}$ by minimizing the $\ell_2$-regularized average loss on the
 
 
 \subsection{Preprocessing the Data}
+\ref{sec:preproc}
 
 \paragraph{Full-Text.}
 For the FT annotations, we use the same FrameNet 1.5 data and train/test splits as \citet{das-14}, without any of our own processing.
@@ -900,6 +901,13 @@ About 20\% of the instances are labeled \texttt{NF} (``no frame''), indicating a
 Other arguments pointed to null anaphora that could not be resolved to overt arguments.
 This leaves 15,323 mappable instances with at least one overt argument, or 20\% of SL-WSJ verbs. This is a very small
 subset of the entire PB annotated data.
+
+Some of the FN information in SemLink is out of date due to subsequent changes in FrameNet.
+There are some erroneous FN annotations as well: e.g., all 14~instances of \vpred{liquidate} are
+labeled \fname{Killing}, despite being used in the financial sense; and in 17~cases \vpred{direct}
+is erroneously marked as \fname{Behind\_the\_scenes} (i.e., film direction).
+These kind of errors are hard to detect and remove.
+
 
 \nss{OntoNotes PropBank preprocessing (NLTK)?}
 
@@ -965,7 +973,7 @@ We present precision, recall, and $F_1$-measure microaveraged across the test in
 The first column classifies the approaches based on what resource we use and the second column indicates what training data was used. 
 For each resource (one multi-row in the table) we show results obtained by various methods of combining it with the FT data.
 The marker `$\xrightarrow{\text{guide}}$' on some of the methods refers to the feature augmentation discussed in \cref{sec:guide},
-`Hier' represents the hierarchical features from \cref{sec:hierfeats} and `EasyAdapt' refers to the frustratingly easy domain adaptation model
+`Hier' represents the hierarchical features from \cref{sec:hierfeats} and `EasyAdapt' refers to the frustratingly easy DA model
 described in \cref{sec:frust}.%\nss{if using the term EasyAdapt, define it above}
 
 \input{results.tex}
@@ -974,15 +982,16 @@ The baseline $F_1$ on argument identification published in \citet{das-14} on the
 However, this does not give us a true picture of the performance, hence we choose not to add frame-level scores while computing $F_1$. 
 In Table \ref{tbl:results}, the first row corresponds to the state-of-art $F_1$ from \citet{das-14}.
 
-The first resource that we consider is `FN Hierarchy'. We find that adding the sibling-level hierarchical features to the baseline FT model improves 
+The first resource that we consider is `FN Hierarchy'. We find that adding the sibling-level hierarchical features to the baseline improves 
 $F_1$ by 1.2 and 1.7 points on FT-test and exemplars-test respectively,
 with benefits to both precision and recall. The `siblings+parents' features which consider two levels of the hierarchy produce unnoticeable benefits,
 suggesting that higher levels in the hierarchy can be too general \mk{give example?} and cause very dissimilar roles firing the same hierarchy features.%
 \footnote{We also tried adding grandparents and found only minor improvements. Using an expert-pruned hierarchy with relations that are
 most likely to help can give greater benefits, and is beyond the focus of this work.}
 
-SemLink, as we remarked earlier is a noisy resource and we see a confirmation for this observation in the performance of the (FT+SemLink) model,
-which drops $F_1$ by a whopping 11.2 and 16.5 points below baseline on FT-test and exemplars, respectively. The guide features however modulate the influence
+SemLink, as we remarked in \cref{sec:preproc} is a noisy resource; we see a confirmation for this observation in the performance of the (FT+SemLink) model,
+which drops the $F_1$ by a whopping 11.2 and 16.5 points below baseline on FT-test and exemplars, respectively. 
+The guide features however modulate the influence
 of the SemLink annotations, giving a minor increase over the baseline. 
 %\mk{resulting in a graceful but prompt exit for this resource from further consideration.}
 
@@ -990,8 +999,8 @@ With the exemplars resource, we find that the guide features give us a modest im
 while using it as gold-standard training data results in a bigger increase of 2.8 points. 
 On the exemplars-test we observe a similar trend, where the (FT+Exemplars) model delivers a massive increase of $\approx$23 $F_1$-points and a 
 much smaller increase is seen with the guide features. This contrasts with what we observed for SemLink.
-The frustratingly easy domain adaptation approach to incorporate the Exemplars
-further improves the $F_1$ by a minor 0.3 on the FT-test and a decent 2.8 on the exemplars-test.
+`EasyAdapt', the frustratingly easy DA approach to incorporate the Exemplars
+gives a minor increase of 0.3 points on the FT-test and 2.8 on the exemplars-test.
 
 Finally, using the PB-SRL data in the form of guide features also results in small improvements over the baseline. 
 Overall we observe that an additional resource that is very similar to the original resource helps more as training data than as a `guide model'.
@@ -1025,7 +1034,7 @@ Our best result of 63.07 on the FT test set beats the baseline (59.12) by 3.95 F
 \finalversion{\nss{impact of automatic frames?}}
 
 \subsection{FE-level evaluation}
-The results so far have discussed the overall improvement in $F_1$-score, but do not present a detailed picture of how we gain from the additional
+The results so far have discussed the overall improvement in $F_1$, but do not present a detailed picture of how we gain from the additional
 coverage. Towards this, we present a frame-element i.e role type level analysis comparing the best results with the baseline.
 The first plot in Figure \ref{fig:num_inst} shows the frequency of all roles that appear in the FT-test set.
 Figure \ref{fig:coolplot} shows the $F_1$ per role-type, for the baseline and the two models from Table \ref{tbl:bestTech}.
@@ -1055,6 +1064,7 @@ Their work is complementary to our own.
 
 
 \nss{multitask learning?}
+\mk{there's no room for citing MTL.. we can do that later}
 
 \section{Conclusion}
 
