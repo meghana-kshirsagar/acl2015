@@ -672,7 +672,7 @@ We expect such improvements to be complementary to the gains due to the added fe
 
 \subsection{Frustratingly Easy}
 \label{sec:frust}
-\cite{daume-2009} proposed a simple feature augmentation approach that was shown to work well in supervised domain adaptation scenarios, 
+\Citet{daume-07} proposed a simple feature augmentation approach that was shown to work well in supervised domain adaptation scenarios, 
 such as ours.
 Let $\mathcal{D}_{FT}$ be the full text data, and $\mathcal{D}_{ex}$ be the exemplar data.
 We %apply their method to incorporate the exemplars data  by introducing
@@ -785,7 +785,7 @@ All of our experiments use the same form of regularization,
 condition on the same oracle frame predictions, 
 and syntactic preprocessing\nss{does this match Dipanjan's latest experiments?}, 
 and use beam search with a beam size of 100 for joint decoding of the test data.
-Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} are used, as in \cite{das-14}. % to narrow the set of candidate spans considered, and as input to feature extraction.
+Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} are used, as in \citet{das-14}. % to narrow the set of candidate spans considered, and as input to feature extraction.
 
 
 \subsection{Learning}
@@ -870,7 +870,7 @@ We learn $\mathbf{w}$ by minimizing the $\ell_2$-regularized average loss on the
 \subsection{Preprocessing the Data}
 
 \paragraph{Full-Text.}
-For the FT annotations, we use the same FrameNet 1.5 data and train/test splits as \cite{das-14}, without any of our own processing.
+For the FT annotations, we use the same FrameNet 1.5 data and train/test splits as \citet{das-14}, without any of our own processing.
 
 \paragraph{Exemplars.} 
 We processed the exemplars data (\cref{sec:exemplars}) to remove sentences which had no role annotations (under the assumption that these are likely to be
@@ -911,7 +911,7 @@ to only tune parameters and not part of the model construction.
 
 \subsection{Evaluation}
 The argument identification performance of the various methods is compared on two different test sets.
-(1) Full-text: the FrameNet 1.5 FT test split that was used in the evaluation in \cite{das-14}. This data consists of sentences from 23 documents. 
+(1) Full-text: the FrameNet 1.5 FT test split that was used in the evaluation in \citet{das-14}. This data consists of sentences from 23 documents. 
 (2) Exemplars: a randomly sampled set of sentences from the exemplars data, with approximately the same number of targets as the FT test set.
 Statistics of both the test sets are given in the lower half of Table \ref{tbl:datastats}. 
 The FT test set has 289 unseen role types, which is much higher than
