@@ -81,6 +81,12 @@
 \usepackage{latexsym}
 
 
+\addtolength{\textfloatsep}{-0.2cm}
+\addtolength{\abovedisplayskip}{-0.2cm}
+\addtolength{\belowdisplayskip}{-0.2cm}
+%\addtolength{\abovecaptionskip}{-0.2cm}
+%\addtolength{\belowcaptionskip}{-0.2cm}
+
 
 
 
@@ -946,7 +952,7 @@ argument identification, we assume that the gold-standard frames are given and e
 The performance of the various methods is compared on two different test sets.
 (1) Full-text: the FrameNet 1.5 FT test split that was used in the evaluation in \citet{das-14}. This data consists of sentences from 23 documents. 
 (2) Exemplars: a randomly sampled set of sentences from the exemplars data, with approximately the same number of targets as the FT test set.
-Statistics of both the test sets are given in the lower half of Table \ref{tbl:datastats}. 
+Statistics of both the test sets are given in Table \ref{tbl:datastats}. 
 The FT test set has 289 unseen role types, which is much higher than
 the 38 in the exemplars test set. There are no unseen frame types in the exemplars test data, whereas the FT test has 46 of them. 
 These differences are due to the manner in which the train and test splits were created, with document-level splits being used
@@ -983,8 +989,8 @@ The first resource that we consider is `FN Hierarchy'. We find that adding the s
 $F_1$ by 1.2 and 1.7 points on FT-test and exemplars-test respectively,
 with benefits to both precision and recall. The `siblings+parents' features which consider two levels of the hierarchy produce unnoticeable benefits,
 suggesting that higher levels in the hierarchy can be too general \mk{give example?} and cause very dissimilar roles firing the same hierarchy features.%
-\footnote{We also tried adding grandparents and found only minor improvements. Using an expert-pruned hierarchy with relations that are
-most likely to help can give greater benefits, and is beyond the focus of this work.}
+%\footnote{We also tried adding grandparents and found only minor improvements. Using an expert-pruned hierarchy with relations that are
+%most likely to help can give greater benefits, and is beyond the focus of this work.}
 
 SemLink, as we remarked in \cref{sec:preproc} is a noisy resource; we see a confirmation for this observation in the performance of the (FT+SemLink) model,
 which drops $F_1$ by a whopping 11.2 and 16.5 points below the baseline on FT-test and exemplars, resp. 
@@ -1088,6 +1094,12 @@ capturing a broader swath of the English language.
 % Moreover, the techniques discussed here could be further explored 
 % using semi-automatic mappings between lexical resources \citep[such as UBY;][]{gurevych-12}, 
 % and correspondingly, this task could be used to extrinsically validate those mappings.
+\finalversion{We are optimistic that future improvements to lexical semantic resources, 
+including planned changes for PropBank \citep{bonial-14} and SemLink \citep{bonial-13}, 
+will lead to further gains in this task. 
+Moreover, the techniques discussed here could be further explored 
+using semi-automatic mappings between lexical resources \citep[such as UBY;][]{gurevych-12}, 
+and correspondingly, this task could be used to extrinsically validate those mappings.}
 
 \finalversion{\section*{Acknowledgments}
 
