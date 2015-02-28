@@ -377,13 +377,12 @@ upon full-text annotations in the FrameNet resource.\nss{is this true? I think D
 We augment supervised learning with additional 
 ``indirect'' training data and features 
 so as to leverage additional resources internal and external to FrameNet (e.g., PropBank). 
-\nss{result}
+Our best model achieves a 3.0 increase in F1, or 7.5\% reduction in error, over state-of-the-art. \st{can you say that with F1?}
 \end{abstract}
 
 \section{Introduction}
 
-\nss{sparseness is a challenge for many computational semantics tasks}
-
+Sparsity of data resources is a challenge for many computational semantics tasks \st{cite?}.
 Frame-semantic parsing \citep{das-14} is a case in point.
 This is the task of automating the rich linguistic structure analyses 
 of the FrameNet lexicon and corpus \citep{baker-98}.\footnote{\url{http://framenet.icsi.berkeley.edu/}}
@@ -413,10 +412,10 @@ are labeled with role names.}
 \label{fig:harbor-fn}
 \end{figure}
 
-FrameNet~1.5 defines a structured hierarchy of over 1,000 frames associated with \nss{\#}~English lexical predicates, 
+FrameNet~1.5 defines a structured taxonomy of over 1,000 frames associated with \nss{\#}~English lexical predicates, 
 and also provides annotations for \nss{\# targets annotated total} attestations 
 of these frames/predicates in corpora, annotated in context with their arguments. 
-In FrameNet~1.5, a rather small number of sentences---\nss{\#}, comprising \nss{\#} words---% 
+In FrameNet~1.5, a rather small number of sentences---5200, comprising \nss{\#} words---% 
 are provided with \textbf{full-text} annotations, i.e.~the sentence 
 has been analyzed for all available frames. 
 But a full \nss{\#}\% of sentences in FrameNet---the lexicographic \textbf{exemplars}---are annotated for only one frame per sentence, 
@@ -506,7 +505,8 @@ seen in those roles and how they relate syntactically to the predicate.
 
 \subsection{Full-text Annotations}\label{sec:ft}
 
-Contemporary frame-semantic parsers are trained and evaluated on the \textbf{full-text (FT)}\footnote{Though these 
+Beginning with the SemEval-2007 shared task on FrameNet analysis \citep{baker-07},
+frame-semantic parsers have been trained and evaluated on the \textbf{full-text (FT)}\footnote{Though these 
 were \emph{annotated} and the document level, and train/dev/test splits are by document, the frame-semantic parsing 
 is currently restricted to the sentence level.} portion 
 of the FrameNet corpus. This consists of documents for which annotators made an effort 
@@ -530,13 +530,42 @@ In other cases, words that in principle should be considered to evoke a frame we
 because they did not match any existing lexical units. 
 This was the case for \textit{passengers} and \textit{dizzying} in \cref{fig:harbor-fn}.
 
-\nss{Genres, sizes}
+The full-text documents represent a mix of genres, prominently including travel guides 
+and bureaucratic reports about weapons stockpiles. 
+Statistics for the full-text corpus appear in \cref{tbl:datastats}.
 
 \nss{Annotation density: (proportion of tokens evoking a frame. breakdown by POS?)}
 
 \subsection{Exemplars}\label{sec:exemplars}
 
-\nss{how different from FT}
+Conceived primarily as a lexicography project, 
+most FrameNet annotations serve to illustrate the argument structure potential 
+of particular predicates. When predicates are added to a frame, 
+a large set of source corpora (primarily, the British National Corpus) covering a wide range of genres
+is searched for various syntactic patterns, 
+and a lexicographer identifies a selection, or \textbf{subcorpus}, of sentences 
+illustrating the predicate's behavior \citep{boas-05}.
+The subcorpus sentences are then annotated, but \emph{only with respect to the predicate in question}.
+These singly-annotated sentences are called lexicographic \textbf{exemplars}.
+
+The subset of exemplars containing argument annotations is described in \cref{tbl:datastats}.
+Relative to the full-text dataset, the exemplar dataset contains 
+an order of magnitude more frame annotations and two orders of magnitude 
+more sentences annotated.
+Because we are conditioning on the identified frame, 
+the fact that the exemplar dataset has just one annotated frame per sentence
+is not a concern in SRL. However, the rate of overt arguments per frame 
+is noticeably higher for exemplars, which potentially biases the model's 
+tendency to predict certain kinds of arguments in a way that is not statistically representative of a natural corpus.
+
+The exemplar sentences formed the basis of early studies of frame-semantic role labeling \citep[e.g.,][]{gildea-02,thompson-03,fleischman-03,kwon-04}.
+We deem it worthwhile to (a)~investigate whether the exemplars 
+can be used to improve performance on the full-text evaluation, 
+compensating for the scarcity of full-text training data,
+and (b)~to evaluate SRL performance on a held-out set of exemplars, 
+given that these exemplars represent a much broader range of genres, frames, and predicates 
+than the full-text data.
+This second evaluation, we believe, will give a useful indication of the robustness of the SRL model.
 
 \subsection{PropBank}\label{sec:pb}
 
@@ -629,7 +658,7 @@ And choose the joint assignment
     }
 \end{equation}
 Beam search, with a beam size of 100, is used to find this $\argmax$.%
-\footnote{Recent work has improved upon global decoding techniques \st{cite Täckström et al, TACL}.
+\footnote{Recent work has improved upon global decoding techniques \citep{tackstrom-15}.
 We expect such improvements to be complementary to the gains due to the added features and data reported here.}
 
 \mk{introduce this as a supervised domain adaptation problem? What is the source and what's the target?}
@@ -886,7 +915,7 @@ both sets of data will certainly benefit in performance.
 \begin{tabular}{@{}p{2cm}r@{~~}r@{~~}r@{~~}r@{}}
 %\toprule
 \normalfont & \multicolumn{2}{c}{\textbf{\hspace{40pt}Full-Text}} & \multicolumn{2}{c}{\textbf{Exemplars}} \\
-& \multicolumn{1}{c}{\hspace{40pt}\textit{train\footnote{We do not include the dev set in these statistics, which had 4463 frames over 746 sentences.}}} & \multicolumn{1}{c}{\textit{test}} & \multicolumn{1}{c}{\textit{train}} & \multicolumn{1}{c}{\textit{test}} \\
+& \multicolumn{1}{c}{\hspace{40pt}\textit{train}} & \multicolumn{1}{c}{\textit{test}} & \multicolumn{1}{c}{\textit{train}} & \multicolumn{1}{c}{\textit{test}} \\
 \midrule
 Sentences  & 2,780 & 2,420 & 137,515 & 4,132 \\
 Frames & 15,019 & 4,458 & 137,515 & 4,132 \\
@@ -899,7 +928,7 @@ Roles & 2,644 & 1,420 & 4,821 & 1,224 \\
 \multicolumn{2}{@{}l}{Unseen roles \quad \textit{vs.~train:}} & 289 & & 38 \\
 \multicolumn{2}{@{}l}{Unseen roles \quad \textit{vs.~combined train:}} & 103 & & 32 \\
 \end{tabular}
-\caption{Characteristics of the training and test data}
+\caption{Characteristics of the training and test data. (These statistics exclude the development set, which contains 4,463 frames over 746 sentences.)}
 \label{tbl:datastats}
 \end{table}
 
@@ -985,7 +1014,7 @@ as long as the baseline.
 
 \nss{Dipanjan's other papers; mention other PB SRL work?; anything using SemLink or combining resources for SRL? see \citep[\S4]{bonial-13}}
 
-\nss{be sure to cite: \citep{shi-05} (multiple resources), \citep{matsubayashi-09} (hierarchy)}
+\nss{be sure to cite: \citep{shi-05} (multiple resources), \citep{matsubayashi-09} (hierarchy), \citep{furstenau-09} (semi-supervised)}
 
 \nss{multitask learning?}
 
