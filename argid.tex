@@ -915,7 +915,7 @@ both sets of data will certainly benefit in performance.
 \begin{tabular}{@{}p{2cm}r@{~~}r@{~~}r@{~~}r@{}}
 %\toprule
 \normalfont & \multicolumn{2}{c}{\textbf{\hspace{40pt}Full-Text}} & \multicolumn{2}{c}{\textbf{Exemplars}} \\
-& \multicolumn{1}{c}{\hspace{40pt}\textit{train\footnote{We do not include the dev set in these statistics, which had 4463 frames over 746 sentences.}}} & \multicolumn{1}{c}{\textit{test}} & \multicolumn{1}{c}{\textit{train}} & \multicolumn{1}{c}{\textit{test}} \\
+& \multicolumn{1}{c}{\hspace{40pt}\textit{train}} & \multicolumn{1}{c}{\textit{test}} & \multicolumn{1}{c}{\textit{train}} & \multicolumn{1}{c}{\textit{test}} \\
 \midrule
 Sentences  & 2,780 & 2,420 & 137,515 & 4,132 \\
 Frames & 15,019 & 4,458 & 137,515 & 4,132 \\
@@ -928,7 +928,7 @@ Roles & 2,644 & 1,420 & 4,821 & 1,224 \\
 \multicolumn{2}{@{}l}{Unseen roles \quad \textit{vs.~train:}} & 289 & & 38 \\
 \multicolumn{2}{@{}l}{Unseen roles \quad \textit{vs.~combined train:}} & 103 & & 32 \\
 \end{tabular}
-\caption{Characteristics of the training and test data}
+\caption{Characteristics of the training and test data. (These statistics exclude the development set, which contains 4,463 frames over 746 sentences.)}
 \label{tbl:datastats}
 \end{table}
 
