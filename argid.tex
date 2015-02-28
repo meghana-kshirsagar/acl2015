@@ -724,7 +724,7 @@ The source domain model is effectively a form of preprocessing, and the features
 of model stacking, where successively richer models are trained by cross-validation on the same dataset 
 \citet[e.g.,][]{cohen-05,nivre-08,martins-08}.}
 
-In our case, we treat the full text annotations as our target domain, and experiment with using PropBank, SemLink, and the exemplars data as our source domain\st{MK, please check this. you need to write more about how SemLink was used, b/c I have no idea.}.
+In our case, we treat the full text annotations as our target domain, and experiment with using PropBank, SemLink, and the exemplars data as source domains.
 Each of the three source models produces SRL-style output, where predicates are assigned frames or rolesets, and for each predicate, spans are assigned role labels.
 But they differ in the labels used for roles.
 \st{talk about Illinois SRL \citep{punyakanok-08}\footnote{\url{http://cogcomp.cs.illinois.edu/page/software_view/SRL}}, whatever-we-did-with-SemLink here?}
@@ -903,7 +903,7 @@ subset of the entire PB annotated data.
 We tune the $\ell_2$ regularization parameter $\lambda$ on the FT dev set, searching over the following
 values: 10$^{-5}$, 10$^{-7}$, 10$^{-9}$, 10$^{-12}$ (note that our loss is normalized).
 We also use the performance on the FT dev set to determine the stopping criterion for the stochastic optimization. The FT dev set was used 
-to only tune parameters and not part of the model construction. 
+only to tune parameters and not as part of the model construction. 
 %Also note that we do not tune any parameters w.r.t the exemplars data.
 %\mk{Do I need to mention this -- The model with the best performance on the FT dev set is used for all evaluation}
 
