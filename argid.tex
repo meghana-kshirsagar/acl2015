@@ -389,7 +389,7 @@ with the best model achieving a 3.95 increase in $F_1$ over the state of the art
 \section{Introduction}
 
 Sparsity of data resources is a challenge for many computational semantics tasks \st{cite?}.
-Frame-semantic parsing \citep{das-14} is a case in point.
+Frame-semantic parsing \citep{gildea-02} is a case in point.
 This is the task of automating the rich linguistic structure analyses 
 of the FrameNet lexicon and corpus \citep{baker-98}.\footnote{\url{http://framenet.icsi.berkeley.edu/}}
 FrameNet represents kinds of events, scenarios, and relationships 
@@ -612,7 +612,7 @@ of the PropBank corpus's roleset annotations with mappings to FrameNet and VerbN
 
 \section{Learning from multiple domains and representations}
 
-We use the model from SEMAFOR \citep{das-14}, described in \S\ref{sec:base_model}, as a starting point.
+We use the model from SEMAFOR \citep{das-14}, described in \S\ref{sec:base_model}--\ref{sec:learning}, as a starting point.
 We experiment with several domain adaptation (DA) techniques, augmenting the model's training data (\S\ref{sec:aug_data}) and feature space %$\mathbf{\phi}$
 (\S\ref{sec:frust}--%,\ref{sec:frust},\ref{sec:guide},
 \ref{sec:hierfeats}).
@@ -628,26 +628,27 @@ The argument identification task is treated as a structured prediction problem.
 Let the classification input be a dependency-parsed sentence $\mathbf{x}$, 
 the token(s) $p$ constituting the predicate in question, and the frame $f$ evoked by $p$
 (as determined by frame identification). 
-We use a heuristic procedure \st{cite} for extracting candidate argument spans 
+We use the heuristic procedure from \citep{das-14} for extracting candidate argument spans 
 for the predicate; call this $\textit{spans}(\mathbf{x}, p, f)$.
 $\textit{spans}$ always includes a special span denoting an empty or non-overt role, denoted $\emptyset$. 
 For each candidate span $a \in \textit{spans}(\mathbf{x}, p, f)$, we extract a binary feature vector 
 $\mathbf{\phi}(a, \mathbf{x}, p, f)$.
-We describe the features in \S\ref{sec:features}.\st{are we going to describe the baseline semafor features?}\nss{i suggest just mention the kinds of things features look at---POS, syntax, etc.---and that many of them are at multiple levels of granularity (role-specific, role name--specific)}
+% We describe the features in \S\ref{sec:features}.\st{are we going to describe the baseline semafor features?}\nss{i suggest just mention the kinds of things features look at---POS, syntax, etc.---and that many of them are at multiple levels of granularity (role-specific, role name--specific)}
 We use a linear model, parametrized by the weight vector $\mathbf{w}$, to score $a$:
 \begin{equation}
 \textit{score}_\mathbf{w}(a \mid \mathbf{x}, p, f, r) = \mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r)
 \end{equation}
-$\textit{score}_\mathbf{w}$ models the compatibility  of a candidate
-role--argument pair, and its parameters (feature weights) $\mathbf{w}$ are
+% $\textit{score}_\mathbf{w}$ models the compatibility  of a candidate
+% role--argument pair, and i
+Its parameters (feature weights) $\mathbf{w}$ are
 learned from data (\S\ref{sec:learning}).
 
 At inference time, we use a \term{global classifier}.
 The global classifier chooses a joint assignment of all arguments of a frame, while respecting the following constraints:
-\begin{enumerate}
+\begin{itemize}
   \item a role may be assigned to at most one span, and
   \item spans of overt arguments must not overlap.
-\end{enumerate}
+\end{itemize}
 Formally, let a joint assigment be represented as a function $\mathbf{a}: \textit{roles}(f) \rightarrow \textit{spans}(\mathbf{x}, p, f)$, % \cup \{\emptyset\}$, %= \{ (r, a) \mid r \in \textit{roles}(f) \}$
  and let $\mathcal{A}$ be the set of all non-overlapping joint assignments.
 We give $\mathbf{a}$ the score:
@@ -666,6 +667,68 @@ and choose the joint assignment:
 Beam search, with a beam size of 100, is used to find this $\argmax$.%
 \footnote{Recent work has improved upon global decoding techniques \citep{tackstrom-15}.
 We expect such improvements to be complementary to the gains due to the added features and data reported here.}
+
+\subsection{Learning}
+\label{sec:learning}
+
+Following SEMAFOR, we train using a \term{local} objective instead of using a global classifier.
+In other words, we treat each role and span pair as an independent training instance.
+% \nss{does beam search require normalizing to probabilities?}\st{no. maybe it should, but SEMAFOR didn't, and we don't.}
+But we have made several modifications to training in order to speed up experiments:
+
+\begin{itemize}
+  \item We minimize squared structured hinge loss (defined below) instead of a log-linear loss.
+  Using hinge loss, there is no longer a need to calculate a partition function.
+  Gradients, and hence parameters, are sparser than in a log-linear model, as they only depend on the correct span and the predicted span.
+  \item We use the online optimization method AdaDelta \citep{zeiler-12} with minibatches, instead of the batch method L-BFGS \citep{liu-89}.
+  We use minibatches of size 4,000  on the full text data, and 40,000 on the exemplar data.
+%   \item We use elastic net ($\ell_1 + \ell_2$) regularization. Adding $\ell_1$ also has the effect of keeping the parameter vector sparse.\nss{what hyperparameter(s)? are $\ell_1$ and $\ell_2$ tuned separately?}
+\end{itemize}
+We use these changes for all systems, including the baseline.
+While the impact on full-text performance is negligible, 
+these changes enabled us to run more experiments with the larger exemplar dataset and expanded feature space.\footnote{With SEMAFOR's original features and training data, 
+the result of the above changes is that full-text $F_1$ decreases from 59.3\% to 59.1\%, 
+while training time (running optimization to convergence) 
+decreases from 729 minutes to 82 minutes\nss{say something about hardware this was tested on?}.%
+%\mk{P/R/F numbers are in the table (see rows 1 and 2). Times: 12 hrs 9 mins for the earlier algorithm to converge. That took 290 iterations. An equivalent number of iterations took 45 minutes for the new system. Running till convergence (about 700 iterations) took 82 minutes, thus giving a speed-up of $\approx$ 9X. The P/R/F on exemplars improves (row 2); I believe it is due to the regularization in Sam's objective.}
+} 
+
+% \st{TODO: local classifier is only used in my SVM version, not in Das's log-linear version.}
+% We define the \textbf{local classifier} as:
+% \begin{equation}
+% \textit{arg}(\mathbf{x}, p, f, r) = \argmax_{a \in \textit{spans}(\mathbf{x}, p, f)
+% } \textit{score}_{\mathbf{w}}(a \mid \mathbf{x}, p, f, r)
+% \end{equation}
+% 
+% \st{something about L2 regularization}
+
+The details of squared hinge loss are as follows.
+
+Let $((\mathbf{x}, p, f, r), a)$ %$(r^{(i)}, a^{(i)})$
+be the $i^{\text{th}}$ training example.
+Then the structured hinge loss on the $i^{\text{th}}$ example is given by:
+\begin{align*}
+\lefteqn{\textit{Hinge}_\mathbf{w}(i) =} \\
+&&\max_{a^\prime}{\{\mathbf{w}^\top \mathbf{\phi}(a^\prime, \mathbf{x}, p, f, r) + \text{cost}(a^\prime, a)\}} - \\
+&&\mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r)
+\end{align*}
+and squared hinge loss is:
+\begin{equation}
+\textit{SqHinge}_\mathbf{w}(i) =
+\textit{Hinge}_\mathbf{w}(i)^2.
+\end{equation}
+We use $\text{cost}(a^\prime, a) = \indicator{a^\prime \ne a}$.%
+\footnote{We experimented with recall-oriented training, where errors of omission are assigned a higher cost, but found that while recall increased, overall $F_1$ went down\nss{or: failed to improve?}.}
+
+We learn $\mathbf{w}$ by minimizing the $\ell_2$-regularized average loss on the dataset:
+\begin{equation}
+\mathbf{w^*} = \argmin_\mathbf{w}{
+    \frac{1}{N}\sum_{i = 1}^N\{
+        \textit{SqHinge}_\mathbf{w}(i)
+    \} + \frac{1}{2} \lambda \| \mathbf{w} \|_2^2
+}
+\end{equation}
+
 
 \mk{introduce this as a supervised domain adaptation problem? What is the source and what's the target?}
 \mk{Let $D_{ft}$ represent the FT data and $D_{ex}$ the exemplars?}
@@ -773,7 +836,6 @@ hierarchical feature types:
 \noindent\textbf{siblings}: Roles that have a common parent share features.
 For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a new feature which is the conjunction: 
 $\text{"sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge \textit{parent}(r)$. 
-% $I_{hier}$ is an indicator to distinguish this feature from the regular conjunction features in Semafor that use frame names and roles.
 
   \item\noindent\textbf{parent+siblings}: Roles share features with their parent and siblings. 
 For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a two new features:
@@ -796,87 +858,9 @@ and use beam search with a beam size of 100 for joint decoding of the test data.
 Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} are used, as in \citet{das-14}. % to narrow the set of candidate spans considered, and as input to feature extraction.
 
 
-\subsection{Learning}
-\label{sec:learning}
-
-Following SEMAFOR, we train using a \term{local} objective instead of using a global classifier.
-In other words, we treat each role and span pair as an independent training instance.
-% SEMAFOR treats the argument identification task as a structured prediction problem.
-% It uses a linearly parametrized model that scores each candidate span given a frame element\st{this should probably be talked about earlier?}:
-% \begin{equation}
-% \textit{score}_\mathbf{w}(y \mid x) = \mathbf{w}^\top \mathbf{f}(x, y)
-% \end{equation}
-%
-% During training, each frame element is treated as an independent log-linear classification instance, with the set of candidate spans (including the \textsc{NULL} span) as its output space.
-% \st{something about L2 regularization}
-% But at test time, it chooses a joint assignment of all arguments that maximizes probability under the model, while satisfying the following constraints:
-% \begin{enumerate}
-%   \item an argument may be assigned to at most one span \st{theta criterion, Chomsky}, and
-%   \item spans of realized arguments must not overlap.
-% \end{enumerate}
-% Beam search, with a beam size of 100, is used to choose the maximum joint assignment with no overlapping arguments.
-% \nss{does beam search require normalizing to probabilities?}\st{no. maybe it should, but SEMAFOR didn't, and we don't.}
-But we have made several modifications to SEMAFOR's training in order to speed up experiments:
-
-\begin{itemize}
-  \item We minimize squared structured hinge loss (defined below) instead of a log-linear loss.
-  Using hinge loss, there is no longer a need to calculate a partition function.
-  Gradients, and hence parameters, are sparser than in a log-linear model, as they only depend on the correct span and the predicted span.
-  \item We use the online optimization method AdaDelta \citep{zeiler-12} with minibatches, instead of the batch method L-BFGS \citep{liu-89}.
-  We use minibatches of size 4,000  on the full text data, and 40,000 on the exemplar data.
-%   \item We use elastic net ($\ell_1 + \ell_2$) regularization. Adding $\ell_1$ also has the effect of keeping the parameter vector sparse.\nss{what hyperparameter(s)? are $\ell_1$ and $\ell_2$ tuned separately?}
-\end{itemize}
-We use these changes for all systems, including the baseline.
-While the impact on full-text performance is negligible, 
-these changes enabled us to run more experiments with the larger exemplar dataset and expanded feature space.\footnote{With SEMAFOR's original features and training data, 
-the result of the above changes is that full-text $F_1$ decreases from 59.3\% to 59.1\%, 
-while training time (running optimization to convergence) 
-decreases from 729 minutes to 82 minutes\nss{say something about hardware this was tested on?}.%
-%\mk{P/R/F numbers are in the table (see rows 1 and 2). Times: 12 hrs 9 mins for the earlier algorithm to converge. That took 290 iterations. An equivalent number of iterations took 45 minutes for the new system. Running till convergence (about 700 iterations) took 82 minutes, thus giving a speed-up of $\approx$ 9X. The P/R/F on exemplars improves (row 2); I believe it is due to the regularization in Sam's objective.}
-} 
-
-% \st{TODO: local classifier is only used in my SVM version, not in Das's log-linear version.}
-% We define the \textbf{local classifier} as:
-% \begin{equation}
-% \textit{arg}(\mathbf{x}, p, f, r) = \argmax_{a \in \textit{spans}(\mathbf{x}, p, f)
-% } \textit{score}_{\mathbf{w}}(a \mid \mathbf{x}, p, f, r)
-% \end{equation}
-% 
-% \st{something about L2 regularization}
-
-The details of squared hinge loss are as follows.
-
-Let $((\mathbf{x}, p, f, r), a)$ %$(r^{(i)}, a^{(i)})$
-be the $i^{\text{th}}$ training example.
-Then the structured hinge loss on the $i^{\text{th}}$ example is given by:
-\begin{align*}
-\lefteqn{\textit{Hinge}_\mathbf{w}(i) =} \\
-&&\max_{a^\prime}{\{\mathbf{w}^\top \mathbf{\phi}(a^\prime, \mathbf{x}, p, f, r) + \text{cost}(a^\prime, a)\}} - \\
-&&\mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r)
-\end{align*}
-and squared hinge loss is:
-\begin{equation}
-\textit{SqHinge}_\mathbf{w}(i) =
-\textit{Hinge}_\mathbf{w}(i)^2.
-\end{equation}
-We use $\text{cost}(a^\prime, a) = \indicator{a^\prime \ne a}$.%
-\footnote{We experimented with recall-oriented training, where errors of omission are assigned a higher cost, but found that while recall increased, overall $F_1$ went down\nss{or: failed to improve?}.}
-
-We learn $\mathbf{w}$ by minimizing the $\ell_2$-regularized average loss on the dataset:
-\begin{equation}
-\mathbf{w^*} = \argmin_\mathbf{w}{
-    \frac{1}{N}\sum_{i = 1}^N\{
-        \textit{SqHinge}_\mathbf{w}(i)
-    \} + \frac{1}{2} \lambda \| \mathbf{w} \|_2^2
-}
-\end{equation}
-
-
-
-
 
 \subsection{Preprocessing the Data}
-\ref{sec:preproc}
+\label{sec:preproc}
 
 \paragraph{Full-Text.}
 For the FT annotations, we use the same FrameNet 1.5 data and train/test splits as \citet{das-14}, without any of our own processing.
