@@ -546,24 +546,26 @@ is searched for various syntactic patterns,
 and a lexicographer identifies a selection, or \textbf{subcorpus}, of sentences 
 illustrating the predicate's behavior \citep{boas-05}.
 The subcorpus sentences are then annotated, but \emph{only with respect to the predicate in question}.
+These singly-annotated sentences are called lexicographic \textbf{exemplars}.
 
-The subset of exemplar sentences containing argument annotations is described in \cref{tbl:datastats}.
+The subset of exemplars containing argument annotations is described in \cref{tbl:datastats}.
 Relative to the full-text dataset, the exemplar dataset contains 
 an order of magnitude more frame annotations and two orders of magnitude 
 more sentences annotated.
 Because we are conditioning on the identified frame, 
 the fact that the exemplar dataset has just one annotated frame per sentence
-is not a concern. However, the rate of overt arguments per frame 
-is noticeably higher for exemplars, which is a cause for concern as it might bias the model's 
+is not a concern in SRL. However, the rate of overt arguments per frame 
+is noticeably higher for exemplars, which potentially biases the model's 
 tendency to predict certain kinds of arguments in a way that is not statistically representative of a natural corpus.
 
 The exemplar sentences formed the basis of early studies of frame-semantic role labeling \citep[e.g.,][]{gildea-02,thompson-03,fleischman-03,kwon-04}.
 We deem it worthwhile to (a)~investigate whether the exemplars 
 can be used to improve performance on the full-text evaluation, 
+compensating for the scarcity of full-text training data,
 and (b)~to evaluate SRL performance on a held-out set of exemplars, 
 given that these exemplars represent a much broader range of genres, frames, and predicates 
 than the full-text data.
-This second evaluation, we believe, gives a useful indication of the robustness of the SRL model.
+This second evaluation, we believe, will give a useful indication of the robustness of the SRL model.
 
 \subsection{PropBank}\label{sec:pb}
 
