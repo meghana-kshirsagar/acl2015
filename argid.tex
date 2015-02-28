@@ -294,6 +294,8 @@
 \newcommand{\fnlu}[1]{\textsf{#1}} % FrameNet lexical unit (predicate)
 \newcommand{\pbf}[1]{\mbox{\textsf{#1}}} % PropBank frame (roleset)
 \newcommand{\pbr}[1]{\textbf{\textsf{#1}}} % PropBank role (numbered or modifier argument label)
+\newcommand{\vpred}[1]{\textbf{#1}} % verb predicate
+
 
 %\newcommand{\lex}[1]{\textsmaller{\textsf{\textcolor{slate}{\textbf{#1}}}}}	% example lexical item
 \newcommand{\lex}[1]{\textit{#1}} % lexical item/lexical example
@@ -906,8 +908,8 @@ subset of the entire PB annotated data.
 
 Some of the FN information in SemLink is out of date due to subsequent changes in FrameNet.
 There are some erroneous FN annotations as well: e.g., all 14~instances of \vpred{liquidate} are
-labeled \fname{Killing}, despite being used in the financial sense; and in 17~cases \vpred{direct}
-is erroneously marked as \fname{Behind\_the\_scenes} (i.e., film direction).
+labeled \fnf{Killing}, despite being used in the financial sense; and in 17~cases \vpred{direct}
+is erroneously marked as \fnf{Behind\_the\_scenes} (i.e., film direction).
 These kind of errors are hard to detect and remove.
 
 
