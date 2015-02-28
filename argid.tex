@@ -391,7 +391,7 @@ Frame-semantic parsing \citep{das-14} is a case in point.
 This is the task of automating the rich linguistic structure analyses 
 of the FrameNet lexicon and corpus \citep{baker-98}.\footnote{\url{http://framenet.icsi.berkeley.edu/}}
 FrameNet represents kinds of events, scenarios, and relationships 
-with an inventory of \textbf{frames} (\nss{examples}). 
+with an inventory of \textbf{frames} (such as \fnf{Shopping}, \fnf{Scarcity}, and \fnf{Shoot\_projectiles}). 
 Each frame is associated with lexical \textbf{predicates} (verbs, nouns, adjectives, and adverbs) capable of 
 evoking the scenario, and a set of \textbf{roles} (or \textbf{frame elements}) 
 called to mind in order to understand the scenario. 
@@ -416,14 +416,14 @@ are labeled with role names.}
 \label{fig:harbor-fn}
 \end{figure}
 
-FrameNet~1.5 defines a structured taxonomy of over 1,000 frames associated with \nss{\#}~English lexical predicates, 
-and also provides annotations for \nss{\# targets annotated total} attestations 
+FrameNet~1.5 defines a structured taxonomy of over 1,000 frames associated with 12,000~English lexical predicates, 
+and also provides annotations for over 175,000 attestations 
 of these frames/predicates in corpora, annotated in context with their arguments. 
-In FrameNet~1.5, a rather small number of sentences---5200, comprising \nss{\#} words---% 
-are provided with \textbf{full-text} annotations, i.e.~the sentence 
+A rather small number of sentences (about 5,000)
+are provided with \textbf{full-text} annotations, i.e.~each sentence 
 has been analyzed for all available frames. 
-But a full \nss{\#}\% of sentences in FrameNet---the lexicographic \textbf{exemplars}---are annotated for only one frame per sentence, 
-and have thus far not been exploited successfully for frame-semantic parsing.
+But the bulk of sentences in FrameNet---the lexicographic \textbf{exemplars}---are annotated for only one frame per sentence, 
+and have thus far not been exploited successfully for the SRL phase of the contemporary frame-semantic parsing task.
 Here, we seek to leverage these exemplar sentences 
 as well as the (type-level) hierarchical structure of the FrameNet lexicon. 
 
