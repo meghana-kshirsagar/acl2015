@@ -1000,15 +1000,6 @@ Overall we observe that an additional resource that is very similar to the origi
 Whereas the guide features help more when the additional resource is either unreliable (like SemLink) or too distinct (like PB). 
 To summarize the results, we find that adding the sibling-level hierarchical features, using Exemplars as gold-standard training data and 
 incorporating PB-SRL data in the form of guide features all help in improving the performance over the baseline on both FT-test and exemplars-test.
- 
-\subsection{Combining all resources}
-
-We pick the techniques that performed best across the resources and combine them in two models. Table \ref{tbl:bestTech} shows the results on these.
-Both models use the optimal training data configuration: (FT+Exemplars). The first one integrates the FN Hierarchy using the `siblings' features
-and the second integrates PB-SRL data in the form of guide features. These two models outperform the models discussed in Table \ref{tbl:results}.
-On both test sets, we find that the model using the hierarchy achieves the best recall, and the PB-SRL guide features result in the 
-best precision. %This result is intuitive because we expect the hierarchy to help \mk{insert good explanation here}.
-Our best result of 63.07 on the FT test set beats the baseline (59.12) by 3.95 F points.
 
 \begin{figure}
 	\begin{subfigure}[b]{0.5\textwidth}
@@ -1023,12 +1014,23 @@ Our best result of 63.07 on the FT test set beats the baseline (59.12) by 3.95 F
 	\caption{Count and $F_1$ for each role appearing in the test set. $F_1$ values have been smoothed with \texttt{loess}, with a smoothing parameter of 0.2.}
 \end{figure}
 
+
+\subsection{Combining all resources}
+
+We pick the techniques that performed best across the resources and combine them in two models. Table \ref{tbl:bestTech} shows the results on these.
+Both models use the optimal training data configuration: (FT+Exemplars). The first one integrates the FN Hierarchy using the `siblings' features
+and the second integrates PB-SRL data in the form of guide features. These two models outperform the models discussed in Table \ref{tbl:results}.
+On both test sets, we find that the model using the hierarchy achieves the best recall, and the PB-SRL guide features result in the 
+best precision. %This result is intuitive because we expect the hierarchy to help \mk{insert good explanation here}.
+Our best result of 63.07 on the FT test set beats the baseline (59.12) by 3.95 F points.
+
 \finalversion{\nss{impact of automatic frames?}}
 
-\subsection{FE-level evaluation}
+\subsection{Frame element--level evaluation}
 The results so far have discussed the overall improvement in $F_1$, but do not present a detailed picture of how we gain from the additional
-coverage. Towards this, we present a frame-element i.e role type level analysis comparing the best results with the baseline.
-The first plot in Figure \ref{fig:num_inst} shows the frequency of all roles that appear in the FT-test set.
+coverage.
+Towards this, we present a frame-element i.e role type level analysis comparing the best results with the baseline.
+Figure \ref{fig:num_inst} shows the frequency of all roles that appear in the FT-test set.
 Figure \ref{fig:coolplot} shows the $F_1$ per role-type, for the baseline and the two models from Table \ref{tbl:bestTech}.
 In both plots, each point on the x-axis represents one role, with the roles sorted in the decreasing order of their frequency.
 The $F_1$ curves clearly show that our models achieve the best improvements for the rarer roles and are at par with the baseline on the frequent roles.
