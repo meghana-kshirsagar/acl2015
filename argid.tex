@@ -721,7 +721,8 @@ Then the squared hinge loss on the $i^{\text{th}}$ example is given by:
 % \textit{SqHinge}_\mathbf{w}(i) =
 % \textit{Hinge}_\mathbf{w}(i)^2.
 % \end{equation}
-We use $\text{cost}(a^\prime, a) = \indicator{a^\prime \ne a}$.%
+We use $\text{cost}(a^\prime, a) = \indicator{a^\prime \ne a}$,
+where $\indicator{P}$ is the indicator function, with value 1 if $P$ is true, 0 otherwise.%
 \footnote{We experimented with recall-oriented training, where errors of omission are assigned a higher cost, but found that while recall increased, overall $F_1$ went down\nss{or: failed to improve?}.}
 We learn $\mathbf{w}$ by minimizing the $\ell_2$-regularized average loss on the dataset:
 \begin{equation}
@@ -749,10 +750,10 @@ we add the exemplars training data, $\mathcal{D}_{ex}$, to the full text trainin
 \label{sec:frust}
 \Citet{daume-07} proposed a simple feature augmentation approach that was shown to work well in supervised domain adaptation scenarios, 
 such as ours.
-We %apply their method to incorporate the exemplars data  by introducing
-introduce a domain indicator %$I_{\textit{domain}}(\mathbf{x}) =
-$\indicator{\mathbf{x} \in \mathcal{D}_{ft}}$,
-where $\indicator{P}$ is the indicator function, with value 1 if $P$ is true, 0 otherwise.
+% We %apply their method to incorporate the exemplars data  by introducing
+% introduce a domain indicator %$I_{\textit{domain}}(\mathbf{x}) =
+% $\indicator{\mathbf{x} \in \mathcal{D}_{ft}}$,
+% where $\indicator{P}$ is the indicator function, with value 1 if $P$ is true, 0 otherwise.
 % \[
 % \indicator{P} = \left\{\begin{array}{lr}
 % 1, & \text{ if } P \\
@@ -760,32 +761,36 @@ where $\indicator{P}$ is the indicator function, with value 1 if $P$ is true, 0 
 % \end{array}
 % \right.
 % \]
-We expand the feature space by concatenating the original feature vector with a version of the feature vector that has been element-wise conjoined with the domain indicator:
-% We apply their method to incorporate the exemplars data  by introducing a feature mapping $\Phi : \mathds{R}^d \rightarrow \mathds{R}^{2d}$ given by
-% \begin{equation}
-% \Phi(\mathbf{\phi}(a, \mathbf{x}, p, f, r)) = [x; x * ]
-% \end{equation}
-%  for the
-\begin{align*}
-\lefteqn{
-\phi_{\textit{frust}}(a, \mathbf{x}, p, f, r) =
-} \\
-&&
-\left[\begin{array}{c}
-\phi(a, \mathbf{x}, p, f, r) \\
-\phi(a, \mathbf{x}, p, f, r) \text{ \& } \indicator{\mathbf{x} \in \mathcal{D}_{ft}}%I_{\textit{domain}}(\mathbf{x})
-\end{array}
-\right]
-% \left[\phi(a, \mathbf{x}, p, f, r) ; \phi(a, \mathbf{x}, p, f, r) \wedge I_{\textit{domain}}(\mathbf{x}) \right]
-\end{align*}
-\st{this ``vector concatenation'' view is sort of inconsistent with the ``adding features" view in the guide/hierarchy sections}
+For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a new feature that fires only if $\phi_i$ fires and $\x \in \mathcal{D}_{ft}$: 
+$\text{"ft"} \wedge \phi_i(a, \mathbf{x}, p, f, r)$. 
+
+% For each original feature $\phi_i$, we create a new feature 
+% We expand the feature space by concatenating the original feature vector with a version of the feature vector that has been element-wise conjoined with the domain indicator:
+% % We apply their method to incorporate the exemplars data  by introducing a feature mapping $\Phi : \mathds{R}^d \rightarrow \mathds{R}^{2d}$ given by
+% % \begin{equation}
+% % \Phi(\mathbf{\phi}(a, \mathbf{x}, p, f, r)) = [x; x * ]
+% % \end{equation}
+% %  for the
+% \begin{align*}
+% \lefteqn{
+% \phi_{\textit{frust}}(a, \mathbf{x}, p, f, r) =
+% } \\
+% &&
+% \left[\begin{array}{c}
+% \phi(a, \mathbf{x}, p, f, r) \\
+% \phi(a, \mathbf{x}, p, f, r) \text{ \& } \indicator{\mathbf{x} \in \mathcal{D}_{ft}}%I_{\textit{domain}}(\mathbf{x})
+% \end{array}
+% \right]
+% % \left[\phi(a, \mathbf{x}, p, f, r) ; \phi(a, \mathbf{x}, p, f, r) \wedge I_{\textit{domain}}(\mathbf{x}) \right]
+% \end{align*}
+% \st{this ``vector concatenation'' view is sort of inconsistent with the ``adding features" view in the guide/hierarchy sections}
 
 % FT annotations $x \in \mathcal{D}_{ft}$, and $\Phi^{ex}(x) = (x, 0)$ for the exemplars $x \in D_{ex}$. The resulting transformed data 
 % from the two domains is then used to learn a single model.
 The intuition is that we are allowing
 each feature to contribute both ``general'' and ``domain-specific'' weights to the model depending on whether the feature
 behaves similarly in both domains or not.
-Since the general feature contributes to both domains, regularization will encourage the model to use the general version over the domain-specific version of a feature whenever possible.
+The general feature contributes to both domains, so regularization encourages the model to use the general version over the domain-specific, if possible.
 
 \subsection{Guide Features}
 \label{sec:guide}
@@ -915,7 +920,7 @@ only to tune parameters and not as part of model construction.
 \subsection{Evaluation}
 A complete frame-semantic parsing system involves two main steps: frame identification and argument identification. Since the focus of this work is only 
 argument identification, we assume that the gold-standard frames are given and evaluate the models on their role labeling performance.
-The baseline model from \citet{das-14} that we compare against, is the current state-of-the-art for argument identification (i.e frame SRL).
+% The baseline model from \citet{das-14} that we compare against, is the current state-of-the-art for argument identification (i.e frame SRL).
 
 The performance of the various methods is compared on two different test sets.
 (1) Full-text: the FrameNet 1.5 FT test split that was used in the evaluation in \citet{das-14}. This data consists of sentences from 23 documents. 
@@ -1006,8 +1011,7 @@ On both test sets, we find that the model using the hierarchy achieves the best 
 best precision. %This result is intuitive because we expect the hierarchy to help \mk{insert good explanation here}.
 Our best result of 63.07 on the FT test set beats the baseline (59.12) by 3.95 F points.
 
-
-\begin{figure}[t]
+\begin{figure}
 	\begin{subfigure}[b]{0.5\textwidth}
 		\includegraphics[width=\textwidth]{fig/num_instances}
 		\caption{Frequency of each role appearing in the test set.}\label{fig:num_inst}
