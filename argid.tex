@@ -367,17 +367,21 @@
 The high cost of semantic structure annotation is a major obstacle 
 to automating semantic analysis with broad coverage.
 The fully annotated datasets that exist are often small, 
-hindering the robustness of models trained on them.
+hindering the accuracy and domain robustness of models trained on them.
 However, low-resource tasks may benefit from exploiting \emph{partially} annotated data, 
 as well as data with \emph{different} (but related) forms of annotation,
 for additional training data or features.
 This paper considers the argument identification and classification subtask 
 of frame-semantic parsing, which to date has relied exclusively 
-upon full-text annotations in the FrameNet resource.\nss{is this true? I think Dipanjan used exemplars for the latent variable frame ID model, but he hasn't used them at all for arg ID, right?}
+upon full-text annotations in the FrameNet resource. %\nss{is this true? I think Dipanjan used exemplars for the latent variable frame ID model, but he hasn't used them at all for arg ID, right?}
 We augment supervised learning with additional 
 ``indirect'' training data and features 
 so as to leverage additional resources internal and external to FrameNet (e.g., PropBank). 
-Our best model achieves a 3.0 increase in F1, or 7.5\% reduction in error, over state-of-the-art.\st{can you say that with F1?}\nss{sure, you can say error reduction, but how can we compare to state-of-the-art (unless you mean best reported result with gold frames)?}
+Experiments demonstrate that some of these resources are valuable for 
+more accurate and more robust frame SRL,
+with the best model \nss{main quantitative result}.
+%with the best model achieving a 3.0 increase in $F_1$, or 7.5\% reduction in error, 
+%over the state of the art.\st{can you say that with F1?}\nss{sure, you can say error reduction, but how can we compare to state-of-the-art (unless you mean best reported result with gold frames)?}
 \end{abstract}
 
 \section{Introduction}
@@ -1034,9 +1038,24 @@ The larger models take roughly 6 times as long as the baseline to train.
 
 \section{Conclusion}
 
-\nss{overall findings}
+We have empirically shown that auxiliary semantic resources
+can benefit the challenging task of frame-semantic role labeling.
+Complementary gains on the standard full-text evaluation are achieved
+by including the FrameNet exemplars in the training data 
+and by grouping features according to the FrameNet hierarchy. 
+There are smaller, but nevertheless promising, signs that data annotated 
+with the PropBank scheme can be leveraged as well.
+In addition to making SRL more \emph{accurate}, 
+a parallel evaluation on a sample of exemplars suggests the 
+improved models are also more \emph{robust}, 
+capturing a broader swath of the English language.
 
-\nss{future work: testing ground for improvements to PB \citep{bonial-14} and SemLink \citep{bonial-13}; automatic mappings between resources}
+We are optimistic that future improvements to lexical semantic resources, 
+including planned changes for PropBank \citep{bonial-14} and SemLink \citep{bonial-13}, 
+will lead to further gains in this task. 
+Moreover, the techniques discussed here could be further explored 
+using semi-automatic mappings between lexical resources\nss{cites}, 
+and correspondingly, this task could be used to extrinsically validate those resources.
 
 \finalversion{\section*{Acknowledgments}
 
