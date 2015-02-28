@@ -558,7 +558,7 @@ an order of magnitude more frame annotations and two orders of magnitude
 more sentences annotated.
 Because we are conditioning on the identified frame, 
 the fact that the exemplar dataset has just one annotated frame per sentence
-is not a concern in SRL. However, the rate of overt arguments per frame 
+is not a concern in argument identification. However, the rate of overt arguments per frame 
 is noticeably higher for exemplars, which potentially biases the model's 
 tendency to predict certain kinds of arguments in a way that is not statistically representative of a natural corpus.
 
@@ -675,14 +675,16 @@ We expect such improvements to be complementary to the gains due to the added fe
 \subsection{Augmenting the Training Data}
 \label{sec:aug_data}
 
+This is the simplest possible technique:
+we add the exemplars training data, $\mathcal{D}_{ex}$, to the full text training data, $\mathcal{D}_{ft}$, without differentiating between the two, and train on the combined dataset.
+
 \subsection{Frustratingly Easy}
 \label{sec:frust}
 \Citet{daume-07} proposed a simple feature augmentation approach that was shown to work well in supervised domain adaptation scenarios, 
 such as ours.
-Let $\mathcal{D}_{FT}$ be the full text data, and $\mathcal{D}_{ex}$ be the exemplar data.
 We %apply their method to incorporate the exemplars data  by introducing
 introduce a domain indicator %$I_{\textit{domain}}(\mathbf{x}) =
-$\indicator{\mathbf{x} \in \mathcal{D}_{FT}}$,
+$\indicator{\mathbf{x} \in \mathcal{D}_{ft}}$,
 where $\indicator{P}$ is the indicator function, with value 1 if $P$ is true, 0 otherwise.
 % \[
 % \indicator{P} = \left\{\begin{array}{lr}
@@ -704,7 +706,7 @@ We expand the feature space by concatenating the original feature vector with a 
 &&
 \left[\begin{array}{c}
 \phi(a, \mathbf{x}, p, f, r) \\
-\phi(a, \mathbf{x}, p, f, r) \text{ \& } \indicator{\mathbf{x} \in \mathcal{D}_{FT}}%I_{\textit{domain}}(\mathbf{x})
+\phi(a, \mathbf{x}, p, f, r) \text{ \& } \indicator{\mathbf{x} \in \mathcal{D}_{ft}}%I_{\textit{domain}}(\mathbf{x})
 \end{array}
 \right]
 % \left[\phi(a, \mathbf{x}, p, f, r) ; \phi(a, \mathbf{x}, p, f, r) \wedge I_{\textit{domain}}(\mathbf{x}) \right]
