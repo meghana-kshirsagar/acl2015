@@ -656,6 +656,7 @@ We give $\mathbf{a}$ the score:
 \end{equation}
 and choose the joint assignment:
 \begin{equation}
+\label{eq:args}
 \textit{args}(\mathbf{x}, p, f) =
     \argmax_{\mathbf{a} \in \mathcal{A}} {
         \textit{score}_{\mathbf{w}}(\mathbf{a} \mid \mathbf{x}, p, f, r)
@@ -1040,9 +1041,18 @@ The larger models take roughly 6 times as long as the baseline to train.
 
 \section{Related Work}
 
-\nss{Dipanjan's other papers (focusing on different parts of the task)}
+Prior work has noted that the preponderance of role labels in FrameNet poses a challenge, and have considered various ways of grouping role labels together in order to share statistical strength. 
+\citet{matsubayashi-09} investigated using the \textbf{Inheritance} relationships, and also grouping by the human-readable name of the role, and found small gains from both. Their evaluation was on a simpler subtask of argument classification, and our experiments confirm that their results hold for argument identification as well as classification.
+\citet{baldewein-04} use an EM-based clustering method to learn latent groupings of roles and role-fillers, reporting mixed results.
 
-\nss{be sure to cite: \citep{shi-05} (multiple resources), \citep{matsubayashi-09} (hierarchy vs. role names), \citep{merlo-09} (multiple resources + levels of generalization), \citep{furstenau-09} (semi-supervised)}
+\citet{tackstrom-15} is the most recent work on frame-semantic argument identification.
+They present an efficient dynamic program for solving the joint role assignment problem (equation~\ref{eq:args}), and show that using it at training time is helpful.
+Their work is complementary to our own.
+\citet{das-11,das-12} investigated semi-supervised techniques using the exemplars and WordNet for frame identification.
+\citet{hermann-14} also improve frame identification in a way that allows sharing of statistical strength among related frames, by mapping frames and predicates into the same continous vector space.
+% \nss{Dipanjan's other papers (focusing on different parts of the task)}
+\nss{be sure to cite: \citep{shi-05} (multiple resources), \citep{merlo-09} (multiple resources + levels of generalization), \citep{furstenau-09} (semi-supervised)}
+
 
 \nss{multitask learning?}
 
