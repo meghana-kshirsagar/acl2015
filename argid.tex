@@ -377,13 +377,12 @@ upon full-text annotations in the FrameNet resource.\nss{is this true? I think D
 We augment supervised learning with additional 
 ``indirect'' training data and features 
 so as to leverage additional resources internal and external to FrameNet (e.g., PropBank). 
-\nss{result}
+Our best model achieves a 3.0 increase in F1, or 7.5\% reduction in error, over state-of-the-art. \st{can you say that with F1?}
 \end{abstract}
 
 \section{Introduction}
 
-\nss{sparseness is a challenge for many computational semantics tasks}
-
+Sparsity of data resources is a challenge for many computational semantics tasks \st{cite?}.
 Frame-semantic parsing \citep{das-14} is a case in point.
 This is the task of automating the rich linguistic structure analyses 
 of the FrameNet lexicon and corpus \citep{baker-98}.\footnote{\url{http://framenet.icsi.berkeley.edu/}}
@@ -413,10 +412,10 @@ are labeled with role names.}
 \label{fig:harbor-fn}
 \end{figure}
 
-FrameNet~1.5 defines a structured hierarchy of over 1,000 frames associated with \nss{\#}~English lexical predicates, 
+FrameNet~1.5 defines a structured taxonomy of over 1,000 frames associated with \nss{\#}~English lexical predicates, 
 and also provides annotations for \nss{\# targets annotated total} attestations 
 of these frames/predicates in corpora, annotated in context with their arguments. 
-In FrameNet~1.5, a rather small number of sentences---\nss{\#}, comprising \nss{\#} words---% 
+In FrameNet~1.5, a rather small number of sentences---5200, comprising \nss{\#} words---% 
 are provided with \textbf{full-text} annotations, i.e.~the sentence 
 has been analyzed for all available frames. 
 But a full \nss{\#}\% of sentences in FrameNet---the lexicographic \textbf{exemplars}---are annotated for only one frame per sentence, 
@@ -657,7 +656,7 @@ And choose the joint assignment
     }
 \end{equation}
 Beam search, with a beam size of 100, is used to find this $\argmax$.%
-\footnote{Recent work has improved upon global decoding techniques \st{cite Täckström et al, TACL}.
+\footnote{Recent work has improved upon global decoding techniques \citep{tackstrom-15}.
 We expect such improvements to be complementary to the gains due to the added features and data reported here.}
 
 \mk{introduce this as a supervised domain adaptation problem? What is the source and what's the target?}
