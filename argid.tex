@@ -479,32 +479,33 @@ information (time, place, manner, purpose, etc.);
 an English textual description of the scene and how its roles relate to one another;
 and a set of English predicates that can evoke the scene.
 For example, the \fnf{Body\_movement} frame has \fnr{Agent} and \fnr{Body\_part} as its core roles; 
-the frame description states,
-``This frame contains words for motions or actions an \fnr{Agent} performs using some part of his/her body.''
+%the frame description states,
+%``This frame contains words for motions or actions an \fnr{Agent} performs using some part of his/her body.''
 Lexical entries in this frame include verbs such as \fnlu{bend}, \fnlu{blink}, \fnlu{crane}, and \fnlu{curtsy}, 
 plus the noun use of \fnlu{curtsy}.
 
 The frame lexicon is organized as a network, with several kinds of \textbf{frame-to-frame relations} 
 linking pairs of frames and (subsets of) their arguments \citep{ruppenhofer-10}. 
-Among these kinds of frame-to-frame relations are:
-\begin{itemize}
-\item \textbf{Inheritance:} E.g., \fnf{Punctual\_perception} (e.g., \fnlu{glimpse.v}) inherits from 
+Among these kinds of frame-to-frame relations are:\\
+\paragraph{Inheritance:} E.g., \fnf{Punctual\_perception} (e.g., \fnlu{glimpse.v}) inherits from 
 \fnf{Perception\_experience} (e.g., \fnlu{see.v}), which inherits from \fnf{Perception}. 
-Other frames inheriting from \fnf{Perception} include \fnf{Sensation} (e.g., \fnlu{sight.n}) and 
-\fnf{Becoming\_aware} (e.g., \fnlu{notice.v}). Crucially, roles in inheriting (conceptually more specific) frames are mapped 
+%Other frames inheriting from \fnf{Perception} include \fnf{Sensation} (e.g., \fnlu{sight.n}) and 
+%\fnf{Becoming\_aware} (e.g., \fnlu{notice.v}). 
+Crucially, roles in inheriting (conceptually more specific) frames are mapped 
 where they correspond to a role in the inherited frame: so \fnf{Punctual\_perception}.\fnr{Perceiver} links to \fnf{Perception\_experience}.\fnr{Perceiver\_passive}, 
 which links to \fnf{Perception}.\fnr{Perceiver}, which links to \fnf{Sensation}.\fnr{Perceiver\_passive} and \fnf{Becoming\_aware}.\fnr{Cognizer}.
-\item \textbf{Subframe:} This indicates a subevent within a complex event. 
+
+\paragraph{Subframe:} This indicates a subevent within a complex event. 
 E.g., the \fnf{Criminal\_process} frame groups together subframes 
 \fnf{Arrest}, \fnf{Arraignment}, \fnf{Trial}, and \fnf{Sentencing}. 
 \fnf{Criminal\_process}.\fnr{Defendant}, for instance, is mapped to 
-\fnf{Arrest}.\fnr{Suspect}, \fnf{Arraignment}.\fnr{Defendant}, 
+\fnf{Arrest}.\fnr{Suspect}, %\fnf{Arraignment}.\fnr{Defendant}, 
 \fnf{Trial}.\fnr{Defendant}, and \fnf{Sentencing}.\fnr{Convict}. 
-Other salient participants in the complex event (such as the crime for which someone is arrested, 
-tried, etc.)\ are similarly mapped via Subframe relations.
+Other salient participants in the complex event %(such as the crime for which someone is arrested, tried, etc.)\ 
+are similarly mapped via Subframe relations.
 This permits an inference that a person tried for a crime likely
 has been or will be arrested, arraigned, and sentenced for that crime.
-\end{itemize}
+
 In \cref{sec:hierfeats}, we experiment with features shared between related roles of related frames 
 in order to capture statistical generalizations about the kinds of arguments 
 seen in those roles and how they relate syntactically to the predicate.
@@ -513,28 +514,28 @@ seen in those roles and how they relate syntactically to the predicate.
 
 Beginning with the SemEval-2007 shared task on FrameNet analysis \citep{baker-07},
 frame-semantic parsers have been trained and evaluated on the \textbf{full-text (FT)}\footnote{Though these 
-were \emph{annotated} and the document level, and train/dev/test splits are by document, the frame-semantic parsing 
+were \emph{annotated} at the document level, and train/dev/test splits are by document, the frame-semantic parsing 
 is currently restricted to the sentence level.} portion 
-of the FrameNet corpus. This consists of documents for which annotators made an effort 
-to assign frames and arguments to as many words as possible. 
+of the FrameNet corpus. %This consists of documents for which annotators made an effort to assign frames and arguments to as many words as possible. 
 \Cref{fig:harbor-fn} gives an example sentence from the FT portion of the corpus. 
 It has 4~frame annotations. \fnf{Body\_movement}, as described in the previous section, 
 is evoked by \textit{crane}, and 3~of its roles are filled by overt arguments: 
 the 2~core roles (\fnr{Agent}, \fnr{Body\_part}) happen to be filled by noun phrases 
 (\textit{passengers}, \textit{their necks}), while the non-core role \fnr{Purpose} is filled by a 
 prepositional phrase adjunct (\textit{for dizzying glimpses of the harbor}).
-The frame defines 19~additional non-core roles, none of which have an argument in the example.
+
+\finalversion{The frame defines 19~additional non-core roles, none of which have an argument in the example.
 In frame semantics, non-core roles are considered to be \emph{conceptually} optional; 
 core roles may or may not be \emph{syntactically} optional, but if not locally specified they are 
 expected to be available from context, or else implicit.
 For example, \fnf{Punctual\_perception}---evoked in this case by \textit{glimpses}---is annotated 
 as missing 2~of its core roles. A human listener would resolve the identity of the \fnr{Perceiver} 
-from the wider context and the \fnr{Body\_part} from world knowledge. 
+from the wider context and the \fnr{Body\_part} from world knowledge. }
 
-In some cases, FT annotation involved creating a new frame or adding a new lexical unit to an existing frame. 
+\finalversion{In some cases, FT annotation involved creating a new frame or adding a new lexical unit to an existing frame. 
 In other cases, words that in principle should be considered to evoke a frame were left unannotated 
 because they did not match any existing lexical units. 
-This was the case for \textit{passengers} and \textit{dizzying} in \cref{fig:harbor-fn}.
+This was the case for \textit{passengers} and \textit{dizzying} in \cref{fig:harbor-fn}.}
 
 The full-text documents represent a mix of genres, prominently including travel guides 
 and bureaucratic reports about weapons stockpiles. 
@@ -580,13 +581,14 @@ that takes a shallower approach than FrameNet. Whereas FrameNet frames cluster
 lexical predicates that evoke similar kinds of scenarios (with the same kinds of roles), 
 and these frames are organized in a network, 
 PropBank frames are purely lexical and there are no formal relations between different predicates 
-or their roles.
-PropBank does represent lexical ambiguity---e.g., the verb \textit{order} is ambiguous 
-in PropBank between \pbf{order-v-01} ``impelled action'' and \pbf{order-v-02} ``request to be delivered''---but
-PropBank's sense distinctions are generally coarser-grained than FrameNet's.
+or their roles. Further, PropBank's sense distinctions are generally coarser-grained than FrameNet's.
 
-Within sense-disambiguated PropBank frames, or \textbf{rolesets}, 
-core roles are defined with textual descriptions and assigned numbers. 
+\finalversion{PropBank does represent lexical ambiguity---e.g., the verb \textit{order} is ambiguous 
+in PropBank between \pbf{order-v-01} ``impelled action'' and \pbf{order-v-02} ``request to be delivered''---but
+PropBank's sense distinctions are generally coarser-grained than FrameNet's.}
+
+%Within sense-disambiguated PropBank frames, or \textbf{rolesets}, 
+Core roles are defined with textual descriptions and assigned numbers. 
 E.g., \pbf{order-v-02} defines: \pbr{A0} ``orderer'', 
 \pbr{A1} ``thing ordered'', \pbr{A2} ``benefactive, ordered-for'', 
 and \pbr{A3} ``source''.
@@ -1004,7 +1006,7 @@ while using it as gold-standard training data results in a bigger increase of 2.
 On the exemplars-test we observe a similar trend, where the (FT+Exemplars) model delivers a massive increase of $\approx$23 $F_1$-points and a 
 much smaller increase is seen with the guide features. This contrasts with what we observed for SemLink.
 `EasyAdapt', the frustratingly easy DA approach to incorporate the Exemplars
-gives a minor increase of 0.3 points on the FT-test and 2.8 on the exemplars-test.
+gives a minor increase of 0.3 points on the FT-test but a reduction of 2.8 points on the exemplars-test.
 
 Finally, using the PB-SRL data in the form of guide features also results in small improvements over the baseline. 
 Overall we observe that an additional resource that is very similar to the original resource helps more as training data than as a `guide model'.
