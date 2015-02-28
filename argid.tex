@@ -558,7 +558,7 @@ an order of magnitude more frame annotations and two orders of magnitude
 more sentences annotated.
 Because we are conditioning on the identified frame, 
 the fact that the exemplar dataset has just one annotated frame per sentence
-is not a concern in SRL. However, the rate of overt arguments per frame 
+is not a concern in argument identification. However, the rate of overt arguments per frame 
 is noticeably higher for exemplars, which potentially biases the model's 
 tendency to predict certain kinds of arguments in a way that is not statistically representative of a natural corpus.
 
@@ -675,14 +675,16 @@ We expect such improvements to be complementary to the gains due to the added fe
 \subsection{Augmenting the Training Data}
 \label{sec:aug_data}
 
+This is the simplest possible technique:
+we add the exemplars training data, $\mathcal{D}_{ex}$, to the full text training data, $\mathcal{D}_{ft}$, without differentiating between the two, and train on the combined dataset.
+
 \subsection{Frustratingly Easy}
 \label{sec:frust}
 \Citet{daume-07} proposed a simple feature augmentation approach that was shown to work well in supervised domain adaptation scenarios, 
 such as ours.
-Let $\mathcal{D}_{FT}$ be the full text data, and $\mathcal{D}_{ex}$ be the exemplar data.
 We %apply their method to incorporate the exemplars data  by introducing
 introduce a domain indicator %$I_{\textit{domain}}(\mathbf{x}) =
-$\indicator{\mathbf{x} \in \mathcal{D}_{FT}}$,
+$\indicator{\mathbf{x} \in \mathcal{D}_{ft}}$,
 where $\indicator{P}$ is the indicator function, with value 1 if $P$ is true, 0 otherwise.
 % \[
 % \indicator{P} = \left\{\begin{array}{lr}
@@ -704,7 +706,7 @@ We expand the feature space by concatenating the original feature vector with a 
 &&
 \left[\begin{array}{c}
 \phi(a, \mathbf{x}, p, f, r) \\
-\phi(a, \mathbf{x}, p, f, r) \text{ \& } \indicator{\mathbf{x} \in \mathcal{D}_{FT}}%I_{\textit{domain}}(\mathbf{x})
+\phi(a, \mathbf{x}, p, f, r) \text{ \& } \indicator{\mathbf{x} \in \mathcal{D}_{ft}}%I_{\textit{domain}}(\mathbf{x})
 \end{array}
 \right]
 % \left[\phi(a, \mathbf{x}, p, f, r) ; \phi(a, \mathbf{x}, p, f, r) \wedge I_{\textit{domain}}(\mathbf{x}) \right]
@@ -1053,14 +1055,16 @@ The larger models take roughly 6 times as long as the baseline to train.
 Prior work has noted that the preponderance of role labels in FrameNet poses a challenge, and have considered various ways of grouping role labels together in order to share statistical strength. 
 \citet{matsubayashi-09} investigated using the \textbf{Inheritance} relationships, and also grouping by the human-readable name of the role, and found small gains from both. Their evaluation was on a simpler subtask of argument classification, and our experiments confirm that their results hold for argument identification as well as classification.
 \citet{baldewein-04} use an EM-based clustering method to learn latent groupings of roles and role-fillers, reporting mixed results.
+\citet{shi-05} used a rule-based mapping between FrameNet and VerbNet, and between VerbNet and WordNet, and used these mappings to build a semantic parser.
 
 \citet{tackstrom-15} is the most recent work on frame-semantic argument identification.
 They present an efficient dynamic program for solving the joint role assignment problem (equation~\ref{eq:args}), and show that using it at training time is helpful.
 Their work is complementary to our own.
 \citet{das-11,das-12} investigated semi-supervised techniques using the exemplars and WordNet for frame identification.
 \citet{hermann-14} also improve frame identification in a way that allows sharing of statistical strength among related frames, by mapping frames and predicates into the same continous vector space.
+
 % \nss{Dipanjan's other papers (focusing on different parts of the task)}
-\nss{be sure to cite: \citep{shi-05} (multiple resources), \citep{merlo-09} (multiple resources + levels of generalization), \citep{furstenau-09} (semi-supervised)}
+\nss{be sure to cite: \citep{merlo-09} (multiple resources + levels of generalization), \citep{furstenau-09} (semi-supervised)}
 
 
 \nss{multitask learning?}
