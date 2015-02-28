@@ -1,6 +1,14 @@
 library(RColorBrewer)
 
-fes <- read.csv("../results/fe_numOccurTest_fscores_baseline_fn+ex_fn+ex+siblings_fn+ex+srl.csv")
+#fes <- read.csv("../results/fe_numOccurTest_fscores_baseline_fn+ex_fn+ex+siblings_fn+ex+srl.csv")
+
+num.examples <- read.csv("../results/fe_counts.csv")
+baseline.fn <- read.csv("../results/baseline_fe_f1.csv")
+fn.exemplars <- read.csv("../results/fn_exemplars_f1.csv")
+fn.exemplars.srl <- read.csv("../results/srl_fn_exemplars_f1.csv")
+fn.exemplars.siblings <- read.csv("../results/siblings_fn_exemplars_fe_f1.csv")
+
+fes <- merge(merge(merge(merge(num.examples, baseline.fn), fn.exemplars), fn.exemplars.srl), fn.exemplars.siblings)
 
 #names(fes) <- c(
 #    "fe",
@@ -14,27 +22,29 @@ fes <- fes[order(-fes$num_examples),]
 
 pdf("num_instances.pdf", width=7, height=4)
 plot(
-    fes$num_examples,
+    fes$num.examples,
     xlab="Frame Element, ordered by test set frequency",
     ylab="Test Examples",
+    xlim=c(0, 1400),
     type="l",
     col="gray",
 #    log="y"
 )
 polygon(
-    c(1, fes$num_examples, 1),
+    c(1, fes$num.examples, 1),
     col="darkgray",
     border="darkgray"
 )
 dev.off()
 
-my.pallette <- brewer.pal(4, "Dark2")[c(2,1,4,3)]
+my.pallette <- brewer.pal(4, "Dark2")[c(4,1,2,3)]
 
 smoothing <- 0.2
 baseline.fn.low <- lowess(fes$baseline.fn, f=smoothing)
 fn.exemplars.low <- lowess(fes$fn.exemplars, f=smoothing)
-fn.exemplars.siblings.low <- lowess(fes$fn.exemplars.siblings, f=smoothing)
 fn.exemplars.srl.low <- lowess(fes$fn.exemplars.srl, f=smoothing)
+fn.exemplars.siblings.low <- lowess(fes$fn.exemplars.siblings, f=smoothing)
+
 
 pdf("f1_sorted_by_num_instances.pdf", width=7, height=5)
 
