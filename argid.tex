@@ -676,14 +676,18 @@ In other words, we treat each role and span pair as an independent training inst
 % \nss{does beam search require normalizing to probabilities?}\st{no. maybe it should, but SEMAFOR didn't, and we don't.}
 But we have made several modifications to training in order to speed up experiments:
 
-\begin{itemize}
-  \item We minimize squared structured hinge loss (defined below) instead of a log-linear loss.
+% \begin{itemize}
+%   \item
+  \paragraph{Squared Hinge Loss:}
+  We minimize squared structured hinge loss (defined below) instead of a log-linear loss.
   Using hinge loss, there is no longer a need to calculate a partition function.
   Gradients, and hence parameters, are sparser than in a log-linear model, as they only depend on the correct span and the predicted span.
-  \item We use the online optimization method AdaDelta \citep{zeiler-12} with minibatches, instead of the batch method L-BFGS \citep{liu-89}.
+%   \item
+  \paragraph{AdaDelta:}
+  We use the online optimization method AdaDelta \citep{zeiler-12} with minibatches, instead of the batch method L-BFGS \citep{liu-89}.
   We use minibatches of size 4,000  on the full text data, and 40,000 on the exemplar data.
 %   \item We use elastic net ($\ell_1 + \ell_2$) regularization. Adding $\ell_1$ also has the effect of keeping the parameter vector sparse.\nss{what hyperparameter(s)? are $\ell_1$ and $\ell_2$ tuned separately?}
-\end{itemize}
+% \end{itemize}
 We use these changes for all systems, including the baseline.
 While the impact on full-text performance is negligible, 
 these changes enabled us to run more experiments with the larger exemplar dataset and expanded feature space.\footnote{With SEMAFOR's original features and training data, 
@@ -702,24 +706,22 @@ decreases from 729 minutes to 82 minutes\nss{say something about hardware this w
 % 
 % \st{something about L2 regularization}
 
-The details of squared hinge loss are as follows.
-
+% The details of squared hinge loss are as follows.
 Let $((\mathbf{x}, p, f, r), a)$ %$(r^{(i)}, a^{(i)})$
 be the $i^{\text{th}}$ training example.
-Then the structured hinge loss on the $i^{\text{th}}$ example is given by:
+Then the squared hinge loss on the $i^{\text{th}}$ example is given by:
 \begin{align*}
-\lefteqn{\textit{Hinge}_\mathbf{w}(i) =} \\
-&&\max_{a^\prime}{\{\mathbf{w}^\top \mathbf{\phi}(a^\prime, \mathbf{x}, p, f, r) + \text{cost}(a^\prime, a)\}} - \\
-&&\mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r)
+\lefteqn{\textit{SqHinge}_\mathbf{w}(i) =} \\
+&& (\max_{a^\prime}{\{\mathbf{w}^\top \mathbf{\phi}(a^\prime, \mathbf{x}, p, f, r) + \text{cost}(a^\prime, a)\}} - \\
+&&\mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r))^2.
 \end{align*}
-and squared hinge loss is:
-\begin{equation}
-\textit{SqHinge}_\mathbf{w}(i) =
-\textit{Hinge}_\mathbf{w}(i)^2.
-\end{equation}
+% and squared hinge loss is:
+% \begin{equation}
+% \textit{SqHinge}_\mathbf{w}(i) =
+% \textit{Hinge}_\mathbf{w}(i)^2.
+% \end{equation}
 We use $\text{cost}(a^\prime, a) = \indicator{a^\prime \ne a}$.%
 \footnote{We experimented with recall-oriented training, where errors of omission are assigned a higher cost, but found that while recall increased, overall $F_1$ went down\nss{or: failed to improve?}.}
-
 We learn $\mathbf{w}$ by minimizing the $\ell_2$-regularized average loss on the dataset:
 \begin{equation}
 \mathbf{w^*} = \argmin_\mathbf{w}{
