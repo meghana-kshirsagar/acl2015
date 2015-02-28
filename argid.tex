@@ -860,10 +860,11 @@ For the FT annotations, we use the same FrameNet 1.5 data and train/test splits 
 
 
 \nss{tuning regularizer for all experiments}
-We tune the $\ell_2$ regularization parameter $\lambda$ on the FT held-out set. We searched over the following
+We tune the $\ell_2$ regularization parameter $\lambda$ on the FT dev set. We searched over the following
 values: 10$^{-5}$, 10$^{-7}$, 10$^{-9}$, 10$^{-12}$ (note that our loss is normalized).
-We also use the performance on the FT held-out set to determine the stopping criterion for the stochastic optimization.
-We do not tune any parameters w.r.t the exemplars data.
+We also use the performance on the FT dev set to determine the stopping criterion for the stochastic optimization. The FT dev set was used 
+to only tune parameters and not part of the model construction. Also note that we do not tune any parameters w.r.t the exemplars data.
+\mk{Do I need to mention this -- The model with the best performance on the FT dev set is used for all evaluation}
 
 
 
