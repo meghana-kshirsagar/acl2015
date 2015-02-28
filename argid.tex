@@ -835,10 +835,8 @@ We learn $\mathbf{w}$ by minimizing the $\ell_2$-regularized average loss on the
 \end{equation}
 
 
-\nss{same FN 1.5 splits as Dipanjan}
 
-
-\nss{preprocessing issues: removing duplicate sentences, merging adjacent split args in exemplars, OntoNotes PropBank preprocessing (NLTK), token-level SemLink details (such as filtering out sentences without mappable annotations; copy from WS paper)}
+\nss{OntoNotes PropBank preprocessing (NLTK)}
 
 \subsection{Preprocessing the data}
 
@@ -862,10 +860,10 @@ For the FT annotations, we use the same FrameNet 1.5 data and train/test splits 
 
 
 \nss{tuning regularizer for all experiments}
-We tune the $\ell_2$ regularization parameter $\lambda$ on the held-out set. We searched over the following
+We tune the $\ell_2$ regularization parameter $\lambda$ on the FT held-out set. We searched over the following
 values: 10$^{-5}$, 10$^{-7}$, 10$^{-9}$, 10$^{-12}$ (note that our loss is normalized).
-We also use the performance on the held-out set to determine the stopping criterion for the stochastic optimization.
-
+We also use the performance on the FT held-out set to determine the stopping criterion for the stochastic optimization.
+We do not tune any parameters w.r.t the exemplars data.
 
 
 
@@ -887,7 +885,7 @@ both sets of data will certainly benefit in performance.
 \begin{tabular}{@{}p{2cm}r@{~~}r@{~~}r@{~~}r@{}}
 %\toprule
 \normalfont & \multicolumn{2}{c}{\textbf{\hspace{40pt}Full-Text}} & \multicolumn{2}{c}{\textbf{Exemplars}} \\
-& \multicolumn{1}{c}{\hspace{40pt}\textit{train}} & \multicolumn{1}{c}{\textit{test}} & \multicolumn{1}{c}{\textit{train}} & \multicolumn{1}{c}{\textit{test}} \\
+& \multicolumn{1}{c}{\hspace{40pt}\textit{train\footnote{We do not include the dev set in these statistics, which had 4463 frames over 746 sentences.}}} & \multicolumn{1}{c}{\textit{test}} & \multicolumn{1}{c}{\textit{train}} & \multicolumn{1}{c}{\textit{test}} \\
 \midrule
 Sentences  & 2,780 & 2,420 & 137,515 & 4,132 \\
 Frames & 15,019 & 4,458 & 137,515 & 4,132 \\
