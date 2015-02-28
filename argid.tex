@@ -643,19 +643,19 @@ The global classifier chooses a joint assignment of all arguments of a frame, wh
   \item a role may be assigned to at most one span, and
   \item spans of overt arguments must not overlap.
 \end{enumerate}
-Concretely, let a joint assigment be represented as a function $\mathbf{a}: \textit{roles}(f) \rightarrow \textit{spans}(\mathbf{x}, p, f)$, % \cup \{\emptyset\}$, %= \{ (r, a) \mid r \in \textit{roles}(f) \}$
- and let $\mathcal{A}$ be the set of all non-overlapping assignments.
-We give $\mathbf{a}$ the score
+Formally, let a joint assigment be represented as a function $\mathbf{a}: \textit{roles}(f) \rightarrow \textit{spans}(\mathbf{x}, p, f)$, % \cup \{\emptyset\}$, %= \{ (r, a) \mid r \in \textit{roles}(f) \}$
+ and let $\mathcal{A}$ be the set of all non-overlapping joint assignments.
+We give $\mathbf{a}$ the score:
 \begin{equation}
 \textit{score}_{\mathbf{w}}(\mathbf{a} \mid \mathbf{x}, p, f) =
     \sum_{r \in \textit{roles}(f)}{\textit{score}_\mathbf{x}(\mathbf{a}(r) \mid \mathbf{x}, p, f, r)}
 \end{equation}
-And choose the joint assignment
+and choose the joint assignment:
 \begin{equation}
 \textit{args}(\mathbf{x}, p, f) =
     \argmax_{\mathbf{a} \in \mathcal{A}} {
         \textit{score}_{\mathbf{w}}(\mathbf{a} \mid \mathbf{x}, p, f, r)
-    }
+    }.
 \end{equation}
 Beam search, with a beam size of 100, is used to find this $\argmax$.%
 \footnote{Recent work has improved upon global decoding techniques \citep{tackstrom-15}.
@@ -813,7 +813,7 @@ But we have made several modifications to SEMAFOR's training in order to speed u
 \begin{itemize}
   \item We minimize squared structured hinge loss (defined below) instead of a log-linear loss.
   Using hinge loss, there is no longer a need to calculate a partition function.
-  Gradients, and hence parameters, are sparser than in logistic regression, allowing us to use a sparse vector implementation.
+  Gradients, and hence parameters, are sparser than in a log-linear model, as they only depend on the correct span and the predicted span.
   \item We use the online optimization method AdaDelta \citep{zeiler-12} with minibatches, instead of the batch method L-BFGS \citep{liu-89}.
   We use minibatches of size 4,000  on the full text data, and 40,000 on the exemplar data.
 %   \item We use elastic net ($\ell_1 + \ell_2$) regularization. Adding $\ell_1$ also has the effect of keeping the parameter vector sparse.\nss{what hyperparameter(s)? are $\ell_1$ and $\ell_2$ tuned separately?}
@@ -843,7 +843,7 @@ be the $i^{\text{th}}$ training example.
 Then the structured hinge loss on the $i^{\text{th}}$ example is given by:
 \begin{align*}
 \lefteqn{\textit{Hinge}_\mathbf{w}(i) =} \\
-&&\max_{r^\prime}{\{\mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r^\prime) + \text{cost}(r^\prime, r)\}} - \\
+&&\max_{a^\prime}{\{\mathbf{w}^\top \mathbf{\phi}(a^\prime, \mathbf{x}, p, f, r) + \text{cost}(a^\prime, a)\}} - \\
 &&\mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r)
 \end{align*}
 and squared hinge loss is:
@@ -851,7 +851,7 @@ and squared hinge loss is:
 \textit{SqHinge}_\mathbf{w}(i) =
 \textit{Hinge}_\mathbf{w}(i)^2.
 \end{equation}
-We use $\text{cost}(r^\prime, r) = \indicator{r^\prime \ne r}$.%
+We use $\text{cost}(a^\prime, a) = \indicator{a^\prime \ne a}$.%
 \footnote{We experimented with recall-oriented training, where errors of omission are assigned a higher cost, but found that while recall increased, overall $F_1$ went down\nss{or: failed to improve?}.}
 
 We learn $\mathbf{w}$ by minimizing the $\ell_2$-regularized average loss on the dataset:
@@ -1018,9 +1018,10 @@ In both plots, each point on the x-axis represents one role, with the roles sort
 The $F_1$ curves clearly show that our models achieve the best improvements for the rarer roles and are at par with the baseline on the frequent roles.
 
 \mk{Analyze the sparsity of the models? Which features have highest importance?}
-In addition to the performance, we also show the sizes of the various models in the column `number of features'. All the models are quite sparse however,
-with $\approx$60--70\% of the features assigned a zero weight. The larger models are also a lot slower to train, taking about 6 times
-as long as the baseline. 
+In addition to the performance, we also show the sizes of the various models in the column `Millions of features'.
+All the models are quite sparse however,
+with $\approx$60-70\% of the features assigned a weight of zero.
+The larger models take roughly 6 times as long as the baseline to train. 
 
 
 \section{Related Work}
