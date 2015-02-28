@@ -446,9 +446,12 @@ Another resource, \textbf{PropBank} \citep{propbank}, has been widely used for S
 PropBank annotations capture shallower lexical frames and arguments; 
 additionally, PropBank provides one million words of fully annotated English sentences.
 % (annotation is less expensive, but potentially less valuable because of the shallower representation).
-Despite a number of differences in the representations and annotation conventions, 
-for many predicates FrameNet and PropBank are quite similar: 
-\cref{fig:harbor-fn} and \cref{fig:harbor-pb} show this for the verb \textit{crane}.
+% Despite a number of differences in the representations and annotation conventions, 
+% for many predicates FrameNet and PropBank are quite similar: 
+% \cref{fig:harbor-fn} and \cref{fig:harbor-pb} show this for the verb \textit{crane}.
+Despite all these differences, there is often a great deal in common between 
+FrameNet-style and PropBank-style analyses, as should be apparent from comparing 
+\cref{fig:harbor-fn} and \cref{fig:harbor-pb}. 
 To get the best of both worlds, we aim to tap into PropBank's vast resources 
 as indirect token-level supervision for FrameNet-style analysis. 
 We hypothesize that PropBank analyses can serve as a signal for the FrameNet SRL task, either by heuristically transforming PropBank annotations into FrameNet annotations to augment the training data, or by preprocessing sentences with a PropBank SRL system to obtain new features for FrameNet argument identification.
@@ -618,10 +621,6 @@ in interpretation of core roles across lexical predicates for PropBank than ther
 Another difference is that PropBank's non-core roles---named \pbr{AM-*}, 
 such as \pbr{AM-PRP} for purposes---are not frame-specific.\footnote{\Citet{ellsworth-04} 
 has a more extensive discussion of differences between PropBank's and FrameNet's conventions.}
-
-Despite all these differences, there is often a great deal in common between 
-FrameNet-style and PropBank-style analyses, as should be apparent from comparing 
-\cref{fig:harbor-fn} and \cref{fig:harbor-pb}. 
 The major benefit to PropBank is that it includes a large and comprehensively annotated corpus.
 We hypothesize that leveraging this large corpus indirectly 
 can reap rewards for FrameNet-style SRL. 
