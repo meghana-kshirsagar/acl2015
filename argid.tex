@@ -506,7 +506,8 @@ seen in those roles and how they relate syntactically to the predicate.
 
 \subsection{Full-text Annotations}\label{sec:ft}
 
-Contemporary frame-semantic parsers are trained and evaluated on the \textbf{full-text (FT)}\footnote{Though these 
+Beginning with the SemEval-2007 shared task on FrameNet analysis \citep{baker-07},
+frame-semantic parsers have been trained and evaluated on the \textbf{full-text (FT)}\footnote{Though these 
 were \emph{annotated} and the document level, and train/dev/test splits are by document, the frame-semantic parsing 
 is currently restricted to the sentence level.} portion 
 of the FrameNet corpus. This consists of documents for which annotators made an effort 
@@ -530,13 +531,40 @@ In other cases, words that in principle should be considered to evoke a frame we
 because they did not match any existing lexical units. 
 This was the case for \textit{passengers} and \textit{dizzying} in \cref{fig:harbor-fn}.
 
-\nss{Genres, sizes}
+The full-text documents represent a mix of genres, prominently including travel guides 
+and bureaucratic reports about weapons stockpiles. 
+Statistics for the full-text corpus appear in \cref{tbl:datastats}.
 
 \nss{Annotation density: (proportion of tokens evoking a frame. breakdown by POS?)}
 
 \subsection{Exemplars}\label{sec:exemplars}
 
-\nss{how different from FT}
+Conceived primarily as a lexicography project, 
+most FrameNet annotations serve to illustrate the argument structure potential 
+of particular predicates. When predicates are added to a frame, 
+a large set of source corpora (primarily, the British National Corpus) covering a wide range of genres
+is searched for various syntactic patterns, 
+and a lexicographer identifies a selection, or \textbf{subcorpus}, of sentences 
+illustrating the predicate's behavior \citep{boas-05}.
+The subcorpus sentences are then annotated, but \emph{only with respect to the predicate in question}.
+
+The subset of exemplar sentences containing argument annotations is described in \cref{tbl:datastats}.
+Relative to the full-text dataset, the exemplar dataset contains 
+an order of magnitude more frame annotations and two orders of magnitude 
+more sentences annotated.
+Because we are conditioning on the identified frame, 
+the fact that the exemplar dataset has just one annotated frame per sentence
+is not a concern. However, the rate of overt arguments per frame 
+is noticeably higher for exemplars, which is a cause for concern as it might bias the model's 
+tendency to predict certain kinds of arguments in a way that is not statistically representative of a natural corpus.
+
+The exemplar sentences formed the basis of early studies of frame-semantic role labeling \citep[e.g.,][]{gildea-02,thompson-03,fleischman-03,kwon-04}.
+We deem it worthwhile to (a)~investigate whether the exemplars 
+can be used to improve performance on the full-text evaluation, 
+and (b)~to evaluate SRL performance on a held-out set of exemplars, 
+given that these exemplars represent a much broader range of genres, frames, and predicates 
+than the full-text data.
+This second evaluation, we believe, gives a useful indication of the robustness of the SRL model.
 
 \subsection{PropBank}\label{sec:pb}
 
@@ -985,7 +1013,7 @@ as long as the baseline.
 
 \nss{Dipanjan's other papers; mention other PB SRL work?; anything using SemLink or combining resources for SRL? see \citep[\S4]{bonial-13}}
 
-\nss{be sure to cite: \citep{shi-05} (multiple resources), \citep{matsubayashi-09} (hierarchy)}
+\nss{be sure to cite: \citep{shi-05} (multiple resources), \citep{matsubayashi-09} (hierarchy), \citep{furstenau-09} (semi-supervised)}
 
 \nss{multitask learning?}
 
