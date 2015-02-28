@@ -983,7 +983,7 @@ described in \cref{sec:frust}.%\nss{if using the term EasyAdapt, define it above
 
 The baseline $F_1$ on argument identification published in \citet{das-14} on the FT test set includes adding `pseudo' scores for getting gold frames right. 
 However, this does not give us a true picture of the performance, hence we choose not to add frame-level scores while computing $F_1$. 
-In Table \ref{tbl:results}, the first row corresponds to the state-of-art $F_1$ from \citet{das-14}.
+In Table \ref{tbl:results}, the first row corresponds to the state-of-art $F_1$ from \citet{das-14}.\finalversion{\nss{not quite, because of the changes to learning in SEMAFOR, right?}}
 
 The first resource that we consider is `FN Hierarchy'. We find that adding the sibling-level hierarchical features to the baseline improves 
 $F_1$ by 1.2 and 1.7 points on FT-test and exemplars-test respectively,
@@ -1100,6 +1100,7 @@ will lead to further gains in this task.
 Moreover, the techniques discussed here could be further explored 
 using semi-automatic mappings between lexical resources \citep[such as UBY;][]{gurevych-12}, 
 and correspondingly, this task could be used to extrinsically validate those mappings.}
+\finalversion{\nss{release of code and models}}
 
 \finalversion{\section*{Acknowledgments}
 
