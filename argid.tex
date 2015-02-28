@@ -377,7 +377,7 @@ upon full-text annotations in the FrameNet resource.\nss{is this true? I think D
 We augment supervised learning with additional 
 ``indirect'' training data and features 
 so as to leverage additional resources internal and external to FrameNet (e.g., PropBank). 
-Our best model achieves a 3.0 increase in F1, or 7.5\% reduction in error, over state-of-the-art. \st{can you say that with F1?}
+Our best model achieves a 3.0 increase in F1, or 7.5\% reduction in error, over state-of-the-art.\st{can you say that with F1?}\nss{sure, you can say error reduction, but how can we compare to state-of-the-art (unless you mean best reported result with gold frames)?}
 \end{abstract}
 
 \section{Introduction}
@@ -910,6 +910,7 @@ to only tune parameters and not part of the model construction.
 
 
 \subsection{Evaluation}
+\nss{be sure to mention: gold frames}
 The argument identification performance of the various methods is compared on two different test sets.
 (1) Full-text: the FrameNet 1.5 FT test split that was used in the evaluation in \citet{das-14}. This data consists of sentences from 23 documents. 
 (2) Exemplars: a randomly sampled set of sentences from the exemplars data, with approximately the same number of targets as the FT test set.
@@ -961,14 +962,14 @@ The marker `$\xrightarrow{\text{guide}}$' on some of the methods refers to the f
 \input{results.tex}
 
 The first resource that we consider is `FN Hierarchy'. We find that adding the sibling-level hierarchical features to the baseline FT model improves 
-the fscore by 1.2 and 1.7 points on FT-test and exemplars-test respectively,
+$F_1$ by 1.2 and 1.7 points on FT-test and exemplars-test respectively,
 with benefits to both precision and recall. The `siblings+parents' features which consider two levels of the hierarchy produce unnoticeable benefits,
 suggesting that higher levels in the hierarchy can be too general \mk{give example?} and cause very dissimilar roles firing the same hierarchy features.%
-\footnote{We also tried adding grand-parents and found only minor improvements. Using an expert-pruned hierarchy with relations that are
+\footnote{We also tried adding grandparents and found only minor improvements. Using an expert-pruned hierarchy with relations that are
 most likely to help can give greater benefits, and is beyond the focus of this work.}
 
 SemLink, as we remarked earlier is a noisy resource and we see a confirmation for this observation in the performance of the (FT+SemLink) model,
-which drops the f-score by a whopping 11.2 and 16.5 points below baseline on FT-test and exemplars resp. The guide features however modulate the influence
+which drops $F_1$ by a whopping 11.2 and 16.5 points below baseline on FT-test and exemplars, respectively. The guide features however modulate the influence
 of the SemLink annotations, giving a minor increase over the baseline. 
 %\mk{resulting in a graceful but prompt exit for this resource from further consideration.}
 
@@ -1006,7 +1007,7 @@ best precision. This result is intuitive because we expect the hierarchy to help
 	\caption{Count and $F_1$ for each frame element appearing in the test set. $F_1$ values have been smoothed with \texttt{loess}, with a smoothing parameter of 0.2.}
 \end{figure}
 
-
+\finalversion{\nss{impact of automatic frames?}}
 
 \subsection{FE-level evaluation}
 The results so far have discussed the overall improvement in $F_1$-score, but do not present a detailed picture of how we gain from the additional
@@ -1018,7 +1019,7 @@ The $F_1$ curves clearly show that our models achieve the best improvements for 
 
 \mk{Analyze the sparsity of the models? Which features have highest importance?}
 In addition to the performance, we also show the sizes of the various models in the column `number of features'. All the models are quite sparse however,
-with $\approx$60-70 \% of the features assigned a zero weight. The larger models are also a lot slower to train, taking about 6 times
+with $\approx$60--70\% of the features assigned a zero weight. The larger models are also a lot slower to train, taking about 6 times
 as long as the baseline. 
 
 
