@@ -688,9 +688,9 @@ But we have made several modifications to training in order to speed up experime
   We use minibatches of size 4,000  on the full text data, and 40,000 on the exemplar data.
 %   \item We use elastic net ($\ell_1 + \ell_2$) regularization. Adding $\ell_1$ also has the effect of keeping the parameter vector sparse.\nss{what hyperparameter(s)? are $\ell_1$ and $\ell_2$ tuned separately?}
 % \end{itemize}
-We use these changes for all systems, including the baseline.
+% We use these changes for all systems, including the baseline.
 While the impact on full-text performance is negligible, 
-these changes enabled us to run more experiments with the larger exemplar dataset and expanded feature space.\footnote{With SEMAFOR's original features and training data, 
+these changes decreased training time significantly.\footnote{With SEMAFOR's original features and training data, 
 the result of the above changes is that full-text $F_1$ decreases from 59.3\% to 59.1\%, 
 while training time (running optimization to convergence) 
 decreases from 729 minutes to 82 minutes\nss{say something about hardware this was tested on?}.%
@@ -781,7 +781,7 @@ We expand the feature space by concatenating the original feature vector with a 
 
 % FT annotations $x \in \mathcal{D}_{ft}$, and $\Phi^{ex}(x) = (x, 0)$ for the exemplars $x \in D_{ex}$. The resulting transformed data 
 % from the two domains is then used to learn a single model.
-The intuition is that by replicating the features, we allow for
+The intuition is that we are allowing
 each feature to contribute both ``general'' and ``domain-specific'' weights to the model depending on whether the feature
 behaves similarly in both domains or not.
 Since the general feature contributes to both domains, regularization will encourage the model to use the general version over the domain-specific version of a feature whenever possible.
@@ -903,9 +903,9 @@ These kind of errors are hard to detect and remove.
 \subsection{Hyperparameter Tuning}
 
 We tune the $\ell_2$ regularization parameter $\lambda$ on the FT dev set, searching over the following
-values: 10$^{-5}$, 10$^{-7}$, 10$^{-9}$, 10$^{-12}$ (note that our loss is normalized).
-We also use the performance on the FT dev set to determine the stopping criterion for the stochastic optimization. The FT dev set was used 
-only to tune parameters and not as part of the model construction. 
+values: 10$^{-5}$, 10$^{-7}$, 10$^{-9}$, 10$^{-12}$.
+We use the performance on the FT dev set to determine the stopping criterion for optimization. The FT dev set was used 
+only to tune parameters and not as part of model construction. 
 %Also note that we do not tune any parameters w.r.t the exemplars data.
 %\mk{Do I need to mention this -- The model with the best performance on the FT dev set is used for all evaluation}
 
