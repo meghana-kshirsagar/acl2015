@@ -1030,9 +1030,13 @@ The larger models take roughly 6 times as long as the baseline to train.
 
 \section{Related Work}
 
-\nss{Dipanjan's other papers (focusing on different parts of the task)}
+Prior work has noted that the preponderance of role labels in FrameNet poses a challenge, and have considered various ways of grouping role labels together in order to share statistical strength. 
+\citet{matsubayashi-09} investigated using the \textgf{Inheritance} relationships, and also grouping by the human-readable name of the role, and found small gains from both, though their evaluation was on a simpler subtask of argument classification.
+\citet{baldewein-04} use an EM-based clustering method to learn latent groupings of roles and role-fillers. They report mixed results.
 
-\nss{be sure to cite: \citep{shi-05} (multiple resources), \citep{matsubayashi-09} (hierarchy vs. role names), \citep{merlo-09} (multiple resources + levels of generalization), \citep{furstenau-09} (semi-supervised)}
+\nss{Dipanjan's other papers (focusing on different parts of the task)}
+\nss{be sure to cite: \citep{shi-05} (multiple resources), \citep{merlo-09} (multiple resources + levels of generalization), \citep{furstenau-09} (semi-supervised)}
+
 
 \nss{multitask learning?}
 
