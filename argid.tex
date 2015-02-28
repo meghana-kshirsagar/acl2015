@@ -961,14 +961,14 @@ The marker `$\xrightarrow{\text{guide}}$' on some of the methods refers to the f
 \input{results.tex}
 
 The first resource that we consider is `FN Hierarchy'. We find that adding the sibling-level hierarchical features to the baseline FT model improves 
-the fscore by 1.2 and 1.7 points on FT-test and exemplars-test respectively,
+$F_1$ by 1.2 and 1.7 points on FT-test and exemplars-test respectively,
 with benefits to both precision and recall. The `siblings+parents' features which consider two levels of the hierarchy produce unnoticeable benefits,
 suggesting that higher levels in the hierarchy can be too general \mk{give example?} and cause very dissimilar roles firing the same hierarchy features.%
-\footnote{We also tried adding grand-parents and found only minor improvements. Using an expert-pruned hierarchy with relations that are
+\footnote{We also tried adding grandparents and found only minor improvements. Using an expert-pruned hierarchy with relations that are
 most likely to help can give greater benefits, and is beyond the focus of this work.}
 
 SemLink, as we remarked earlier is a noisy resource and we see a confirmation for this observation in the performance of the (FT+SemLink) model,
-which drops the f-score by a whopping 11.2 and 16.5 points below baseline on FT-test and exemplars resp. The guide features however modulate the influence
+which drops $F_1$ by a whopping 11.2 and 16.5 points below baseline on FT-test and exemplars, respectively. The guide features however modulate the influence
 of the SemLink annotations, giving a minor increase over the baseline. 
 %\mk{resulting in a graceful but prompt exit for this resource from further consideration.}
 
