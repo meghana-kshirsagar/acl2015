@@ -853,8 +853,12 @@ Other arguments pointed to null anaphora that could not be resolved to overt arg
 This leaves 15,323 mappable instances with at least one overt argument, or 20\% of SL-WSJ verbs. This is a very small
 subset of the entire PB annotated data.
 
-We processed the exemplars data to remove duplicate sentences that already appear in the FT data. 
+We processed the exemplars data to remove sentences which had no role annotations (under the assumption that these are likely to be
+incomplete annotations). Out of a total of 145838 sentences, $\approx$4000 had only frame annotations. 
+We further removed duplicate sentences that already appear in the FT data. 
+In the argument annotations, we merged spans which were adjacent and had the same argument label.
 
+For the FT annotations, we use the same FrameNet 1.5 data and train/test splits as \cite{das-14}, without any of our own processing.
 
 
 \nss{tuning regularizer for all experiments}
@@ -885,15 +889,12 @@ both sets of data will certainly benefit in performance.
 \normalfont & \multicolumn{2}{c}{\textbf{\hspace{40pt}Full-Text}} & \multicolumn{2}{c}{\textbf{Exemplars}} \\
 & \multicolumn{1}{c}{\hspace{40pt}\textit{train}} & \multicolumn{1}{c}{\textit{test}} & \multicolumn{1}{c}{\textit{train}} & \multicolumn{1}{c}{\textit{test}} \\
 \midrule
-Sentences  & 2,780 & 2,420 & 145,838 & 4,132 \\
-Frames & 15,019 & 4,458 & 137,511 & 4,132 \\
-Overt args & \nss{TODO} & & \nss{\^{} ??} \\
+Sentences  & 2,780 & 2,420 & 137,515 & 4,132 \\
+Frames & 15,019 & 4,458 & 137,515 & 4,132 \\
+Overt args & 25,918 & 7,210 & 278,985 & 8,417 \\
 \midrule
 \multicolumn{5}{c}{\textsc{types}} \\
 Roles & 2,644 & 1,420 & 4,821 & 1,224 \\
-%Sentences in test data & 2,420 & 4,132 \\
-%Roles in test data & 4,458 & 4,132 \\
-%Roles (types) in test data & 1,420 & 1,224 \\
 \multicolumn{2}{@{}l}{Unseen frames  \quad \textit{vs.~train:}} & 46 & & 0 \\
 \multicolumn{2}{@{}l}{Roles in unseen frames \quad \textit{vs.~train:}} & 178 & & 0 \\
 \multicolumn{2}{@{}l}{Unseen roles \quad \textit{vs.~train:}} & 289 & & 38 \\
