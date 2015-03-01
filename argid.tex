@@ -658,7 +658,7 @@ the token(s) $p$ constituting the predicate in question, and the frame $f$ evoke
 (as determined by frame identification). 
 We use the heuristic procedure from \citep{das-14} for extracting candidate argument spans 
 for the predicate; call this $\textit{spans}(\mathbf{x}, p, f)$.
-$\textit{spans}$ always includes a special span denoting an empty or non-overt role, denoted $\emptyset$. 
+$\textit{spans}$ always includes a special span denoting an empty or non-overt role, denoted~$\emptyset$. 
 For each candidate span $a \in \textit{spans}(\mathbf{x}, p, f)$, we extract a binary feature vector 
 $\mathbf{\phi}(a, \mathbf{x}, p, f)$.
 % We describe the features in \S\ref{sec:features}.\st{are we going to describe the baseline semafor features?}\nss{i suggest just mention the kinds of things features look at---POS, syntax, etc.---and that many of them are at multiple levels of granularity (role-specific, role name--specific)}
@@ -789,7 +789,7 @@ such as ours.
 % \right.
 % \]
 For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a new feature that fires only if $\phi_i$ fires and $\x \in \mathcal{D}_{ft}$: 
-$\text{"ft"} \wedge \phi_i(a, \mathbf{x}, p, f, r)$. 
+$\text{"ft"} \wedge \phi_i(a, \mathbf{x}, p, f, r)$.\finalversion{\nss{why the $i$ subscript? is that for the training instance as above?}}
 
 % For each original feature $\phi_i$, we create a new feature 
 % We expand the feature space by concatenating the original feature vector with a version of the feature vector that has been element-wise conjoined with the domain indicator:
@@ -828,7 +828,7 @@ is to train a supervised model on a source domain, make predictions using that m
 % When training and testing in the target domain, 
 The source domain model is effectively a form of preprocessing, and the features from its output are known as \textbf{guide features} \citep{johansson-13,kong-14}.\footnote{This is related to the technique
 of model stacking, where successively richer models are trained by cross-validation on the same dataset 
-\citet[e.g.,][]{cohen-05,nivre-08,martins-08}.}
+\citep[e.g.,][]{cohen-05,nivre-08,martins-08}.}
 
 In our case, we treat the full text annotations as our target domain, and experiment with using PropBank, SemLink, and the exemplars data as source domains.
 Each of the three source models produces SRL-style output, where predicates are assigned frames or rolesets, and for each predicate, spans are assigned role labels.
@@ -843,9 +843,9 @@ Two types of guide features were used:
 one indicates that a span $a$ was assigned \emph{any} role, and the other encodes the role label $r_g$ itself.
 In the case where $M_s$ produces labels
 that belong to the same schema as the target domain 
-(for instance, the exemplars use the same schema as the FT annotations \st{our set of source domains is small enough that we can enumerate which ones this applies to. Is it exemplars + SemLink?}), 
+(for instance, the exemplars use the same schema as the FT annotations\st{our set of source domains is small enough that we can enumerate which ones this applies to. Is it exemplars + SemLink?}), 
 we use an additional feature $\phi_{match}(r_t,r_g)$ to indicate that 
-the `guide' role label $r_g$ of the span $a$ is the same as it's true\st{you mean ``target''?} label $r_t$.
+the `guide' role label $r_g$ of the span $a$ is the same as its true\st{you mean ``target''?} label $r_t$.
 
 
 \subsection{Type-level hierarchy features}\label{sec:hierfeats}
@@ -880,14 +880,14 @@ For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a two new features:
 \noindent$\text{"par+sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge r$.
 \end{itemize}
 
-We experimented with using more than one level of the hierarchy (grandparents, e.g.), but found that it does not produce any improvements in the performance, yet increased computation cost due to the greater number of features.
+We experimented with using more than one level of the hierarchy (e.g., grandparents), but found no improvement in performance despite the increased computation cost owing to the greater number of features.
 
 
 
 \section{Experiments}
 
 All of our experiments use the same form of regularization, 
-condition on the same oracle frame predictions, 
+condition on the same oracle frame predictions 
 and syntactic preprocessing\nss{does this match Dipanjan's latest experiments?}, 
 and use beam search with a beam size of 100 for joint decoding of the test data.
 Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} are used, as in \citet{das-14}. % to narrow the set of candidate spans considered, and as input to feature extraction.
@@ -898,7 +898,7 @@ Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} a
 \label{sec:preproc}
 
 \paragraph{Full-Text.}
-For the FT annotations, we use the same FrameNet 1.5 data and train/test splits as \citet{das-14}, without any of our own processing.
+For the FT annotations, we use the same FrameNet 1.5 data and train/test splits as \citet{das-14}.
 
 \paragraph{Exemplars.} 
 We processed the exemplars data (\cref{sec:exemplars}) to remove sentences which had no role annotations (under the assumption that these are likely to be
@@ -982,7 +982,7 @@ described in \cref{sec:frust}.%\nss{if using the term EasyAdapt, define it above
 
 
 The baseline $F_1$ on argument identification published in \citet{das-14} on the FT test set includes adding `pseudo' scores for getting gold frames right. 
-However, this does not give us a true picture of the performance, hence we choose not to add frame-level scores while computing $F_1$. 
+Because our focus is on SRL only, we opt to report $F_1$ computed only over arguments. 
 In Table \ref{tbl:results}, the first row corresponds to the state-of-art $F_1$ from \citet{das-14}.\finalversion{\nss{not quite, because of the changes to learning in SEMAFOR, right?}}
 
 The first resource that we consider is `FN Hierarchy'. We find that adding the sibling-level hierarchical features to the baseline improves 
@@ -992,10 +992,10 @@ suggesting that higher levels in the hierarchy can be too general \mk{give examp
 %\footnote{We also tried adding grandparents and found only minor improvements. Using an expert-pruned hierarchy with relations that are
 %most likely to help can give greater benefits, and is beyond the focus of this work.}
 
-SemLink, as we remarked in \cref{sec:preproc} is a noisy resource; we see a confirmation for this observation in the performance of the (FT+SemLink) model,
-which drops $F_1$ by a whopping 11.2 and 16.5 points below the baseline on FT-test and exemplars, resp. 
-The guide features however modulate the influence
-of the SemLink annotations, giving a minor increase over the baseline. 
+SemLink, as noted in \cref{sec:preproc}, is a noisy resource---an observation confirmed by the performance of the (FT+SemLink) model,
+which drops $F_1$ by a whopping 11.2 and 16.5 points below the baseline on FT-test and exemplars, respectively. 
+The guide features, however, modulate the influence
+of the SemLink annotations, giving a minor increase over the baseline.\nss{the two results are presented in the opposite order in the table}
 %\mk{resulting in a graceful but prompt exit for this resource from further consideration.}
 
 With the exemplars resource, we find that the guide features give us a modest improvement of 1.1 points on FT-test, 
@@ -1005,8 +1005,8 @@ On the exemplars-test we observe a similar trend: guide features give a smaller 
 gives a minor increase of 0.3 points on the FT-test but a reduction of 2.8 points on the exemplars-test.
 
 Finally, using the PB-SRL data in the form of guide features also results in small improvements over the baseline. 
-Overall we observe that an additional resource that is very similar to the original resource helps more as training data than as a `guide model'.
-Whereas the guide features help more when the additional resource is either unreliable (like SemLink) or too distinct (like PB). 
+Overall we observe that an additional resource that is very similar to the original resource helps more as training data than as a `guide model'---%
+whereas the guide features help more when the additional resource is either unreliable (like SemLink) or too distinct (like PB). 
 To summarize the results, we find that adding the sibling-level hierarchical features, using Exemplars as gold-standard training data and 
 incorporating PB-SRL data in the form of guide features all help in improving the performance over the baseline on both FT-test and exemplars-test.
 
