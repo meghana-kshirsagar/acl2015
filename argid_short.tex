@@ -404,7 +404,7 @@ Given a sentence, frame-semantic parsing is the task of mapping tokens in the se
 to evoked \textbf{frames}, and for each evoked frame, finding and labeling its \textbf{argument} phrases 
 with frame-specific \textbf{roles}. 
 The FrameNet \textbf{full-text} corpus provides about 5,000 sentences annotated for all frames and their arguments; 
-these have been used to train and evaluate contemporary frame-semantic parsers \citep{litkowski,das-14}.
+these have been used to train and evaluate contemporary frame-semantic parsers \citep{baker-07,das-14}.
 An example appears in \cref{fig:harbor-fn}; it will be explained in detail in \cref{sec:ft}.
 
 In this paper, we address the \textbf{argument identification} 
@@ -464,7 +464,7 @@ there are clear similarities to the FrameNet annotations in \cref{fig:harbor-fn}
 
 
 
-\section{Resources}
+\section{General Background}
 
 \nss{incl. data analysis of differences from full-text}
 
@@ -500,9 +500,34 @@ In FrameNet~1.5, there are over 1,000 frames and 12,000~lexical predicates.
 % an English textual description of the scene and how its roles relate to one another;
 % and a set of English predicates that can evoke the scene.
 
-The frame lexicon is organized as a network, with several kinds of \textbf{frame-to-frame relations} 
+\subsection{Matching roles and arguments}
+
+We use the model from SEMAFOR \citep{das-14}, detailed in \S\ref{sec:base_model}--\ref{sec:learning}, as a starting point.
+We experiment with %several domain adaptation (DA) techniques, augmenting 
+techniques that augment
+the model's training data (\S\ref{sec:aug_data}) and feature space %$\mathbf{\phi}$
+(\cref{sec:hierfeats,sec:frust,sec:guide}).
+% modifying the model-fitting portion of the argument identification model's local learning objective  (training data, features).
+
+At the core of SEMAFOR's argument identification procedure is a feature-based scoring function 
+that assigns a real value to a possible assignment of a candidate argument (span in the sentence) $a$ 
+to a role $r$ of the frame ($f$):
+\begin{equation}\label{eq:score}
+\textit{score}_\mathbf{w}(a \mid \mathbf{x}, p, f, r) = \mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r)
+\end{equation}
+Given a (syntactically preprocessed) sentence $\mathbf{x}$, this is evaluated 
+for every frame-evoking lexical predicate $p$ in that sentence 
+and every role of the evoked frame in order to choose the best argument.
+Binary features $\mathbf{\phi}(\cdot)$ are extracted and weighted by the model parameters $\mathbf{w}$, 
+which are learned from FrameNet annotations in the training data.
+
+\section{Leveraging lexicon structure}
+
+\subsection{Structure in the FrameNet lexicon}
+
+The FrameNet lexicon is organized as a network, with several kinds of \textbf{frame-to-frame relations} 
 linking pairs of frames and (subsets of) their arguments \citep{ruppenhofer-10}. 
-Among these kinds of frame-to-frame relations are:
+In this work, we consider two kinds of frame-to-frame relations:
 \paragraph{Inheritance:} 
 E.g., \fnf{Punctual\_perception} (e.g., \fnlu{glimpse.v}) inherits from 
 \fnf{Perception\_experience} (e.g., \fnlu{see.v}), which inherits from \fnf{Perception}. 
@@ -524,18 +549,68 @@ E.g., the \fnf{Criminal\_process} frame groups together subframes
 This permits an inference that a person tried for a crime likely
 has been or will be arrested, arraigned, and sentenced for that crime.
 
-In \cref{sec:hierfeats}, we experiment with features shared between related roles of related frames 
+We say that the $\textit{parent}$ of a role is one that has either the \textbf{Inheritance} or \textbf{Subframe} relation to it.\nss{clarify?}
+There are 4,138 \textbf{Inheritance} and 589 \textbf{Subframe} links between role types in FrameNet 1.5.
+
+\subsection{Type-level hierarchy features}\label{sec:hierfeats}
+
+We experiment with features shared between related roles of related frames 
 in order to capture statistical generalizations about the kinds of arguments 
-seen in those roles and how they relate syntactically to the predicate.
+seen in those roles. 
+%and how they relate syntactically to the predicate.
+Our hypothesis is that this will be beneficial given the small number of training examples 
+for individual roles.
 
-\subsection{Full-text Annotations}\label{sec:ft}
+%\mk{NSS: notation for the frame/role/features etc?}
+%\mk{How many total types of relations? Cleanup writeup based on NSS's notation.}
 
-\nss{TODO:move}FrameNet~1.5 defines a structured taxonomy of over 1,000 frames associated with 12,000~English lexical predicates, 
-and also provides annotations for over 175,000 attestations 
-of these frames/predicates in corpora, annotated in context with their arguments. 
-A smaller number of sentences (about 5,000)
-are provided with \textbf{full-text} annotations, i.e.~each sentence 
-has been analyzed for all available frames. 
+% \nss{this is all redundant given above:}Frames in FrameNet are connected to each other by relations such as inheritance, temporal ordering, causality. 
+% For instance, the frame \fnf{Robbery} inherits from the more abstract frame \fnf{Committing\_crime}, and the
+% frame \fnf{Fall\_asleep} is preceeded by the frame \fnf{Being\_awake}. The roles of related frames have 
+% also been mapped to indicate the correspondence between them: \fnf{Robbery}.\fnr{Perpetrator} is mapped to 
+% \fnf{Committing\_crime}.\fnr{Perpetrator}, which in turn maps to \fnf{Misdeed}.\fnr{Wrongdoer}. Frames and roles that are far
+% apart in this hierarchy are less related than say neighbours.
+% This hierarchy can be exploited to share information across related roles, thereby benefiting the roles 
+% that have few annotations \mk{say something about a greater variety of contexts is available for each role}. 
+
+
+%A simple mechanism to share information is via shared model parameters between related roles. 
+%Towards this, 
+We experiment with two kinds of features using the \textbf{Inheritance} and \textbf{Subframe} relations:
+
+\begin{itemize}
+  \item 
+\noindent\textbf{siblings}: Roles that have a common parent share features.
+For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a new feature which is the conjunction: 
+$\text{"sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge \textit{parent}(r)$. 
+
+  \item\noindent\textbf{parent+siblings}: Roles share features with their parent and siblings. 
+For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a two new features:
+
+\noindent$\text{"par+sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge \textit{parent}(r)$, and
+
+\noindent$\text{"par+sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge r$.\footnote{We also experimented with using more than one level of the hierarchy (e.g., grandparents). 
+The additional features made the model computationally more expensive, 
+but did not improve its predictions.}
+\end{itemize}
+
+
+
+\section{Leveraging additional annotations}
+
+In this section, we discuss additional sources of annotations 
+that can be used for learning, followed by modeling techniques
+to exploit multiple domains and heterogeneous annotations.
+
+\subsection{FrameNet gold annotations}\label{sec:fn-annos}
+%\subsection{Full-text Annotations}\label{sec:ft}
+
+% \nss{TODO:move}FrameNet~1.5 defines a structured taxonomy of over 1,000 frames associated with 12,000~English lexical predicates, 
+% and also provides annotations for over 175,000 attestations 
+% of these frames/predicates in corpora, annotated in context with their arguments. 
+% A smaller number of sentences (about 5,000)
+% are provided with \textbf{full-text} annotations, i.e.~each sentence 
+% has been analyzed for all available frames. 
 
 
 Beginning with the SemEval-2007 shared task on FrameNet analysis \citep{baker-07},
@@ -543,25 +618,24 @@ frame-semantic parsers have been trained and evaluated on the \textbf{full-text 
 were \emph{annotated} at the document level, and train/dev/test splits are by document, the frame-semantic parsing 
 is currently restricted to the sentence level.} portion 
 of the FrameNet corpus. %This consists of documents for which annotators made an effort to assign frames and arguments to as many words as possible. 
-\Cref{fig:harbor-fn} gives an example sentence from the FT portion of the corpus. 
-It has 4~frame annotations. 
-
-\finalversion{The frame defines 19~additional non-core roles, none of which have an argument in the example.
-In frame semantics, non-core roles are considered to be \emph{conceptually} optional; 
-core roles may or may not be \emph{syntactically} optional, but if not locally specified they are 
-expected to be available from context, or else implicit.
-For example, \fnf{Punctual\_perception}---evoked in this case by \textit{glimpses}---is annotated 
-as missing 2~of its core roles. A human listener would resolve the identity of the \fnr{Perceiver} 
-from the wider context and the \fnr{Body\_part} from world knowledge. }
-
-\finalversion{In some cases, FT annotation involved creating a new frame or adding a new lexical unit to an existing frame. 
-In other cases, words that in principle should be considered to evoke a frame were left unannotated 
-because they did not match any existing lexical units. 
-This was the case for \textit{passengers} and \textit{dizzying} in \cref{fig:harbor-fn}.}
-
+% 
+% \finalversion{The frame defines 19~additional non-core roles, none of which have an argument in the example.
+% In frame semantics, non-core roles are considered to be \emph{conceptually} optional; 
+% core roles may or may not be \emph{syntactically} optional, but if not locally specified they are 
+% expected to be available from context, or else implicit.
+% For example, \fnf{Punctual\_perception}---evoked in this case by \textit{glimpses}---is annotated 
+% as missing 2~of its core roles. A human listener would resolve the identity of the \fnr{Perceiver} 
+% from the wider context and the \fnr{Body\_part} from world knowledge. }
+% 
+% \finalversion{In some cases, FT annotation involved creating a new frame or adding a new lexical unit to an existing frame. 
+% In other cases, words that in principle should be considered to evoke a frame were left unannotated 
+% because they did not match any existing lexical units. 
+% This was the case for \textit{passengers} and \textit{dizzying} in \cref{fig:harbor-fn}.}
 The full-text documents represent a mix of genres, prominently including travel guides 
 and bureaucratic reports about weapons stockpiles. 
-Statistics for the full-text corpus appear in \cref{tbl:datastats}.
+FrameNet~1.5 has about 5,000 full-text sentences in total.
+Statistics for the full-text corpus appear in \cref{tbl:datastats},
+and an example annotated sentence in \cref{fig:harbor-fn}.
 
 \nss{Annotation density: (proportion of tokens evoking a frame. breakdown by POS?)}
 
@@ -587,10 +661,10 @@ Roles & 2,644 & 1,420 & 4,821 & 1,224 \\
 \end{table}
 
 
-\subsection{Exemplars}\label{sec:exemplars}
+%\subsection{Exemplars}\label{sec:exemplars}
 
 %Conceived primarily as a lexicography project, 
-Most FrameNet annotations serve to illustrate the argument structure potential 
+However, most FrameNet annotations serve to illustrate the argument structure potential 
 of particular predicates. 
 % When predicates are added to a frame, 
 % a large set of source corpora (primarily, the British National Corpus) covering a wide range of genres
@@ -603,15 +677,16 @@ To document a given predicate, lexicographers manually select corpus examples an
 These singly-annotated sentences are called lexicographic \textbf{exemplars}.
 
 The subset of exemplars containing argument annotations is described in \cref{tbl:datastats}.
+There are over 140,000 such sentences (an additional 35,000 exemplar sentences contain no overt arguments).
 Relative to the full-text dataset, the exemplar dataset contains 
 an order of magnitude more frame annotations and two orders of magnitude 
 more sentences annotated.
 % Because we are conditioning on the identified frame, 
 % the fact that the exemplar dataset has just one annotated frame per sentence
 % is not a concern in argument identification. However, the 
-Because exemplars have been manually selected, the rate of overt arguments per frame 
+But because exemplars have been manually selected, the rate of overt arguments per frame 
 is noticeably higher than in the full-text data, which potentially biases the 
-predictions of models trained on exemplars.
+predictions of models trained on exemplars.\nss{cite \citep{palmer-10-eval} somewhere, maybe here}
 %model's tendency to predict certain kinds of arguments in a way that is not statistically representative of a natural corpus.
 
 The exemplar sentences formed the basis of early studies of frame-semantic role labeling \citep[e.g.,][]{gildea-02,thompson-03,fleischman-03,kwon-04}.
@@ -620,7 +695,7 @@ can be used to improve performance on the full-text evaluation,
 compensating for the scarcity of full-text training data,
 and (b)~to evaluate SRL performance on a held-out set of exemplars, 
 given that these exemplars represent a much broader range of genres, frames, and predicates 
-than the full-text data.
+than the full-text data.\nss{TODO: quantify number of additional frames and predicates relative to FT-test!}
 This second evaluation, we believe, will give a useful indication of the robustness of the SRL model.
 
 \subsection{PropBank}\label{sec:pb}
@@ -656,19 +731,96 @@ Therefore, to bridge between the PropBank and FrameNet corpora,
 we run a PropBank-trained semantic role labeler 
 on the FrameNet data as an additional form of preprocessing.\footnote{In preliminary experiments, 
 we tried to leverage PropBank annotations in SemLink \citep{bonial-13}, which include mappings to FrameNet.
-However, we found that FrameNet mappings in SemLink are quite noisy, and that including 
+We found that FrameNet mappings in SemLink are noisy/incomplete; including 
 SemLink sentences in the training data only hurt performance.}
 
-\section{Learning from multiple domains and representations}
 
-We use the model from SEMAFOR \citep{das-14}, described in \S\ref{sec:base_model}--\ref{sec:learning}, as a starting point.
-We experiment with several domain adaptation (DA) techniques, augmenting the model's training data (\S\ref{sec:aug_data}) and feature space %$\mathbf{\phi}$
-(\S\ref{sec:frust}--%,\ref{sec:frust},\ref{sec:guide},
-\ref{sec:hierfeats}).
-% modifying the model-fitting portion of the argument identification model's local learning objective  (training data, features).
+\subsection{Augmenting the Training Data}
+\label{sec:aug_data}
+
+This is the simplest possible technique:
+we add the exemplars training data, $\mathcal{D}_{ex}$, to the full text training data, $\mathcal{D}_{ft}$, without differentiating between the two, and train on the combined dataset.
+
+\subsection{Frustratingly Easy}
+\label{sec:frust}
+\Citet{daume-07} proposed a simple feature augmentation approach that was shown to work well in supervised domain adaptation scenarios, 
+such as ours.
+% We %apply their method to incorporate the exemplars data  by introducing
+% introduce a domain indicator %$I_{\textit{domain}}(\mathbf{x}) =
+% $\indicator{\mathbf{x} \in \mathcal{D}_{ft}}$,
+% where $\indicator{P}$ is the indicator function, with value 1 if $P$ is true, 0 otherwise.
+% \[
+% \indicator{P} = \left\{\begin{array}{lr}
+% 1, & \text{ if } P \\
+% 0, & \text{ otherwise}. \\
+% \end{array}
+% \right.
+% \]
+For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a new feature that fires only if $\phi_i$ fires and $\x \in \mathcal{D}_{ft}$: 
+$\text{"ft"} \wedge \phi_i(a, \mathbf{x}, p, f, r)$.\finalversion{\nss{why the $i$ subscript? is that for the training instance as above?}}
+
+% For each original feature $\phi_i$, we create a new feature 
+% We expand the feature space by concatenating the original feature vector with a version of the feature vector that has been element-wise conjoined with the domain indicator:
+% % We apply their method to incorporate the exemplars data  by introducing a feature mapping $\Phi : \mathds{R}^d \rightarrow \mathds{R}^{2d}$ given by
+% % \begin{equation}
+% % \Phi(\mathbf{\phi}(a, \mathbf{x}, p, f, r)) = [x; x * ]
+% % \end{equation}
+% %  for the
+% \begin{align*}
+% \lefteqn{
+% \phi_{\textit{frust}}(a, \mathbf{x}, p, f, r) =
+% } \\
+% &&
+% \left[\begin{array}{c}
+% \phi(a, \mathbf{x}, p, f, r) \\
+% \phi(a, \mathbf{x}, p, f, r) \text{ \& } \indicator{\mathbf{x} \in \mathcal{D}_{ft}}%I_{\textit{domain}}(\mathbf{x})
+% \end{array}
+% \right]
+% % \left[\phi(a, \mathbf{x}, p, f, r) ; \phi(a, \mathbf{x}, p, f, r) \wedge I_{\textit{domain}}(\mathbf{x}) \right]
+% \end{align*}
+% \st{this ``vector concatenation'' view is sort of inconsistent with the ``adding features" view in the guide/hierarchy sections}
+
+% FT annotations $x \in \mathcal{D}_{ft}$, and $\Phi^{ex}(x) = (x, 0)$ for the exemplars $x \in D_{ex}$. The resulting transformed data 
+% from the two domains is then used to learn a single model.
+The intuition is that we are allowing
+each feature to contribute both ``general'' and ``domain-specific'' weights to the model depending on whether the feature
+behaves similarly in both domains or not.
+The general feature contributes to both domains, so regularization encourages the model to use the general version over the domain-specific, if possible.
+
+\subsection{Guide Features}
+\label{sec:guide}
+Another approach to introduce supervision for domain adaptation %, 
+% which does not combine the labeled data from the two domains, 
+is to train a supervised model on a source domain, make predictions using that model on the training data of the target domain, then use those predictions as additional features while training a new model on the target domain.
+% is to use a supervised model built on the source domain to augment features in the target domain.
+% When training and testing in the target domain, 
+The source domain model is effectively a form of preprocessing, and the features from its output are known as \textbf{guide features} \citep{johansson-13,kong-14}.\footnote{This is related to the technique
+of model stacking, where successively richer models are trained by cross-validation on the same dataset 
+\citep[e.g.,][]{cohen-05,nivre-08,martins-08}.}
+
+In our case, we treat the full text annotations as our target domain, and experiment with using PropBank and the exemplars data as source domains.
+Each of the three source models produces SRL-style output, where predicates are assigned frames or rolesets, and for each predicate, spans are assigned role labels.
+But they differ in the labels used for roles.
+\st{talk about Illinois SRL \citep{punyakanok-08}\footnote{\url{http://cogcomp.cs.illinois.edu/page/software_view/SRL}}, whatever-we-did-with-SemLink here?}
+
+Formally, let $M_{s}$ be the model built on
+the source domain (for instance, the PropBank data). 
+For every target domain sentence $\x$, we introduce ``guide'' features which use the output $M_s(\x)$
+obtained by applying $M_s$ on $\x$, which consists of the role labels assigned to various text spans in $\x$.
+Two types of guide features were used:
+one indicates that a span $a$ was assigned \emph{any} role, and the other encodes the role label $r_g$ itself.
+In the case where $M_s$ produces labels
+that belong to the same schema as the target domain 
+(for instance, the exemplars use the same schema as the FT annotations\st{our set of source domains is small enough that we can enumerate which ones this applies to. Is it exemplars + SemLink?}), 
+we use an additional feature $\phi_{match}(r_t,r_g)$ to indicate that 
+the `guide' role label $r_g$ of the span $a$ is the same as its true\st{you mean ``target''?} label $r_t$.
 
 
-\subsection{Base model}
+
+
+\section{Baseline}
+
+\subsection{Model}
 \label{sec:base_model}
 
 The argument identification task is treated as a structured prediction problem.
@@ -680,17 +832,8 @@ the token(s) $p$ constituting the predicate in question, and the frame $f$ evoke
 We use the heuristic procedure from \citep{das-14} for extracting candidate argument spans 
 for the predicate; call this $\textit{spans}(\mathbf{x}, p, f)$.
 $\textit{spans}$ always includes a special span denoting an empty or non-overt role, denoted~$\emptyset$. 
-For each candidate span $a \in \textit{spans}(\mathbf{x}, p, f)$, we extract a binary feature vector 
-$\mathbf{\phi}(a, \mathbf{x}, p, f)$.
-% We describe the features in \S\ref{sec:features}.\st{are we going to describe the baseline semafor features?}\nss{i suggest just mention the kinds of things features look at---POS, syntax, etc.---and that many of them are at multiple levels of granularity (role-specific, role name--specific)}
-We use a linear model, parametrized by the weight vector $\mathbf{w}$, to score $a$:
-\begin{equation}
-\textit{score}_\mathbf{w}(a \mid \mathbf{x}, p, f, r) = \mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r)
-\end{equation}
-% $\textit{score}_\mathbf{w}$ models the compatibility  of a candidate
-% role--argument pair, and i
-Its parameters (feature weights) $\mathbf{w}$ are
-learned from data (\S\ref{sec:learning}).
+The scoring function (\cref{eq:score}) 
+is computed for each candidate span $a \in \textit{spans}(\mathbf{x}, p, f)$.
 
 At inference time, we use a \term{global classifier}.
 The global classifier chooses a joint assignment of all arguments of a frame, while respecting the following constraints:
@@ -788,125 +931,8 @@ We learn $\mathbf{w}$ by minimizing the $\ell_2$-regularized average loss on the
 
 \nss{Domain adaptation/multitask learning techniques}
 
-\subsection{Augmenting the Training Data}
-\label{sec:aug_data}
 
-This is the simplest possible technique:
-we add the exemplars training data, $\mathcal{D}_{ex}$, to the full text training data, $\mathcal{D}_{ft}$, without differentiating between the two, and train on the combined dataset.
-
-\subsection{Frustratingly Easy}
-\label{sec:frust}
-\Citet{daume-07} proposed a simple feature augmentation approach that was shown to work well in supervised domain adaptation scenarios, 
-such as ours.
-% We %apply their method to incorporate the exemplars data  by introducing
-% introduce a domain indicator %$I_{\textit{domain}}(\mathbf{x}) =
-% $\indicator{\mathbf{x} \in \mathcal{D}_{ft}}$,
-% where $\indicator{P}$ is the indicator function, with value 1 if $P$ is true, 0 otherwise.
-% \[
-% \indicator{P} = \left\{\begin{array}{lr}
-% 1, & \text{ if } P \\
-% 0, & \text{ otherwise}. \\
-% \end{array}
-% \right.
-% \]
-For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a new feature that fires only if $\phi_i$ fires and $\x \in \mathcal{D}_{ft}$: 
-$\text{"ft"} \wedge \phi_i(a, \mathbf{x}, p, f, r)$.\finalversion{\nss{why the $i$ subscript? is that for the training instance as above?}}
-
-% For each original feature $\phi_i$, we create a new feature 
-% We expand the feature space by concatenating the original feature vector with a version of the feature vector that has been element-wise conjoined with the domain indicator:
-% % We apply their method to incorporate the exemplars data  by introducing a feature mapping $\Phi : \mathds{R}^d \rightarrow \mathds{R}^{2d}$ given by
-% % \begin{equation}
-% % \Phi(\mathbf{\phi}(a, \mathbf{x}, p, f, r)) = [x; x * ]
-% % \end{equation}
-% %  for the
-% \begin{align*}
-% \lefteqn{
-% \phi_{\textit{frust}}(a, \mathbf{x}, p, f, r) =
-% } \\
-% &&
-% \left[\begin{array}{c}
-% \phi(a, \mathbf{x}, p, f, r) \\
-% \phi(a, \mathbf{x}, p, f, r) \text{ \& } \indicator{\mathbf{x} \in \mathcal{D}_{ft}}%I_{\textit{domain}}(\mathbf{x})
-% \end{array}
-% \right]
-% % \left[\phi(a, \mathbf{x}, p, f, r) ; \phi(a, \mathbf{x}, p, f, r) \wedge I_{\textit{domain}}(\mathbf{x}) \right]
-% \end{align*}
-% \st{this ``vector concatenation'' view is sort of inconsistent with the ``adding features" view in the guide/hierarchy sections}
-
-% FT annotations $x \in \mathcal{D}_{ft}$, and $\Phi^{ex}(x) = (x, 0)$ for the exemplars $x \in D_{ex}$. The resulting transformed data 
-% from the two domains is then used to learn a single model.
-The intuition is that we are allowing
-each feature to contribute both ``general'' and ``domain-specific'' weights to the model depending on whether the feature
-behaves similarly in both domains or not.
-The general feature contributes to both domains, so regularization encourages the model to use the general version over the domain-specific, if possible.
-
-\subsection{Guide Features}
-\label{sec:guide}
-Another approach to introduce supervision for domain adaptation %, 
-% which does not combine the labeled data from the two domains, 
-is to train a supervised model on a source domain, make predictions using that model on the training data of the target domain, then use those predictions as additional features while training a new model on the target domain.
-% is to use a supervised model built on the source domain to augment features in the target domain.
-% When training and testing in the target domain, 
-The source domain model is effectively a form of preprocessing, and the features from its output are known as \textbf{guide features} \citep{johansson-13,kong-14}.\footnote{This is related to the technique
-of model stacking, where successively richer models are trained by cross-validation on the same dataset 
-\citep[e.g.,][]{cohen-05,nivre-08,martins-08}.}
-
-In our case, we treat the full text annotations as our target domain, and experiment with using PropBank and the exemplars data as source domains.
-Each of the three source models produces SRL-style output, where predicates are assigned frames or rolesets, and for each predicate, spans are assigned role labels.
-But they differ in the labels used for roles.
-\st{talk about Illinois SRL \citep{punyakanok-08}\footnote{\url{http://cogcomp.cs.illinois.edu/page/software_view/SRL}}, whatever-we-did-with-SemLink here?}
-
-Formally, let $M_{s}$ be the model built on
-the source domain (for instance, the PropBank data). 
-For every target domain sentence $\x$, we introduce ``guide'' features which use the output $M_s(\x)$
-obtained by applying $M_s$ on $\x$, which consists of the role labels assigned to various text spans in $\x$.
-Two types of guide features were used:
-one indicates that a span $a$ was assigned \emph{any} role, and the other encodes the role label $r_g$ itself.
-In the case where $M_s$ produces labels
-that belong to the same schema as the target domain 
-(for instance, the exemplars use the same schema as the FT annotations\st{our set of source domains is small enough that we can enumerate which ones this applies to. Is it exemplars + SemLink?}), 
-we use an additional feature $\phi_{match}(r_t,r_g)$ to indicate that 
-the `guide' role label $r_g$ of the span $a$ is the same as its true\st{you mean ``target''?} label $r_t$.
-
-
-\subsection{Type-level hierarchy features}\label{sec:hierfeats}
-\mk{NSS: notation for the frame/role/features etc?}
-\mk{How many total types of relations? Cleanup writeup based on NSS's notation.}
-
-\nss{this is all redundant given above:}Frames in FrameNet are connected to each other by relations such as inheritance, temporal ordering, causality. 
-For instance, the frame \fnf{Robbery} inherits from the more abstract frame \fnf{Committing\_crime}, and the
-frame \fnf{Fall\_asleep} is preceeded by the frame \fnf{Being\_awake}. The roles of related frames have 
-also been mapped to indicate the correspondence between them: \fnf{Robbery}.\fnr{Perpetrator} is mapped to 
-\fnf{Committing\_crime}.\fnr{Perpetrator}, which in turn maps to \fnf{Misdeed}.\fnr{Wrongdoer}. Frames and roles that are far
-apart in this hierarchy are less related than say neighbours.
-This hierarchy can be exploited to share information across related roles, thereby benefiting the roles 
-that have few annotations \mk{say something about a greater variety of contexts is available for each role}. 
-
-We say that the $\textit{parent}$ of a role is one that has either the \textbf{Inheritance} or \textbf{Subframe} relation to it (\cref{sec:lex}).
-There are 4138 \textbf{Inheritance} and 589 \textbf{Subframe} links between role types in FrameNet 1.5.
-
-A simple mechanism to share information is via shared model parameters between related roles. Towards this, we experiment with two variations of
-hierarchical feature types:
-
-\begin{itemize}
-  \item 
-\noindent\textbf{siblings}: Roles that have a common parent share features.
-For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a new feature which is the conjunction: 
-$\text{"sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge \textit{parent}(r)$. 
-
-  \item\noindent\textbf{parent+siblings}: Roles share features with their parent and siblings. 
-For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a two new features:
-
-\noindent$\text{"par+sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge \textit{parent}(r)$, and
-
-\noindent$\text{"par+sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge r$.
-\end{itemize}
-
-We experimented with using more than one level of the hierarchy (e.g., grandparents), but found no improvement in performance despite the increased computation cost owing to the greater number of features.
-
-
-
-\section{Experiments}
+\section{Experimental setup}
 
 All of our experiments use the same form of regularization, 
 condition on the same oracle frame predictions 
@@ -916,23 +942,23 @@ Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} a
 
 
 
-\subsection{Preprocessing the Data}
-\label{sec:preproc}
+%\subsection{Preprocessing the Data}
+%\label{sec:preproc}
+%\paragraph{Full-Text.}
+\paragraph{Preprocessing.}
+%\subparagraph{Full-text.}
+For the full-text annotations, we use the same FrameNet 1.5 data and train/test splits as \citet{das-14}.
 
-\paragraph{Full-Text.}
-For the FT annotations, we use the same FrameNet 1.5 data and train/test splits as \citet{das-14}.
-
-\paragraph{Exemplars.} 
-We processed the exemplars data (\cref{sec:exemplars}) to remove sentences which had no role annotations (under the assumption that these are likely to be
-incomplete annotations). Out of a total of 145838 sentences, $\approx$4000 had only frame annotations. 
-We further removed duplicate sentences that already appear in the FT data. 
+%\subparagraph{Exemplars.} 
+We processed the exemplars data to remove sentences which had no role annotations (under the assumption that these are likely to be
+incomplete annotations). Out of a total of 145,838 sentences, $\approx$4,000 had only frame annotations. 
+We further removed duplicate sentences that already appear in the full-text data. 
 In the argument annotations, we merged spans which were adjacent and had the same argument label.
 
 
 \nss{OntoNotes PropBank preprocessing (NLTK)?}
 
-\subsection{Hyperparameter Tuning}
-
+\paragraph{Hyperparameter tuning.}
 We tune the $\ell_2$ regularization parameter $\lambda$ on the FT dev set, searching over the following
 values: 10$^{-5}$, 10$^{-7}$, 10$^{-9}$, 10$^{-12}$.
 We use the performance on the FT dev set to determine the stopping criterion for optimization. The FT dev set was used 
@@ -942,7 +968,7 @@ only to tune parameters and not as part of model construction.
 
 
 
-\subsection{Evaluation}
+\paragraph{Evaluation.}
 A complete frame-semantic parsing system involves two main steps: frame identification and argument identification. Since the focus of this work is only 
 argument identification, we assume that the gold-standard frames are given and evaluate the models on their role labeling performance.
 % The baseline model from \citet{das-14} that we compare against, is the current state-of-the-art for argument identification (i.e frame SRL).
@@ -964,7 +990,7 @@ performance of a frame semantic role labeling system, the exemplars test set bei
 an indication of how well a model generalizes.
 
 
-\subsection{Results}
+\section{Results}
 
 \input{results_short.tex}
 
