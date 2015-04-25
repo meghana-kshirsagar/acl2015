@@ -455,12 +455,7 @@ are labeled with role names.}
 
 
 
-\begin{figure}
-\includegraphics[width=\columnwidth]{fig/harbor-pb.pdf}
-\caption{Ideal PropBank annotations for verbs. Though PB uses lexical frames rather than deep frames,
-there are clear similarities to the FrameNet annotations in \cref{fig:harbor-fn}.}
-\label{fig:harbor-pb}
-\end{figure}
+
 
 
 
@@ -522,6 +517,13 @@ Binary features $\mathbf{\phi}(\cdot)$ are extracted and weighted by the model p
 which are learned from FrameNet annotations in the training data.
 
 \section{Leveraging lexicon structure}
+
+\begin{figure}
+\includegraphics[width=\columnwidth]{fig/harbor-pb.pdf}
+\caption{Ideal PropBank (\cref{sec:pb}) annotations for verbs. Though PB uses lexical frames rather than deep frames,
+there are clear similarities to the FrameNet annotations in \cref{fig:harbor-fn}.}
+\label{fig:harbor-pb}
+\end{figure}
 
 \subsection{Structure in the FrameNet lexicon}
 
@@ -706,6 +708,7 @@ lexical predicates that evoke similar kinds of scenarios (with the same kinds of
 and these frames are organized in a network, 
 PropBank frames are purely lexical and there are no formal relations between different predicates 
 or their roles. Further, PropBank's sense distinctions are generally coarser-grained than FrameNet's.
+An example PB-annotated sentence is shown in \cref{fig:harbor-pb}.
 
 \finalversion{PropBank does represent lexical ambiguity---e.g., the verb \textit{order} is ambiguous 
 in PropBank between \pbf{order-v-01} ``impelled action'' and \pbf{order-v-02} ``request to be delivered''---but
