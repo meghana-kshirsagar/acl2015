@@ -377,13 +377,14 @@ to automating semantic analysis with broad coverage.
 %The fully annotated datasets that exist are often small, 
 %hindering the accuracy and domain robustness of models trained on them.
 %However, 
-Low-resource tasks may benefit from exploiting \emph{out-of-domain} annotated data, 
-as well as data with \emph{different} (but related) forms of annotation,
-for additional training data or features.
+%
+% Low-resource tasks may benefit from exploiting \emph{out-of-domain} annotated data, 
+% as well as data with \emph{different} (but related) forms of annotation,
+% for additional training data or features.
 This paper considers the argument identification and classification subtask 
 of frame-semantic parsing.
 To date, systems evaluated on the full-sentence FrameNet parsing task 
-have relied exclusively upon full-text annotations in the FrameNet resource 
+have relied exclusively upon a small corpus of full-text annotations %in the FrameNet resource 
 for learning to recognize arguments. 
 We augment supervised learning with additional 
 ``indirect'' training data and features 
@@ -588,25 +589,30 @@ Roles & 2,644 & 1,420 & 4,821 & 1,224 \\
 
 \subsection{Exemplars}\label{sec:exemplars}
 
-Conceived primarily as a lexicography project, 
-most FrameNet annotations serve to illustrate the argument structure potential 
-of particular predicates. When predicates are added to a frame, 
-a large set of source corpora (primarily, the British National Corpus) covering a wide range of genres
-is searched for various syntactic patterns, 
-and a lexicographer identifies a selection, or \textbf{subcorpus}, of sentences 
-illustrating the predicate's behavior \citep{boas-05}.
-The subcorpus sentences are then annotated, but \emph{only with respect to the predicate in question}.
+%Conceived primarily as a lexicography project, 
+Most FrameNet annotations serve to illustrate the argument structure potential 
+of particular predicates. 
+% When predicates are added to a frame, 
+% a large set of source corpora (primarily, the British National Corpus) covering a wide range of genres
+% is searched for various syntactic patterns, 
+% and a lexicographer identifies a selection, or \textbf{subcorpus}, of sentences 
+% illustrating the predicate's behavior \citep{boas-05}.
+% The subcorpus sentences are then annotated, but \emph{only with respect to the predicate in question}.
+To document a given predicate, lexicographers manually select corpus examples and annotate them
+\emph{only with respect to the predicate in question}.
 These singly-annotated sentences are called lexicographic \textbf{exemplars}.
 
 The subset of exemplars containing argument annotations is described in \cref{tbl:datastats}.
 Relative to the full-text dataset, the exemplar dataset contains 
 an order of magnitude more frame annotations and two orders of magnitude 
 more sentences annotated.
-Because we are conditioning on the identified frame, 
-the fact that the exemplar dataset has just one annotated frame per sentence
-is not a concern in argument identification. However, the rate of overt arguments per frame 
-is noticeably higher for exemplars, which potentially biases the model's 
-tendency to predict certain kinds of arguments in a way that is not statistically representative of a natural corpus.
+% Because we are conditioning on the identified frame, 
+% the fact that the exemplar dataset has just one annotated frame per sentence
+% is not a concern in argument identification. However, the 
+Because exemplars have been manually selected, the rate of overt arguments per frame 
+is noticeably higher than in the full-text data, which potentially biases the 
+predictions of models trained on exemplars.
+%model's tendency to predict certain kinds of arguments in a way that is not statistically representative of a natural corpus.
 
 The exemplar sentences formed the basis of early studies of frame-semantic role labeling \citep[e.g.,][]{gildea-02,thompson-03,fleischman-03,kwon-04}.
 We deem it worthwhile to (a)~investigate whether the exemplars 
@@ -647,10 +653,11 @@ can reap rewards for FrameNet-style SRL.
 
 Very little data is annotated with both PropBank and FrameNet analyses.
 Therefore, to bridge between the PropBank and FrameNet corpora, 
-we explore two approaches: (a)~running a PropBank-trained semantic role labeler 
-on the FrameNet data as an additional form of preprocessing; and 
-(b)~leveraging SemLink \citep{bonial-13}, a partial and semi-automatic augmentation 
-of the PropBank corpus's roleset annotations with mappings to FrameNet and VerbNet.
+we run a PropBank-trained semantic role labeler 
+on the FrameNet data as an additional form of preprocessing.\footnote{In preliminary experiments, 
+we tried to leverage PropBank annotations in SemLink \citep{bonial-13}, which include mappings to FrameNet.
+However, we found that FrameNet mappings in SemLink are quite noisy, and that including 
+SemLink sentences in the training data only hurt performance.}
 
 \section{Learning from multiple domains and representations}
 
@@ -844,7 +851,7 @@ The source domain model is effectively a form of preprocessing, and the features
 of model stacking, where successively richer models are trained by cross-validation on the same dataset 
 \citep[e.g.,][]{cohen-05,nivre-08,martins-08}.}
 
-In our case, we treat the full text annotations as our target domain, and experiment with using PropBank, SemLink, and the exemplars data as source domains.
+In our case, we treat the full text annotations as our target domain, and experiment with using PropBank and the exemplars data as source domains.
 Each of the three source models produces SRL-style output, where predicates are assigned frames or rolesets, and for each predicate, spans are assigned role labels.
 But they differ in the labels used for roles.
 \st{talk about Illinois SRL \citep{punyakanok-08}\footnote{\url{http://cogcomp.cs.illinois.edu/page/software_view/SRL}}, whatever-we-did-with-SemLink here?}
@@ -921,30 +928,6 @@ incomplete annotations). Out of a total of 145838 sentences, $\approx$4000 had o
 We further removed duplicate sentences that already appear in the FT data. 
 In the argument annotations, we merged spans which were adjacent and had the same argument label.
 
-\paragraph{SemLink.} 
-SemLink (see \cref{sec:pb}) contains two types of mappings. The \emph{sense-level mappings} give correspondences between the concepts
-from each resource---i.e., between `frames' from FN, `rolesets' from PB, and `roles' from VN. 
-Since they map different interpretations and granularities 
-of concepts, the sense-level mappings may be one-to-one, one-to-many, or many-to-many.
-PropBank and FrameNet are mapped indirectly via VerbNet. %, introducing additional coverage gaps and ambiguities.
-Second, SemLink provides some \emph{token-level parallel annotations} 
-for the 3~representations in a subset of the PB-WSJ text: hereafter SL-WSJ.
-
-We focus on using token-level SemLink version~1.2.2c annotations as a (disambiguated) mapping from PB to FN tokens.
-Of the available 74,977 SL-WSJ verbs, a majority cannot be mapped to FN frames for various reasons.
-Around 31\% of the predicates have the frame label \texttt{IN} (``indefinite'') where the mapping from VerbNet to FrameNet is ambiguous.
-About 20\% of the instances are labeled \texttt{NF} (``no frame''), indicating a coverage gap in FrameNet. 
-21\% of verbs have frame labels but no frame element annotations. Most of these are predicates with modifier arguments.
-Other arguments pointed to null anaphora that could not be resolved to overt arguments.
-This leaves 15,323 mappable instances with at least one overt argument, or 20\% of SL-WSJ verbs. This is a very small
-subset of the entire PB annotated data.
-
-Some of the FN information in SemLink is out of date due to subsequent changes in FrameNet.
-There are some erroneous FN annotations as well: e.g., all 14~instances of \vpred{liquidate} are
-labeled \fnf{Killing}, despite being used in the financial sense; and in 17~cases \vpred{direct}
-is erroneously marked as \fnf{Behind\_the\_scenes} (i.e., film direction).
-These kind of errors are hard to detect and remove.
-
 
 \nss{OntoNotes PropBank preprocessing (NLTK)?}
 
@@ -983,7 +966,7 @@ an indication of how well a model generalizes.
 
 \subsection{Results}
 
-\input{results.tex}
+\input{results_short.tex}
 
 
 \nss{comparison to prior work (baseline, best result). args+frames score vs. args only}
@@ -1007,21 +990,15 @@ suggesting that higher levels in the hierarchy can be too general \mk{give examp
 %\footnote{We also tried adding grandparents and found only minor improvements. Using an expert-pruned hierarchy with relations that are
 %most likely to help can give greater benefits, and is beyond the focus of this work.}
 
-SemLink, as noted in \cref{sec:preproc}, is a noisy resource---an observation confirmed by the performance of the (FT+SemLink) model,
-which drops $F_1$ by a whopping 11.2 and 16.5 points below the baseline on FT-test and exemplars, respectively. 
-The guide features, however, modulate the influence
-of the SemLink annotations, giving a minor increase over the baseline.\nss{the two results are presented in the opposite order in the table}
-%\mk{resulting in a graceful but prompt exit for this resource from further consideration.}
-
 With the exemplars resource, we find that the guide features give us a modest improvement of 1.1 points on FT-test, 
 while using it as gold-standard training data results in a bigger increase of 2.8 points. 
-On the exemplars-test we observe a similar trend: guide features give a smaller benefit but the (FT+Exemplars) model increases $F_1$ by $\approx$23 $F_1$-points. This contrasts with what we observed for SemLink.
+On the exemplars-test we observe a similar trend: guide features give a smaller benefit but the (FT+Exemplars) model increases $F_1$ by $\approx$23 $F_1$-points.
 `EasyAdapt', the frustratingly easy DA approach to incorporate the Exemplars
 gives a minor increase of 0.3 points on the FT-test but a reduction of 2.8 points on the exemplars-test.
 
 Finally, using the PB-SRL data in the form of guide features also results in small improvements over the baseline. 
 Overall we observe that an additional resource that is very similar to the original resource helps more as training data than as a `guide model'---%
-whereas the guide features help more when the additional resource is either unreliable (like SemLink) or too distinct (like PB). 
+whereas the guide features help more when the additional resource is too distinct (like PB). 
 To summarize the results, we find that adding the sibling-level hierarchical features, using Exemplars as gold-standard training data and 
 incorporating PB-SRL data in the form of guide features all help in improving the performance over the baseline on both FT-test and exemplars-test.
 
@@ -1103,12 +1080,6 @@ a parallel evaluation on a sample of exemplars suggests the
 improved models are also more \emph{robust}, 
 capturing a broader swath of the English language.
 
-% We are optimistic that future improvements to lexical semantic resources, 
-% including planned changes for PropBank \citep{bonial-14} and SemLink \citep{bonial-13}, 
-% will lead to further gains in this task. 
-% Moreover, the techniques discussed here could be further explored 
-% using semi-automatic mappings between lexical resources \citep[such as UBY;][]{gurevych-12}, 
-% and correspondingly, this task could be used to extrinsically validate those mappings.
 \finalversion{We are optimistic that future improvements to lexical semantic resources, 
 including planned changes for PropBank \citep{bonial-14} and SemLink \citep{bonial-13}, 
 will lead to further gains in this task. 

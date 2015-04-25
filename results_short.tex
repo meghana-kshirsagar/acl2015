@@ -1,0 +1,40 @@
+\begin{table*}\centering\small
+\begin{tabular}{>{\itshape}clr<{\hspace*{15pt}}rrr@{~~}r@{~~}rrr}
+\toprule
+\normalfont\textbf{Additional} & \multicolumn{1}{c}{\textbf{Training Configuration}} & \multicolumn{1}{c}{\textbf{Millions of}} & \multicolumn{3}{c}{\textbf{Full-Text}} && \multicolumn{3}{c}{\textbf{Exemplars}} \\
+\cline{4-6}\cline{8-10}
+\normalfont\textbf{Resource} &  \multicolumn{1}{c}{\textbf{(Features)}} & \multicolumn{1}{c}{\textbf{Features}} & P\hphantom{11} & R\hphantom{11} & $F_1$\hphantom{0} && P\hphantom{11} & R\hphantom{11} & $F_1$\hphantom{0} \\
+\midrule
+%(Baseline) & FT (Basic) & 66.03 & 53.79 & 59.29 && 64.90 & 33.60 & 44.27 \\
+(Baseline) & FT (Basic) & 2.7 & 65.57 & 53.82 & 59.12 && 62.63 & 37.65 & 47.03 \\
+\midrule
+\multirow{2}{*}{FN Hierarchy} & FT (siblings) & 5.4 & 67.24 & 54.76 & 60.36 && 64.81 & 39.09 & 48.77 \\
+          & FT (siblings+parents) & 8.5 & 67.67 & 52.79 & 59.31 && 65.25 & 38.18 & 48.18 \\
+\midrule
+& Exemplars $\xrightarrow{\text{guide}}$ FT & 3.5 & 65.24 & 55.96 & 60.24 && 67.71 & 48.08 & 56.23\\
+Exemplars & FT+Exemplars (Basic) & 13\nss{.?} & 66.06 & 58.23 & 61.90 && 75.44 & 65.11 & \bf{69.89} \\
+& FT+Exemplars (EasyAdapt) & 16\nss{.?} & 65.70 & 59.04 & \bf{62.19} && 73.88 & 61.40 & 67.06 \\
+\midrule
+PB-SRL & PB-SRL $\xrightarrow{\text{guide}}$ FT & 3.6 & 64.96 & 54.83 & 59.47 && 61.38 & 39.14 & 47.80 \\
+\bottomrule
+\end{tabular}
+\caption{Results on two test sets: Baseline vs.~individual other resources. 
+Precision, recall, and $F_1$ are given as percentages.}
+\label{tbl:results}
+\end{table*}
+
+\begin{table*}\centering\small
+\begin{tabular}{lr<{\hspace*{15pt}}rrr@{~~}r@{~~}rrr}
+\toprule
+\multicolumn{1}{c}{\textbf{Training Configuration}} & \multicolumn{1}{c}{\textbf{Millions of}} & \multicolumn{3}{c}{\textbf{Full-Text}} && \multicolumn{3}{c}{\textbf{Exemplars}} \\
+\cline{3-5}\cline{7-9}
+\multicolumn{1}{c}{\textbf{(Features)}} & \multicolumn{1}{c}{\textbf{Features}} & P\hphantom{11} & R\hphantom{11} & $F_1$\hphantom{0} && P\hphantom{11} & R\hphantom{11} & $F_1$\hphantom{0} \\
+\midrule
+FT+Exemplars (Hier: siblings) & 34 & 66.00 & 60.40 & \textbf{63.07} && 76.14 & 67.71 & \textbf{71.70} \\
+PB-SRL $\xrightarrow{\text{guide}}$ FT+Exemplars & 17 & 67.36 & 58.79 & 62.80 && 77.15 & 65.47 & 70.83 \\
+%FT+Exemplars (PB-SRL, Hier: siblings) \\
+\bottomrule
+\end{tabular}
+\caption{Combining best techniques across resources \nss{TODO}}
+\label{tbl:bestTech}
+\end{table*}
