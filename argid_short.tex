@@ -233,8 +233,8 @@
 \newcommand{\stmarker}{\ensuretext{\textcolor{blue}{\ensuremath{^{\textsc{S}}_{\textsc{T}}}}}}
 \newcommand{\jbmarker}{\ensuretext{\textcolor{orange}{\ensuremath{^{\textsc{J}}_{\textsc{B}}}}}}
 \newcommand{\dbmarker}{\ensuretext{\textcolor{purple}{\ensuremath{^{\textsc{D}}_{\textsc{B}}}}}}
-%\newcommand{\arkcomment}[3]{\ensuretext{\textcolor{#3}{[#1 #2]}}}
-\newcommand{\arkcomment}[3]{}
+\newcommand{\arkcomment}[3]{\ensuretext{\textcolor{#3}{[#1 #2]}}}
+%\newcommand{\arkcomment}[3]{}
 \newcommand{\cjd}[1]{\arkcomment{\cjdmarker}{#1}{red}}
 \newcommand{\nss}[1]{\arkcomment{\nssmarker}{#1}{magenta}}
 \newcommand{\mk}[1]{\arkcomment{\mkmarker}{#1}{mdgreen}}
@@ -381,67 +381,30 @@ Low-resource tasks may benefit from exploiting \emph{out-of-domain} annotated da
 as well as data with \emph{different} (but related) forms of annotation,
 for additional training data or features.
 This paper considers the argument identification and classification subtask 
-of frame-semantic parsing, which to date has relied exclusively 
-upon full-text annotations in the FrameNet resource. %\nss{is this true? I think Dipanjan used exemplars for the latent variable frame ID model, but he hasn't used them at all for arg ID, right?}
+of frame-semantic parsing.
+To date, systems evaluated on the full-sentence FrameNet parsing task 
+have relied exclusively upon full-text annotations in the FrameNet resource 
+for learning to recognize arguments. 
 We augment supervised learning with additional 
 ``indirect'' training data and features 
 so as to leverage resources internal and external to FrameNet (e.g., PropBank). 
 Experiments demonstrate that some of these resources are valuable for 
 more accurate and more robust frame SRL,
-with the best model achieving a 3.95 increase in $F_1$ over the state of the art. \nss{main quantitative result}
-%with the best model achieving a 3.0 increase in $F_1$, or 7.5\% reduction in error, 
-%over the state of the art.\st{can you say that with F1?}\nss{sure, you can say error reduction, but how can we compare to state-of-the-art (unless you mean best reported result with gold frames)?}
+with the best model achieving nearly a 4-point increase in $F_1$ over the baseline.
 \end{abstract}
 
 \section{Introduction}
 
-Sparsity of data resources is a challenge for many computational semantics tasks \st{cite?}.
-Frame-semantic parsing \citep{gildea-02} is a case in point.
+Sparsity of data resources is a challenge for many computational semantics tasks\st{cite?}.
+Frame-semantic parsing \citep{gildea-02,das-14} is a case in point.
 This is the task of automating the rich linguistic structure analyses 
 of the FrameNet lexicon and corpus \citep{baker-98}.\footnote{\url{http://framenet.icsi.berkeley.edu/}}
-FrameNet represents kinds of events, scenarios, and relationships 
-with an inventory of \textbf{frames} (such as \fnf{Shopping}, \fnf{Scarcity}, and \fnf{Shoot\_projectiles}). 
-Each frame is associated with lexical \textbf{predicates} (verbs, nouns, adjectives, and adverbs) capable of 
-evoking the scenario, and a set of \textbf{roles} (or \textbf{frame elements}) 
-called to mind in order to understand the scenario. 
-These roles may be implicit, 
-but are often realized in the sentence.
 Given a sentence, frame-semantic parsing is the task of mapping tokens in the sentences
-to evoked frames, and for each evoked frame, finding and labeling its \textbf{argument} phrases 
-with roles. 
+to evoked \textbf{frames}, and for each evoked frame, finding and labeling its \textbf{argument} phrases 
+with frame-specific \textbf{roles}. 
+The FrameNet \textbf{full-text} corpus provides about 5,000 sentences annotated for all frames and their arguments; 
+these have been used to train and evaluate contemporary frame-semantic parsers \citep{litkowski,das-14}.
 An example appears in \cref{fig:harbor-fn}; it will be explained in detail in \cref{sec:ft}.
-
-\begin{figure}
-\includegraphics[width=\columnwidth]{fig/harbor-fn.pdf}
-\caption{Example sentence from FrameNet full-text annotation. 
-3~frames and their arguments are shown: 
-\fnf{Body\_movement} is evoked by \textit{crane},
-\fnf{Observable\_body\_parts} by \textit{necks}, 
-and \fnf{Punctual\_perception} by \textit{glimpse}.
-(Further, \textit{harbor} is annotated as evoking the \fnf{Locale\_by\_use} frame 
-and doubles as its sole argument.) 
-Horizontal lines representing argument spans 
-are labeled with role names.}
-\label{fig:harbor-fn}
-\end{figure}
-
-FrameNet~1.5 defines a structured taxonomy of over 1,000 frames associated with 12,000~English lexical predicates, 
-and also provides annotations for over 175,000 attestations 
-of these frames/predicates in corpora, annotated in context with their arguments. 
-A smaller number of sentences (about 5,000)
-are provided with \textbf{full-text} annotations, i.e.~each sentence 
-has been analyzed for all available frames. 
-But the bulk of sentences in FrameNet---the lexicographic \textbf{exemplars}---are annotated for only one frame per sentence, 
-and have thus far not been exploited successfully for the SRL\st{not defined yet} phase of the contemporary frame-semantic parsing task.
-Here, we seek to leverage these exemplar sentences 
-as well as the (type-level) hierarchical structure of the FrameNet lexicon. 
-
-\begin{figure}
-\includegraphics[width=\columnwidth]{fig/harbor-pb.pdf}
-\caption{Ideal PropBank annotations for verbs. Though PB uses lexical frames rather than deep frames,
-there are clear similarities to the FrameNet annotations in \cref{fig:harbor-fn}.}
-\label{fig:harbor-pb}
-\end{figure}
 
 In this paper, we address the \textbf{argument identification} 
 subtask of finding and labeling arguments 
@@ -458,16 +421,46 @@ additionally, PropBank provides one million words of fully annotated English sen
 Despite all these differences, there is often a great deal in common between 
 FrameNet-style and PropBank-style analyses, as should be apparent from comparing 
 \cref{fig:harbor-fn} and \cref{fig:harbor-pb}. 
-To get the best of both worlds, we aim to tap into PropBank's vast resources 
+To get the best of both worlds, we tap into PropBank's vast resources 
 as indirect token-level supervision for FrameNet-style analysis. 
 We hypothesize that PropBank analyses can serve as a signal for the FrameNet SRL task, either by heuristically transforming PropBank annotations into FrameNet annotations to augment the training data, or by preprocessing sentences with a PropBank SRL system to obtain new features for FrameNet argument identification.
+
+Further, we look for ways to exploit additional resources in FrameNet itself.
+The bulk of sentences in FrameNet---the lexicographic \textbf{exemplars}---are annotated for only one frame per sentence, 
+and have thus far not been exploited successfully for the SRL phase of the frame-semantic parsers evaluated on full-text data.
+Here, we seek to leverage these exemplar sentences 
+as well as the (type-level) hierarchical structure of the FrameNet lexicon. 
 
 Our experiments expand the \emph{training data} and the \emph{feature space}
 of supervised argument identification
 in order to integrate evidence from all of these sources 
 into SEMAFOR \citep{das-14}, the leading open-source frame-semantic parser for English.\footnote{\url{http://www.ark.cs.cmu.edu/SEMAFOR/}} 
 The results show that some of these sources of evidence succeed 
-at boosting argument identification performance.\nss{SOTA (without constraints)?}
+at boosting argument identification performance.\nss{relationship to SOTA?}
+
+\begin{figure}
+\includegraphics[width=\columnwidth]{fig/harbor-fn.pdf}
+\caption{Example sentence from FrameNet full-text annotation. 
+3~frames and their arguments are shown: 
+\fnf{Body\_movement} is evoked by \textit{crane},
+\fnf{Observable\_body\_parts} by \textit{necks}, 
+and \fnf{Punctual\_perception} by \textit{glimpse}.
+(Further, \textit{harbor} is annotated as evoking the \fnf{Locale\_by\_use} frame 
+and doubles as its sole argument.) 
+Horizontal lines representing argument spans 
+are labeled with role names.}
+\label{fig:harbor-fn}
+\end{figure}
+
+
+
+\begin{figure}
+\includegraphics[width=\columnwidth]{fig/harbor-pb.pdf}
+\caption{Ideal PropBank annotations for verbs. Though PB uses lexical frames rather than deep frames,
+there are clear similarities to the FrameNet annotations in \cref{fig:harbor-fn}.}
+\label{fig:harbor-pb}
+\end{figure}
+
 
 
 \section{Resources}
@@ -476,31 +469,48 @@ at boosting argument identification performance.\nss{SOTA (without constraints)?
 
 \nss{w/in each mention: genre/overall vocabulary; coverage and distributions of predicates, FE labels; oracle coverage of FT test}
 
-\subsection{The FrameNet Lexicon}\label{sec:lex}
+\subsection{FrameNet}\label{sec:fn}
 
-Each frame in the Berkeley FrameNet lexicon is intended to represent a gestalt scene. 
-The frame definition includes: a descriptive name; 
-a set of \textbf{core roles} representing participants and props that are crucial 
-to understanding the scene; a set of \textbf{non-core roles} such as circumstantial 
-information (time, place, manner, purpose, etc.); 
-an English textual description of the scene and how its roles relate to one another;
-and a set of English predicates that can evoke the scene.
-For example, the \fnf{Body\_movement} frame has \fnr{Agent} and \fnr{Body\_part} as its core roles; 
+FrameNet represents kinds of events, scenarios, and relationships 
+with an inventory of \textbf{frames} (such as \fnf{Shopping}, \fnf{Scarcity}, and \fnf{Shoot\_projectiles}). 
+Each frame is associated with a set of \textbf{roles} (or \textbf{frame elements}) 
+called to mind in order to understand the scenario,
+and lexical \textbf{predicates} (verbs, nouns, adjectives, and adverbs) capable of 
+evoking the scenario. 
+For example, the \fnf{Body\_movement} frame has \fnr{Agent} and \fnr{Body\_part} as its core roles, 
 %the frame description states,
 %``This frame contains words for motions or actions an \fnr{Agent} performs using some part of his/her body.''
-Lexical entries in this frame include verbs such as \fnlu{bend}, \fnlu{blink}, \fnlu{crane}, and \fnlu{curtsy}, 
+and lexical entries including verbs such as \fnlu{bend}, \fnlu{blink}, \fnlu{crane}, and \fnlu{curtsy}, 
 plus the noun use of \fnlu{curtsy}.
+In the annotated sentence in \cref{fig:harbor-fn},
+\fnf{Body\_movement} is evoked by \textit{crane}, and 3~of its roles are filled by overt arguments: 
+the 2~core roles (\fnr{Agent}, \fnr{Body\_part}) happen to be filled by noun phrases 
+(\textit{passengers}, \textit{their necks}), while the non-core role \fnr{Purpose} is filled by a 
+prepositional phrase adjunct (\textit{for dizzying glimpses of the harbor}).
+In FrameNet~1.5, there are over 1,000 frames and 12,000~lexical predicates.
+
+\nss{mention somewhere?: roles may be implicit, but are often realized in the sentence.}
+
+% Each frame in the Berkeley FrameNet lexicon is intended to represent a gestalt scene.
+% The frame definition includes: a descriptive name;
+% a set of \textbf{core roles} representing participants and props that are crucial
+% to understanding the scene; a set of \textbf{non-core roles} such as circumstantial
+% information (time, place, manner, purpose, etc.);
+% an English textual description of the scene and how its roles relate to one another;
+% and a set of English predicates that can evoke the scene.
 
 The frame lexicon is organized as a network, with several kinds of \textbf{frame-to-frame relations} 
 linking pairs of frames and (subsets of) their arguments \citep{ruppenhofer-10}. 
-Among these kinds of frame-to-frame relations are:\\
-\paragraph{Inheritance:} E.g., \fnf{Punctual\_perception} (e.g., \fnlu{glimpse.v}) inherits from 
+Among these kinds of frame-to-frame relations are:
+\paragraph{Inheritance:} 
+E.g., \fnf{Punctual\_perception} (e.g., \fnlu{glimpse.v}) inherits from 
 \fnf{Perception\_experience} (e.g., \fnlu{see.v}), which inherits from \fnf{Perception}. 
-%Other frames inheriting from \fnf{Perception} include \fnf{Sensation} (e.g., \fnlu{sight.n}) and 
+%Other frames inheriting from \fnf{Perception} include \fnf{Sensation} (e.g., \fnlu{sight.n}) and  
 %\fnf{Becoming\_aware} (e.g., \fnlu{notice.v}). 
 Crucially, roles in inheriting (conceptually more specific) frames are mapped 
 where they correspond to a role in the inherited frame: so \fnf{Punctual\_perception}.\fnr{Perceiver} links to \fnf{Perception\_experience}.\fnr{Perceiver\_passive}, 
-which links to \fnf{Perception}.\fnr{Perceiver}, which links to \fnf{Sensation}.\fnr{Perceiver\_passive} and \fnf{Becoming\_aware}.\fnr{Cognizer}.
+which links to \fnf{Perception}.\fnr{Perceiver}, and so forth.
+%, which links to \fnf{Sensation}.\fnr{Perceiver\_passive} and \fnf{Becoming\_aware}.\fnr{Cognizer}.
 
 \paragraph{Subframe:} This indicates a subevent within a complex event. 
 E.g., the \fnf{Criminal\_process} frame groups together subframes 
@@ -508,8 +518,8 @@ E.g., the \fnf{Criminal\_process} frame groups together subframes
 \fnf{Criminal\_process}.\fnr{Defendant}, for instance, is mapped to 
 \fnf{Arrest}.\fnr{Suspect}, %\fnf{Arraignment}.\fnr{Defendant}, 
 \fnf{Trial}.\fnr{Defendant}, and \fnf{Sentencing}.\fnr{Convict}. 
-Other salient participants in the complex event %(such as the crime for which someone is arrested, tried, etc.)\ 
-are similarly mapped via Subframe relations.
+%Other salient participants in the complex event %(such as the crime for which someone is arrested, tried, etc.)\ 
+%are similarly mapped via Subframe relations.
 This permits an inference that a person tried for a crime likely
 has been or will be arrested, arraigned, and sentenced for that crime.
 
@@ -519,17 +529,21 @@ seen in those roles and how they relate syntactically to the predicate.
 
 \subsection{Full-text Annotations}\label{sec:ft}
 
+\nss{TODO:move}FrameNet~1.5 defines a structured taxonomy of over 1,000 frames associated with 12,000~English lexical predicates, 
+and also provides annotations for over 175,000 attestations 
+of these frames/predicates in corpora, annotated in context with their arguments. 
+A smaller number of sentences (about 5,000)
+are provided with \textbf{full-text} annotations, i.e.~each sentence 
+has been analyzed for all available frames. 
+
+
 Beginning with the SemEval-2007 shared task on FrameNet analysis \citep{baker-07},
 frame-semantic parsers have been trained and evaluated on the \textbf{full-text (FT)}\footnote{Though these 
 were \emph{annotated} at the document level, and train/dev/test splits are by document, the frame-semantic parsing 
 is currently restricted to the sentence level.} portion 
 of the FrameNet corpus. %This consists of documents for which annotators made an effort to assign frames and arguments to as many words as possible. 
 \Cref{fig:harbor-fn} gives an example sentence from the FT portion of the corpus. 
-It has 4~frame annotations. \fnf{Body\_movement}, as described in the previous section, 
-is evoked by \textit{crane}, and 3~of its roles are filled by overt arguments: 
-the 2~core roles (\fnr{Agent}, \fnr{Body\_part}) happen to be filled by noun phrases 
-(\textit{passengers}, \textit{their necks}), while the non-core role \fnr{Purpose} is filled by a 
-prepositional phrase adjunct (\textit{for dizzying glimpses of the harbor}).
+It has 4~frame annotations. 
 
 \finalversion{The frame defines 19~additional non-core roles, none of which have an argument in the example.
 In frame semantics, non-core roles are considered to be \emph{conceptually} optional; 
@@ -852,7 +866,7 @@ the `guide' role label $r_g$ of the span $a$ is the same as its true\st{you mean
 \mk{NSS: notation for the frame/role/features etc?}
 \mk{How many total types of relations? Cleanup writeup based on NSS's notation.}
 
-Frames in FrameNet are connected to each other by relations such as inheritance, temporal ordering, causality. 
+\nss{this is all redundant given above:}Frames in FrameNet are connected to each other by relations such as inheritance, temporal ordering, causality. 
 For instance, the frame \fnf{Robbery} inherits from the more abstract frame \fnf{Committing\_crime}, and the
 frame \fnf{Fall\_asleep} is preceeded by the frame \fnf{Being\_awake}. The roles of related frames have 
 also been mapped to indicate the correspondence between them: \fnf{Robbery}.\fnr{Perpetrator} is mapped to 
@@ -860,6 +874,7 @@ also been mapped to indicate the correspondence between them: \fnf{Robbery}.\fnr
 apart in this hierarchy are less related than say neighbours.
 This hierarchy can be exploited to share information across related roles, thereby benefiting the roles 
 that have few annotations \mk{say something about a greater variety of contexts is available for each role}. 
+
 We say that the $\textit{parent}$ of a role is one that has either the \textbf{Inheritance} or \textbf{Subframe} relation to it (\cref{sec:lex}).
 There are 4138 \textbf{Inheritance} and 589 \textbf{Subframe} links between role types in FrameNet 1.5.
 
