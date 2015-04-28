@@ -864,10 +864,9 @@ each feature to contribute both ``general'' and ``domain-specific'' weights to t
 behaves similarly in both domains or not.
 The general feature contributes to both domains, so regularization encourages the model to use the general version over the domain-specific, if possible.
 
+
 \subsection{Guide Features}
 \label{sec:guide}
-
-\st{TODO: shorten}
 
 Another approach to domain adaptation %, 
 % which does not combine the labeled data from the two domains, 
@@ -1024,13 +1023,13 @@ We learn $\mathbf{w}$ by minimizing the $\ell_2$-regularized average loss on the
 
 \section{Experimental setup}
 
-All of our experiments use the same form of regularization, 
-and condition on the same oracle frame predictions 
-and syntactic preprocessing.
+% All of our experiments use the same form of regularization, 
+% and condition on the same oracle frame predictions 
+% and syntactic preprocessing.
 % \nss{does this match Dipanjan's latest
 % experiments?}, and use beam search with a beam size of 100 for joint decoding of the test data.
-Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} are used, as in \citet{das-14}. % to narrow the set of candidate spans considered, and as input to feature extraction.
-For the full-text annotations, we use the same FrameNet 1.5 data and train/test splits as \citet{das-14}.
+We use the same FrameNet 1.5 data and train/test splits as \citet{das-14}.
+Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} are used, as in \citet{das-14}.
 
 
 
@@ -1041,7 +1040,7 @@ For the full-text annotations, we use the same FrameNet 1.5 data and train/test 
 Out of a total of 145,838 exemplar sentences, we removed
 $\approx$4,000 sentences which had no role annotations.
 %  (under the assumption that these are likely to be incomplete annotations).
-We further removed duplicate sentences that already appeared in the full-text
+We removed duplicate sentences that already appeared in the full-text
 data.
 We also merged spans which were adjacent and had the
 same role label.
@@ -1061,22 +1060,32 @@ We use the performance on the FT dev set to determine the stopping criterion for
 
 
 \paragraph{Evaluation.}
-A complete frame-semantic parsing system involves two main steps: frame identification and argument identification. Since the focus of this work is only 
-argument identification, we assume that the gold-standard frames are given and evaluate the models on their role labeling performance.
+A complete frame-semantic parsing system involves frame identification and argument identification.
+We perform two evaluations: one assuming gold-standard frames are given, to
+separate the errors made by frame identification;
+and one using the output of \citet{hermann-14}, the current state-of-the-art in
+frame identification, to demonstrate that our improvements are retained when
+incorporated into a full system.
+% Since the focus of this work is argument identification, we assume that
+% the gold-standard frames are given and evaluate the models on their role labeling performance.
 % The baseline model from \citet{das-14} that we compare against, is the current state-of-the-art for argument identification (i.e frame SRL).
 
-The performance of the various methods is compared on two different test sets.
-(1) Full-text: the FrameNet 1.5 FT test split that was used in the evaluation in \citet{das-14}. This data consists of sentences from 23 documents. 
-(2) Exemplars: a randomly sampled set of sentences from the exemplars data, with approximately the same number of targets as the FT test set.
+\finalversion{
+The performance of the various methods is compared on the FT test set.
+% (1) Full-text: the FrameNet 1.5 FT test split that was used in the evaluation in \citet{das-14}.
+% This data consists of sentences from 23 documents. 
+% (2) Exemplars: a randomly sampled set of sentences from the exemplars data, with approximately the same number of targets as the FT test set.
 Statistics of both the test sets are given in Table \ref{tbl:datastats}. 
 The FT test set has 289 unseen role types, which is much higher than
-the 38 in the exemplars test set. There are no unseen frame types in the exemplars test data, whereas the FT test has 46 of them. 
-These differences are due to the manner in which the train and test splits were created, with document-level splits being used
-for FT and sentence-level splits for the exemplars.
+the 38 in the exemplars test set.
+There are no unseen frame types in the exemplars test data, whereas the FT test has 46 of them. 
+These differences are due to the manner in which the train and test splits were
+created, with document-level splits being used for FT and sentence-level splits
+for the exemplars.
 The last row of Table \ref{tbl:datastats} shows the unseen role types faced by a model that was built on both the FT and exemplars training data.
 In the FT test set it is 103, lower by $\approx$190 than what a FT-only model will see, thus leading us to expect that a model that combines
 both sets of data will certainly benefit in performance.
-
+}
 % While the FT test set represents the benchmark set for evaluating the 
 % performance of a frame semantic role labeling system, the exemplars test set being from a different distribution of text, gives us
 % an indication of how well a model generalizes.
@@ -1089,7 +1098,8 @@ both sets of data will certainly benefit in performance.
 
 \nss{comparison to prior work (baseline, best result). args+frames score vs. args only}
 \nss{be sure to mention: gold frames}
-We present precision, recall, and $F_1$-measure microaveraged across the test instances in Table \ref{tbl:results}, for all the approaches that we tried.
+We present precision, recall, and $F_1$-measure microaveraged across the test
+instances in Table \ref{tbl:results}, for all approaches. % that we tried.
 The first column classifies the approaches based on what resource we use and the second column indicates what training data was used. 
 For each resource (one multi-row in the table) we show results obtained by various methods of combining it with the FT data.
 The marker `$\xrightarrow{\text{guide}}$' on some of the methods refers to the feature augmentation discussed in \cref{sec:guide},
