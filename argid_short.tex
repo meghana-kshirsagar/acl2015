@@ -705,7 +705,8 @@ the model's training data (\cref{sec:frust}) and feature space %$\mathbf{\phi}$
 \subsection{Baseline}
 \label{sec:base_model}
 
-The argument identification task is treated as a structured prediction problem.
+In SEMAFOR, the argument identification task is treated as a structured
+prediction problem.
 % We consider the argument identification task as statistical classification 
 % for each role of the frame in context.
 Let the classification input be a dependency-parsed sentence $\mathbf{x}$, 
@@ -870,7 +871,7 @@ The general feature contributes to both domains, so regularization encourages th
 
 \st{TODO: shorten}
 
-Another approach to introduce supervision for domain adaptation %, 
+Another approach to domain adaptation %, 
 % which does not combine the labeled data from the two domains, 
 is to train a supervised model on a source domain, make predictions using that model on the training data of the target domain, then use those predictions as additional features while training a new model on the target domain.
 % is to use a supervised model built on the source domain to augment features in the target domain.
@@ -880,21 +881,26 @@ of model stacking, where successively richer models are trained by cross-validat
 \citep[e.g.,][]{cohen-05,nivre-08,martins-08}.}
 
 In our case, we treat the full text annotations as our target domain, and experiment with using PropBank and the exemplars data as source domains.
-Each of the three source models produces SRL-style output, where predicates are assigned frames or rolesets, and for each predicate, spans are assigned role labels.
-But they differ in the labels used for roles.
-\st{talk about Illinois SRL \citep{punyakanok-08}\footnote{\url{http://cogcomp.cs.illinois.edu/page/software_view/SRL}}, whatever-we-did-with-SemLink here?}
+% Each of the three source models produces SRL-style output, where predicates are assigned frames or rolesets, and for each predicate, spans are assigned role labels.
+% But they differ in the labels used for roles.
+For PropBank, we run the Illinois SRL system
+ \citep{punyakanok-08}\footnote{\url{http://cogcomp.cs.illinois.edu/page/software_view/SRL}}
+ on the full-text data.
+For the exemplars, we train baseline SEMAFOR on the exemplars and run it on the
+full-text data.
 
-Formally, let $M_{s}$ be the model built on
-the source domain (for instance, the PropBank data). 
-For every target domain sentence $\x$, we introduce ``guide'' features which use the output $M_s(\x)$
-obtained by applying $M_s$ on $\x$, which consists of the role labels assigned to various text spans in $\x$.
+% Formally, let $M_{s}$ be the model built on
+% the source domain (for instance, the PropBank data). 
+% For every target domain sentence $\x$, we introduce ``guide'' features which use the output $M_s(\x)$
+% obtained by applying $M_s$ on $\x$, which consists of the role labels assigned to various text spans in $\x$.
 Two types of guide features were used:
 one indicates that a span $a$ was assigned \emph{any} role, and the other encodes the role label $r_g$ itself.
-In the case where $M_s$ produces labels
-that belong to the same schema as the target domain 
-(for instance, the exemplars use the same schema as the FT annotations\st{our set of source domains is small enough that we can enumerate which ones this applies to. Is it exemplars + SemLink?}), 
+For the exemplars, %case where $M_s$ produces labels
+% that belong to the same schema as the target domain 
+% (for instance, the exemplars use the same schema as the FT annotations\st{our set of source domains is small enough that we can enumerate which ones this applies to. Is it exemplars + SemLink?}), 
 we use an additional feature $\phi_{match}(r_t,r_g)$ to indicate that 
-the `guide' role label $r_g$ of the span $a$ is the same as its true\st{you mean ``target''?} label $r_t$.
+the `guide' role label $r_g$ of the span $a$ is the same as the role label
+being filled, $r_t$.
 
 
 \mk{introduce this as a supervised domain adaptation problem? What is the source and what's the target?}
