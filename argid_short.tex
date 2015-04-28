@@ -346,7 +346,8 @@
 \hyphenation{shriv-eled}
 \hyphenation{Huddle-ston}
 
-\title{Leveraging Additional Resources for Frame-Semantic Role Labeling}
+\title{Improved Frame-Semantic Argument Identification with PropBank,
+Exemplars, and Hierarchical Features}
 
 % Nathan Schneider, Shay B. Cohen, and Noah A. Smith 
 % \author{Nathan Schneider \quad Emily Danchik \quad Chris Dyer \quad Noah A. Smith \\
@@ -383,15 +384,16 @@ to automating semantic analysis with broad coverage.
 % for additional training data or features.
 This paper considers the argument identification and classification subtask 
 of frame-semantic parsing.
-To date, systems evaluated on the full-sentence FrameNet parsing task 
-have relied exclusively upon a small corpus of full-text annotations %in the FrameNet resource 
-for learning to recognize arguments. 
+% To date, systems evaluated on the full-sentence FrameNet parsing task 
+% have relied exclusively upon a small corpus of full-text annotations 
+% for learning to recognize arguments. 
 We augment supervised learning with additional 
 ``indirect'' training data and features 
 so as to leverage resources internal and external to FrameNet (e.g., PropBank). 
-Experiments demonstrate that some of these resources are valuable for 
-more accurate and more robust frame SRL,
-with the best model achieving nearly a 4-point increase in $F_1$ over the baseline.
+Experiments demonstrate that these resources are valuable for 
+more accurate and robust frame-semantic role labeling,
+with the best model achieving nearly a 4-point increase in $F_1$ over the
+\st{SOTA?} baseline.
 \end{abstract}
 
 \section{Introduction}
@@ -403,41 +405,34 @@ of the FrameNet lexicon and corpus \citep{baker-98}.\footnote{\url{http://framen
 Given a sentence, frame-semantic parsing is the task of mapping tokens in the sentences
 to evoked \textbf{frames}, and for each evoked frame, finding and labeling its \textbf{argument} phrases 
 with frame-specific \textbf{roles}. 
-The FrameNet \textbf{full-text} corpus provides about 5,000 sentences annotated for all frames and their arguments; 
-these have been used to train and evaluate contemporary frame-semantic parsers \citep{baker-07,das-14}.
-An example appears in \cref{fig:harbor-fn}; it will be explained in detail in \cref{sec:ft}.
+An example appears in \cref{fig:harbor-fn}; it will be explained in detail in
+\cref{sec:fn}.
 
 In this paper, we address the \textbf{argument identification} 
 subtask of finding and labeling arguments 
 given a predicate in context and the frame it evokes.
 This is a form of semantic role labeling (SRL), 
 a task introduced by \citet{gildea-02} using an earlier version of FrameNet.
-Another resource, \textbf{PropBank} \citep{propbank}, has been widely used for SRL \citep{palmer-10}. 
-PropBank annotations capture shallower lexical frames and arguments; 
-additionally, PropBank provides one million words of fully annotated English sentences.
-% (annotation is less expensive, but potentially less valuable because of the shallower representation).
-% Despite a number of differences in the representations and annotation conventions, 
-% for many predicates FrameNet and PropBank are quite similar: 
-% \cref{fig:harbor-fn} and \cref{fig:harbor-pb} show this for the verb \textit{crane}.
-Despite all these differences, there is often a great deal in common between 
-FrameNet-style and PropBank-style analyses, as should be apparent from comparing 
-\cref{fig:harbor-fn} and \cref{fig:harbor-pb}. 
-To get the best of both worlds, we tap into PropBank's vast resources 
-as indirect token-level supervision for FrameNet-style analysis. 
-We hypothesize that PropBank analyses can serve as a signal for the FrameNet SRL task, either by heuristically transforming PropBank annotations into FrameNet annotations to augment the training data, or by preprocessing sentences with a PropBank SRL system to obtain new features for FrameNet argument identification.
-
-Further, we look for ways to exploit additional resources in FrameNet itself.
-The bulk of sentences in FrameNet---the lexicographic \textbf{exemplars}---are annotated for only one frame per sentence, 
-and have thus far not been exploited successfully for the SRL phase of the frame-semantic parsers evaluated on full-text data.
-Here, we seek to leverage these exemplar sentences 
-as well as the (type-level) hierarchical structure of the FrameNet lexicon. 
-
+We address the sparsity of training data by using standard domain
+adaptation techniques to introduce supervision from three sources:
+\begin{itemize}
+  \item the frame-to-frame relations in FrameNet, by using
+  hierarchical features to share statistical strength among related roles
+  (\S\ref{sec:hierfeats}),
+  \item FrameNet's corpus of partially-annotated \textbf{exemplar} sentences,
+  by using frustratingly simple domain adaptation (\S\ref{sec:frust}), and
+  \item a PropBank-style SRL system, by using guide features (\S\ref{sec:guide}).
+\end{itemize}
+% We show that these internal and external resources improve frame-semantic
+% parsing, as evaluated on full-text text annotations.
 Our experiments expand the \emph{training data} and the \emph{feature space}
 of supervised argument identification
 in order to integrate evidence from all of these sources 
 into SEMAFOR \citep{das-14}, the leading open-source frame-semantic parser for English.\footnote{\url{http://www.ark.cs.cmu.edu/SEMAFOR/}} 
-The results show that some of these sources of evidence succeed 
-at boosting argument identification performance.\nss{relationship to SOTA?}
+Our results show that these sources of evidence boost $F_1$ for argument
+identification by almost 4 points, and for end-to-end frame-semantic parsing by
+about 1 point.\nss{relationship to SOTA?}
+
 
 \begin{figure}
 \includegraphics[width=\columnwidth]{fig/harbor-fn.pdf}
@@ -453,19 +448,26 @@ are labeled with role names.}
 \label{fig:harbor-fn}
 \end{figure}
 
+\begin{figure}
+\includegraphics[width=\columnwidth]{fig/harbor-pb.pdf}
+\caption{Ideal PropBank (\cref{sec:pb}) annotations for verbs. Though PB uses lexical frames rather than deep frames,
+there are clear similarities to the FrameNet annotations in \cref{fig:harbor-fn}.}
+\label{fig:harbor-pb}
+\end{figure}
 
 
 
 
 
+% \section{Data}\label{sec:data}
 
-\section{General Background}
+\section{FrameNet}\label{sec:fn}
 
 \nss{incl. data analysis of differences from full-text}
 
 \nss{w/in each mention: genre/overall vocabulary; coverage and distributions of predicates, FE labels; oracle coverage of FT test}
 
-\subsection{FrameNet}\label{sec:fn}
+% \subsection{FrameNet}\label{sec:fn}
 
 FrameNet represents kinds of events, scenarios, and relationships 
 with an inventory of \textbf{frames} (such as \fnf{Shopping}, \fnf{Scarcity}, and \fnf{Shoot\_projectiles}). 
@@ -474,58 +476,23 @@ called to mind in order to understand the scenario,
 and lexical \textbf{predicates} (verbs, nouns, adjectives, and adverbs) capable of 
 evoking the scenario. 
 For example, the \fnf{Body\_movement} frame has \fnr{Agent} and \fnr{Body\_part} as its core roles, 
-%the frame description states,
-%``This frame contains words for motions or actions an \fnr{Agent} performs using some part of his/her body.''
 and lexical entries including verbs such as \fnlu{bend}, \fnlu{blink}, \fnlu{crane}, and \fnlu{curtsy}, 
 plus the noun use of \fnlu{curtsy}.
+%the frame description states,
+%``This frame contains words for motions or actions an \fnr{Agent} performs using some part of his/her body.''
+\finalversion{
 In the annotated sentence in \cref{fig:harbor-fn},
 \fnf{Body\_movement} is evoked by \textit{crane}, and 3~of its roles are filled by overt arguments: 
 the 2~core roles (\fnr{Agent}, \fnr{Body\_part}) happen to be filled by noun phrases 
 (\textit{passengers}, \textit{their necks}), while the non-core role \fnr{Purpose} is filled by a 
 prepositional phrase adjunct (\textit{for dizzying glimpses of the harbor}).
+}
 In FrameNet~1.5, there are over 1,000 frames and 12,000~lexical predicates.
 
 \nss{mention somewhere?: roles may be implicit, but are often realized in the sentence.}
 
-% Each frame in the Berkeley FrameNet lexicon is intended to represent a gestalt scene.
-% The frame definition includes: a descriptive name;
-% a set of \textbf{core roles} representing participants and props that are crucial
-% to understanding the scene; a set of \textbf{non-core roles} such as circumstantial
-% information (time, place, manner, purpose, etc.);
-% an English textual description of the scene and how its roles relate to one another;
-% and a set of English predicates that can evoke the scene.
 
-\subsection{Matching roles and arguments}
-
-We use the model from SEMAFOR \citep{das-14}, detailed in \S\ref{sec:base_model}--\ref{sec:learning}, as a starting point.
-We experiment with %several domain adaptation (DA) techniques, augmenting 
-techniques that augment
-the model's training data (\S\ref{sec:aug_data}) and feature space %$\mathbf{\phi}$
-(\cref{sec:hierfeats,sec:frust,sec:guide}).
-% modifying the model-fitting portion of the argument identification model's local learning objective  (training data, features).
-
-At the core of SEMAFOR's argument identification procedure is a feature-based scoring function 
-that assigns a real value to a possible assignment of a candidate argument (span in the sentence) $a$ 
-to a role $r$ of the frame ($f$):
-\begin{equation}\label{eq:score}
-\textit{score}_\mathbf{w}(a \mid \mathbf{x}, p, f, r) = \mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r)
-\end{equation}
-Given a (syntactically preprocessed) sentence $\mathbf{x}$, this is evaluated 
-for every frame-evoking lexical predicate $p$ in that sentence 
-and every role of the evoked frame in order to choose the best argument.
-Binary features $\mathbf{\phi}(\cdot)$ are extracted and weighted by the model parameters $\mathbf{w}$, 
-which are learned from FrameNet annotations in the training data.
-
-\section{Leveraging lexicon structure}
-
-\begin{figure}
-\includegraphics[width=\columnwidth]{fig/harbor-pb.pdf}
-\caption{Ideal PropBank (\cref{sec:pb}) annotations for verbs. Though PB uses lexical frames rather than deep frames,
-there are clear similarities to the FrameNet annotations in \cref{fig:harbor-fn}.}
-\label{fig:harbor-pb}
-\end{figure}
-
-\subsection{Structure in the FrameNet lexicon}
+\subsection{Hierarchy}
 
 The FrameNet lexicon is organized as a network, with several kinds of \textbf{frame-to-frame relations} 
 linking pairs of frames and (subsets of) their arguments \citep{ruppenhofer-10}. 
@@ -544,17 +511,261 @@ which links to \fnf{Perception}.\fnr{Perceiver}, and so forth.
 E.g., the \fnf{Criminal\_process} frame groups together subframes 
 \fnf{Arrest}, \fnf{Arraignment}, \fnf{Trial}, and \fnf{Sentencing}. 
 \fnf{Criminal\_process}.\fnr{Defendant}, for instance, is mapped to 
-\fnf{Arrest}.\fnr{Suspect}, %\fnf{Arraignment}.\fnr{Defendant}, 
-\fnf{Trial}.\fnr{Defendant}, and \fnf{Sentencing}.\fnr{Convict}. 
+\fnf{Arrest}.\fnr{Suspect}% \fnf{Arraignment}.\fnr{Defendant}, 
+\finalversion{
+\fnf{Trial}.\fnr{Defendant}, and \fnf{Sentencing}.\fnr{Convict}
+}.
 %Other salient participants in the complex event %(such as the crime for which someone is arrested, tried, etc.)\ 
 %are similarly mapped via Subframe relations.
-This permits an inference that a person tried for a crime likely
-has been or will be arrested, arraigned, and sentenced for that crime.
+% This permits an inference that a person tried for a crime likely
+% has been or will be arrested, arraigned, and sentenced for that crime.
 
 We say that the $\textit{parent}$ of a role is one that has either the \textbf{Inheritance} or \textbf{Subframe} relation to it.\nss{clarify?}
 There are 4,138 \textbf{Inheritance} and 589 \textbf{Subframe} links between role types in FrameNet 1.5.
 
-\subsection{Type-level hierarchy features}\label{sec:hierfeats}
+
+
+\subsection{Annotations}
+
+The \textbf{full-text (FT)} portion of the FrameNet corpus provides about 5,000
+sentences annotated for all frames and their arguments.
+Beginning with the SemEval-2007 shared task on FrameNet analysis,
+frame-semantic parsers have been trained and evaluated on the full-text data
+% of the FrameNet corpus
+ \citep{baker-07,das-14}.\footnote{Though these 
+were \emph{annotated} at the document level, and train/dev/test splits are by document, the frame-semantic parsing 
+is currently restricted to the sentence level.}
+% Beginning with the SemEval-2007 shared task on FrameNet analysis \citep{baker-07},
+% frame-semantic parsers have been trained and evaluated on the \textbf{full-text (FT)}\footnote{Though these 
+% were \emph{annotated} at the document level, and train/dev/test splits are by document, the frame-semantic parsing 
+% is currently restricted to the sentence level.} portion 
+% of the FrameNet corpus. %This consists of documents for which annotators made an effort to assign frames and arguments to as many words as possible. 
+% 
+% \finalversion{The frame defines 19~additional non-core roles, none of which have an argument in the example.
+% In frame semantics, non-core roles are considered to be \emph{conceptually} optional; 
+% core roles may or may not be \emph{syntactically} optional, but if not locally specified they are 
+% expected to be available from context, or else implicit.
+% For example, \fnf{Punctual\_perception}---evoked in this case by \textit{glimpses}---is annotated 
+% as missing 2~of its core roles. A human listener would resolve the identity of the \fnr{Perceiver} 
+% from the wider context and the \fnr{Body\_part} from world knowledge. }
+% 
+% \finalversion{In some cases, FT annotation involved creating a new frame or adding a new lexical unit to an existing frame. 
+% In other cases, words that in principle should be considered to evoke a frame were left unannotated 
+% because they did not match any existing lexical units. 
+% This was the case for \textit{passengers} and \textit{dizzying} in \cref{fig:harbor-fn}.}
+The full-text documents represent a mix of genres, prominently including travel guides 
+and bureaucratic reports about weapons stockpiles. 
+FrameNet~1.5 has about 5,000 full-text sentences in total.
+Statistics for the full-text corpus appear in \cref{tbl:datastats}.
+% , and an example annotated sentence in \cref{fig:harbor-fn}.
+
+\nss{Annotation density: (proportion of tokens evoking a frame. breakdown by POS?)}
+
+\begin{table}\centering\small
+\begin{tabular}{@{}p{2cm}r@{~~}r@{~~}r@{~~}r@{}}
+%\toprule
+\normalfont & \multicolumn{2}{c}{\textbf{\hspace{40pt}Full-Text}} & \multicolumn{2}{c}{\textbf{Exemplars}} \\
+& \multicolumn{1}{c}{\hspace{40pt}\textit{train}} & \multicolumn{1}{c}{\textit{test}} & \multicolumn{1}{c}{\textit{train}} & \multicolumn{1}{c}{\textit{test}} \\
+\midrule
+Sentences  & 2,780 & 2,420 & 137,515 & 4,132 \\
+Frames & 15,019 & 4,458 & 137,515 & 4,132 \\
+Overt args & 25,918 & 7,210 & 278,985 & 8,417 \\
+\midrule
+\multicolumn{5}{c}{\textsc{types}} \\
+Roles & 2,644 & 1,420 & 4,821 & 1,224 \\
+\multicolumn{2}{@{}l}{Unseen frames  \quad \textit{vs.~train:}} & 46 & & 0 \\
+\multicolumn{2}{@{}l}{Roles in unseen frames \quad \textit{vs.~train:}} & 178 & & 0 \\
+\multicolumn{2}{@{}l}{Unseen roles \quad \textit{vs.~train:}} & 289 & & 38 \\
+\multicolumn{2}{@{}l}{Unseen roles \quad \textit{vs.~combined train:}} & 103 & & 32 \\
+\end{tabular}
+\caption{Characteristics of the training and test data. (These statistics exclude the development set, which contains 4,463 frames over 746 sentences.)}
+\label{tbl:datastats}
+\end{table}
+
+
+%\subsection{Exemplars}\label{sec:exemplars}
+
+\st{TODO: shorten exemplar section}
+%Conceived primarily as a lexicography project, 
+However, most FrameNet annotations serve to illustrate the argument structure potential 
+of particular predicates. 
+% When predicates are added to a frame, 
+% a large set of source corpora (primarily, the British National Corpus) covering a wide range of genres
+% is searched for various syntactic patterns, 
+% and a lexicographer identifies a selection, or \textbf{subcorpus}, of sentences 
+% illustrating the predicate's behavior \citep{boas-05}.
+% The subcorpus sentences are then annotated, but \emph{only with respect to the predicate in question}.
+To document a given predicate, lexicographers manually select corpus examples and annotate them
+\emph{only with respect to the predicate in question}.
+These singly-annotated sentences are called lexicographic \textbf{exemplars}.
+
+The subset of exemplars containing argument annotations is described in \cref{tbl:datastats}.
+There are over 140,000 such sentences (an additional 35,000 exemplar sentences contain no overt arguments).
+Relative to the full-text dataset, the exemplar dataset contains 
+an order of magnitude more frame annotations and two orders of magnitude 
+more sentences annotated.
+% Because we are conditioning on the identified frame, 
+% the fact that the exemplar dataset has just one annotated frame per sentence
+% is not a concern in argument identification. However, the 
+But because exemplars have been manually selected, the rate of overt arguments per frame 
+is noticeably higher than in the full-text data, which potentially biases the 
+predictions of models trained on exemplars.\nss{cite \citep{palmer-10-eval} somewhere, maybe here}
+%model's tendency to predict certain kinds of arguments in a way that is not statistically representative of a natural corpus.
+
+The exemplar sentences formed the basis of early studies of frame-semantic role
+labeling
+\citep[e.g.,][]{gildea-02,thompson-03,fleischman-03,litkowski-04,kwon-04}.
+Thus far though, exemplars have not been exploited successfully to improve
+argument identification performance on full-text data, a more realistic task.
+In this work, we seek to leverage these exemplar sentences. 
+% We deem it worthwhile to %(a)~
+% investigate whether the exemplars 
+% can be used to improve performance on the full-text evaluation, 
+% compensating for the scarcity of full-text training data.%,
+% and (b)~to evaluate SRL performance on a held-out set of exemplars, 
+% given that these exemplars represent a much broader range of genres, frames, and predicates 
+% than the full-text data.\nss{TODO: quantify number of additional frames and predicates relative to FT-test!}
+% This second evaluation, we believe, will give a useful indication of the robustness of the SRL model.
+
+% as well as the (type-level) hierarchical structure of the FrameNet lexicon. 
+
+% Each frame in the Berkeley FrameNet lexicon is intended to represent a gestalt scene.
+% The frame definition includes: a descriptive name;
+% a set of \textbf{core roles} representing participants and props that are crucial
+% to understanding the scene; a set of \textbf{non-core roles} such as circumstantial
+% information (time, place, manner, purpose, etc.);
+% an English textual description of the scene and how its roles relate to one another;
+% and a set of English predicates that can evoke the scene.
+
+\finalversion{
+\subsection{PropBank}\label{sec:pb}
+\st{TODO: shorten PB section. we should spend less time talking about PB, and
+more time talking about the specific SRL system we use.}
+PropBank \citep[PB;][]{palmer-05} is a lexicon and corpus of predicate--argument
+structures that takes a shallower approach than FrameNet. Whereas FrameNet frames cluster lexical predicates that evoke similar kinds of scenarios (with the same kinds of roles), 
+and these frames are organized in a network, 
+PropBank frames are purely lexical and there are no formal relations between different predicates 
+or their roles. Further, PropBank's sense distinctions are generally coarser-grained than FrameNet's.
+An example PB-annotated sentence is shown in \cref{fig:harbor-pb}.
+}
+\finalversion{PropBank does represent lexical ambiguity---e.g., the verb \textit{order} is ambiguous 
+in PropBank between \pbf{order-v-01} ``impelled action'' and \pbf{order-v-02} ``request to be delivered''---but
+PropBank's sense distinctions are generally coarser-grained than FrameNet's.}
+
+\finalversion{
+%Within sense-disambiguated PropBank frames, or \textbf{rolesets}, 
+Core roles are defined with textual descriptions and assigned numbers. 
+E.g., \pbf{order-v-02} defines: \pbr{A0} ``orderer'', 
+\pbr{A1} ``thing ordered'', \pbr{A2} ``benefactive, ordered-for'', 
+and \pbr{A3} ``source''.
+Following \citeposs{dowty-91} theory of proto-roles, PropBank rolesets use \pbr{A0} for proto-agents 
+and \pbr{A1} for proto-patients, but in general, there is much less consistency 
+in interpretation of core roles across lexical predicates for PropBank than there is for FrameNet.
+Another difference is that PropBank's non-core roles---named \pbr{AM-*}, 
+such as \pbr{AM-PRP} for purposes---are not frame-specific.\footnote{\Citet{ellsworth-04} 
+has a more extensive discussion of differences between PropBank's and FrameNet's conventions.}
+Despite these differences, there is often a great deal in common between 
+FrameNet-style and PropBank-style analyses, as should be apparent from comparing 
+\cref{fig:harbor-fn} and \cref{fig:harbor-pb}.
+}
+
+\finalversion{
+PropBank provides one million words of fully annotated English sentences.
+% The major benefit to PropBank is that it includes a large and comprehensively
+% annotated corpus.
+% We hypothesize that leveraging this large corpus indirectly 
+% can reap rewards for FrameNet-style SRL. 
+% We use PropBank analyses as a signal in the FrameNet
+% argument identification task 
+% by preprocessing
+% sentences with a PropBank SRL system to obtain new features.
+% \textbf{PropBank} \citep{propbank} is a resource that has been widely
+% used for SRL \citep{palmer-10}.
+% PropBank annotations capture shallower lexical frames and arguments than
+% FrameNet, but
+Very little data is annotated with both PropBank and FrameNet analyses.
+Therefore, to bridge between the PropBank and FrameNet corpora, 
+we run a PropBank-trained semantic role labeler 
+on the FrameNet data as an additional form of preprocessing.\footnote{In preliminary experiments, 
+we tried to leverage PropBank annotations in SemLink \citep{bonial-13}, which include mappings to FrameNet.
+We found that FrameNet mappings in SemLink are noisy/incomplete; including 
+SemLink sentences in the training data only hurt performance.}
+}
+
+\section{Model}
+
+We use the model from SEMAFOR \citep{das-14}, detailed in
+\S\ref{sec:base_model}%--\ref{sec:learning} 
+, as a starting point.
+We experiment with %several domain adaptation (DA) techniques, augmenting 
+techniques that augment
+the model's training data (\cref{sec:frust}) and feature space %$\mathbf{\phi}$
+(\cref{sec:hierfeats},~\cref{sec:guide}).
+
+\subsection{Baseline}
+\label{sec:base_model}
+
+The argument identification task is treated as a structured prediction problem.
+% We consider the argument identification task as statistical classification 
+% for each role of the frame in context.
+Let the classification input be a dependency-parsed sentence $\mathbf{x}$, 
+the token(s) $p$ constituting the predicate in question, and the frame $f$ evoked by $p$
+(as determined by frame identification). 
+We use the heuristic procedure from \citep{das-14} for extracting candidate argument spans 
+for the predicate; call this $\textit{spans}(\mathbf{x}, p, f)$.
+$\textit{spans}$ always includes a special span denoting an empty or non-overt
+role, denoted~$\emptyset$.
+For each candidate argument $a \in \textit{spans(\mathbf{x}, p, f)}$ for a role
+$r$, binary features $\mathbf{\phi}(a, \mathbf{x}, p, f, r)$ are extracted.
+We use the feature extractors from \citep{das-14} as a baseline, adding
+additional feature extractors in our experiments
+(\cref{sec:hierfeats,sec:frust,sec:guide}).
+Each $a$ is given a real-valued score by a linear model:
+% At the core of SEMAFOR's argument
+% identification procedure is a feature-based scoring function that assigns a real value to a possible assignment of a
+% candidate argument $a \in \textit{spans(\mathbf{x}, p, f)}$ to a role $r$: % of
+% the frame $f$:
+\begin{equation}\label{eq:score}
+\textit{score}_\mathbf{w}(a \mid \mathbf{x}, p, f, r) = \mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r)
+\end{equation}
+%  this is evaluated 
+% for every frame-evoking lexical predicate $p$ in that sentence 
+% and every role of the evoked frame in order to choose the best argument.
+% Binary features $\mathbf{\phi}(\cdot)$ are extracted and weighted by 
+The model parameters $\mathbf{w}$ are learned from 
+%FrameNet annotations in the training 
+data (\cref{sec:learning}).
+
+% The scoring function (\cref{eq:score}) 
+% is computed for each candidate span $a \in \textit{spans}(\mathbf{x}, p, f)$.
+
+At inference time, we use a \term{global classifier}.
+The global classifier chooses a joint assignment of all arguments of a frame, while respecting the following constraints:
+\begin{itemize}
+  \item a role may be assigned to at most one span, and
+  \item spans of overt arguments must not overlap.
+\end{itemize}
+Formally, let a joint assigment be represented as a function $\mathbf{a}: \textit{roles}(f) \rightarrow \textit{spans}(\mathbf{x}, p, f)$, % \cup \{\emptyset\}$, %= \{ (r, a) \mid r \in \textit{roles}(f) \}$
+ and let $\mathcal{A}$ be the set of all non-overlapping joint assignments.
+We give $\mathbf{a}$ the score:
+\begin{equation}
+\textit{score}_{\mathbf{w}}(\mathbf{a} \mid \mathbf{x}, p, f) =
+    \sum_{r \in \textit{roles}(f)}{\textit{score}_\mathbf{x}(\mathbf{a}(r) \mid \mathbf{x}, p, f, r)}
+\end{equation}
+and choose the joint assignment:
+\begin{equation}
+\label{eq:args}
+\textit{args}(\mathbf{x}, p, f) =
+    \argmax_{\mathbf{a} \in \mathcal{A}} {
+        \textit{score}_{\mathbf{w}}(\mathbf{a} \mid \mathbf{x}, p, f, r)
+    }.
+\end{equation}
+Beam search, with a beam size of 100, is used to find this $\argmax$.%
+\footnote{Recent work has improved upon global decoding techniques \citep{tackstrom-15}.
+We expect such improvements to be complementary to the gains due to the added features and data reported here.}
+
+
+\subsection{Hierarchy Features}\label{sec:hierfeats}
 
 We experiment with features shared between related roles of related frames 
 in order to capture statistical generalizations about the kinds of arguments 
@@ -598,153 +809,14 @@ but did not improve its predictions.}
 
 
 
-\section{Leveraging additional annotations}
 
-In this section, we discuss additional sources of annotations 
-that can be used for learning, followed by modeling techniques
-to exploit multiple domains and heterogeneous annotations.
-
-\subsection{FrameNet gold annotations}\label{sec:fn-annos}
-%\subsection{Full-text Annotations}\label{sec:ft}
-
-% \nss{TODO:move}FrameNet~1.5 defines a structured taxonomy of over 1,000 frames associated with 12,000~English lexical predicates, 
-% and also provides annotations for over 175,000 attestations 
-% of these frames/predicates in corpora, annotated in context with their arguments. 
-% A smaller number of sentences (about 5,000)
-% are provided with \textbf{full-text} annotations, i.e.~each sentence 
-% has been analyzed for all available frames. 
-
-
-Beginning with the SemEval-2007 shared task on FrameNet analysis \citep{baker-07},
-frame-semantic parsers have been trained and evaluated on the \textbf{full-text (FT)}\footnote{Though these 
-were \emph{annotated} at the document level, and train/dev/test splits are by document, the frame-semantic parsing 
-is currently restricted to the sentence level.} portion 
-of the FrameNet corpus. %This consists of documents for which annotators made an effort to assign frames and arguments to as many words as possible. 
+% \subsection{Augmenting the Training Data}
+% \label{sec:aug_data}
 % 
-% \finalversion{The frame defines 19~additional non-core roles, none of which have an argument in the example.
-% In frame semantics, non-core roles are considered to be \emph{conceptually} optional; 
-% core roles may or may not be \emph{syntactically} optional, but if not locally specified they are 
-% expected to be available from context, or else implicit.
-% For example, \fnf{Punctual\_perception}---evoked in this case by \textit{glimpses}---is annotated 
-% as missing 2~of its core roles. A human listener would resolve the identity of the \fnr{Perceiver} 
-% from the wider context and the \fnr{Body\_part} from world knowledge. }
-% 
-% \finalversion{In some cases, FT annotation involved creating a new frame or adding a new lexical unit to an existing frame. 
-% In other cases, words that in principle should be considered to evoke a frame were left unannotated 
-% because they did not match any existing lexical units. 
-% This was the case for \textit{passengers} and \textit{dizzying} in \cref{fig:harbor-fn}.}
-The full-text documents represent a mix of genres, prominently including travel guides 
-and bureaucratic reports about weapons stockpiles. 
-FrameNet~1.5 has about 5,000 full-text sentences in total.
-Statistics for the full-text corpus appear in \cref{tbl:datastats},
-and an example annotated sentence in \cref{fig:harbor-fn}.
+% This is the simplest possible technique:
+% we add the exemplars training data, $\mathcal{D}_{ex}$, to the full text training data, $\mathcal{D}_{ft}$, without differentiating between the two, and train on the combined dataset.
 
-\nss{Annotation density: (proportion of tokens evoking a frame. breakdown by POS?)}
-
-\begin{table}\centering\small
-\begin{tabular}{@{}p{2cm}r@{~~}r@{~~}r@{~~}r@{}}
-%\toprule
-\normalfont & \multicolumn{2}{c}{\textbf{\hspace{40pt}Full-Text}} & \multicolumn{2}{c}{\textbf{Exemplars}} \\
-& \multicolumn{1}{c}{\hspace{40pt}\textit{train}} & \multicolumn{1}{c}{\textit{test}} & \multicolumn{1}{c}{\textit{train}} & \multicolumn{1}{c}{\textit{test}} \\
-\midrule
-Sentences  & 2,780 & 2,420 & 137,515 & 4,132 \\
-Frames & 15,019 & 4,458 & 137,515 & 4,132 \\
-Overt args & 25,918 & 7,210 & 278,985 & 8,417 \\
-\midrule
-\multicolumn{5}{c}{\textsc{types}} \\
-Roles & 2,644 & 1,420 & 4,821 & 1,224 \\
-\multicolumn{2}{@{}l}{Unseen frames  \quad \textit{vs.~train:}} & 46 & & 0 \\
-\multicolumn{2}{@{}l}{Roles in unseen frames \quad \textit{vs.~train:}} & 178 & & 0 \\
-\multicolumn{2}{@{}l}{Unseen roles \quad \textit{vs.~train:}} & 289 & & 38 \\
-\multicolumn{2}{@{}l}{Unseen roles \quad \textit{vs.~combined train:}} & 103 & & 32 \\
-\end{tabular}
-\caption{Characteristics of the training and test data. (These statistics exclude the development set, which contains 4,463 frames over 746 sentences.)}
-\label{tbl:datastats}
-\end{table}
-
-
-%\subsection{Exemplars}\label{sec:exemplars}
-
-%Conceived primarily as a lexicography project, 
-However, most FrameNet annotations serve to illustrate the argument structure potential 
-of particular predicates. 
-% When predicates are added to a frame, 
-% a large set of source corpora (primarily, the British National Corpus) covering a wide range of genres
-% is searched for various syntactic patterns, 
-% and a lexicographer identifies a selection, or \textbf{subcorpus}, of sentences 
-% illustrating the predicate's behavior \citep{boas-05}.
-% The subcorpus sentences are then annotated, but \emph{only with respect to the predicate in question}.
-To document a given predicate, lexicographers manually select corpus examples and annotate them
-\emph{only with respect to the predicate in question}.
-These singly-annotated sentences are called lexicographic \textbf{exemplars}.
-
-The subset of exemplars containing argument annotations is described in \cref{tbl:datastats}.
-There are over 140,000 such sentences (an additional 35,000 exemplar sentences contain no overt arguments).
-Relative to the full-text dataset, the exemplar dataset contains 
-an order of magnitude more frame annotations and two orders of magnitude 
-more sentences annotated.
-% Because we are conditioning on the identified frame, 
-% the fact that the exemplar dataset has just one annotated frame per sentence
-% is not a concern in argument identification. However, the 
-But because exemplars have been manually selected, the rate of overt arguments per frame 
-is noticeably higher than in the full-text data, which potentially biases the 
-predictions of models trained on exemplars.\nss{cite \citep{palmer-10-eval} somewhere, maybe here}
-%model's tendency to predict certain kinds of arguments in a way that is not statistically representative of a natural corpus.
-
-The exemplar sentences formed the basis of early studies of frame-semantic role labeling \citep[e.g.,][]{gildea-02,thompson-03,fleischman-03,litkowski-04,kwon-04}.
-We deem it worthwhile to (a)~investigate whether the exemplars 
-can be used to improve performance on the full-text evaluation, 
-compensating for the scarcity of full-text training data,
-and (b)~to evaluate SRL performance on a held-out set of exemplars, 
-given that these exemplars represent a much broader range of genres, frames, and predicates 
-than the full-text data.\nss{TODO: quantify number of additional frames and predicates relative to FT-test!}
-This second evaluation, we believe, will give a useful indication of the robustness of the SRL model.
-
-\subsection{PropBank}\label{sec:pb}
-
-PropBank \citep[PB;][]{palmer-05} is a lexicon and corpus of predicate--argument structures
-that takes a shallower approach than FrameNet. Whereas FrameNet frames cluster 
-lexical predicates that evoke similar kinds of scenarios (with the same kinds of roles), 
-and these frames are organized in a network, 
-PropBank frames are purely lexical and there are no formal relations between different predicates 
-or their roles. Further, PropBank's sense distinctions are generally coarser-grained than FrameNet's.
-An example PB-annotated sentence is shown in \cref{fig:harbor-pb}.
-
-\finalversion{PropBank does represent lexical ambiguity---e.g., the verb \textit{order} is ambiguous 
-in PropBank between \pbf{order-v-01} ``impelled action'' and \pbf{order-v-02} ``request to be delivered''---but
-PropBank's sense distinctions are generally coarser-grained than FrameNet's.}
-
-%Within sense-disambiguated PropBank frames, or \textbf{rolesets}, 
-Core roles are defined with textual descriptions and assigned numbers. 
-E.g., \pbf{order-v-02} defines: \pbr{A0} ``orderer'', 
-\pbr{A1} ``thing ordered'', \pbr{A2} ``benefactive, ordered-for'', 
-and \pbr{A3} ``source''.
-Following \citeposs{dowty-91} theory of proto-roles, PropBank rolesets use \pbr{A0} for proto-agents 
-and \pbr{A1} for proto-patients, but in general, there is much less consistency 
-in interpretation of core roles across lexical predicates for PropBank than there is for FrameNet.
-Another difference is that PropBank's non-core roles---named \pbr{AM-*}, 
-such as \pbr{AM-PRP} for purposes---are not frame-specific.\footnote{\Citet{ellsworth-04} 
-has a more extensive discussion of differences between PropBank's and FrameNet's conventions.}
-The major benefit to PropBank is that it includes a large and comprehensively annotated corpus.
-We hypothesize that leveraging this large corpus indirectly 
-can reap rewards for FrameNet-style SRL. 
-
-Very little data is annotated with both PropBank and FrameNet analyses.
-Therefore, to bridge between the PropBank and FrameNet corpora, 
-we run a PropBank-trained semantic role labeler 
-on the FrameNet data as an additional form of preprocessing.\footnote{In preliminary experiments, 
-we tried to leverage PropBank annotations in SemLink \citep{bonial-13}, which include mappings to FrameNet.
-We found that FrameNet mappings in SemLink are noisy/incomplete; including 
-SemLink sentences in the training data only hurt performance.}
-
-
-\subsection{Augmenting the Training Data}
-\label{sec:aug_data}
-
-This is the simplest possible technique:
-we add the exemplars training data, $\mathcal{D}_{ex}$, to the full text training data, $\mathcal{D}_{ft}$, without differentiating between the two, and train on the combined dataset.
-
-\subsection{Frustratingly Easy}
+\subsection{Exemplars / Frustratingly Easy}
 \label{sec:frust}
 \Citet{daume-07} proposed a simple feature augmentation approach that was shown to work well in supervised domain adaptation scenarios, 
 such as ours.
@@ -759,7 +831,10 @@ such as ours.
 % \end{array}
 % \right.
 % \]
-For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a new feature that fires only if $\phi_i$ fires and $\x \in \mathcal{D}_{ft}$: 
+Let $\mathcal{D}_{ex}$ denote the exemplars training data, and
+$\mathcal{D}_{ft}$ denote the full text training data.
+For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a new
+feature that fires only if $\phi_i$ fires and $\x \in \mathcal{D}_{ft}$:
 $\text{"ft"} \wedge \phi_i(a, \mathbf{x}, p, f, r)$.\finalversion{\nss{why the $i$ subscript? is that for the training instance as above?}}
 
 % For each original feature $\phi_i$, we create a new feature 
@@ -792,6 +867,9 @@ The general feature contributes to both domains, so regularization encourages th
 
 \subsection{Guide Features}
 \label{sec:guide}
+
+\st{TODO: shorten}
+
 Another approach to introduce supervision for domain adaptation %, 
 % which does not combine the labeled data from the two domains, 
 is to train a supervised model on a source domain, make predictions using that model on the training data of the target domain, then use those predictions as additional features while training a new model on the target domain.
@@ -819,55 +897,64 @@ we use an additional feature $\phi_{match}(r_t,r_g)$ to indicate that
 the `guide' role label $r_g$ of the span $a$ is the same as its true\st{you mean ``target''?} label $r_t$.
 
 
+\mk{introduce this as a supervised domain adaptation problem? What is the source and what's the target?}
+\mk{Let $D_{ft}$ represent the FT data and $D_{ex}$ the exemplars?}
 
 
-\section{Baseline}
+\nss{Domain adaptation/multitask learning techniques}
 
-\subsection{Model}
-\label{sec:base_model}
 
-The argument identification task is treated as a structured prediction problem.
-% We consider the argument identification task as statistical classification 
-% for each role of the frame in context.
-Let the classification input be a dependency-parsed sentence $\mathbf{x}$, 
-the token(s) $p$ constituting the predicate in question, and the frame $f$ evoked by $p$
-(as determined by frame identification). 
-We use the heuristic procedure from \citep{das-14} for extracting candidate argument spans 
-for the predicate; call this $\textit{spans}(\mathbf{x}, p, f)$.
-$\textit{spans}$ always includes a special span denoting an empty or non-overt role, denoted~$\emptyset$. 
-The scoring function (\cref{eq:score}) 
-is computed for each candidate span $a \in \textit{spans}(\mathbf{x}, p, f)$.
+% \section{Baseline}
+% 
+% \subsection{Model}
+% \label{sec:base_model}
+% 
+% The argument identification task is treated as a structured prediction problem.
+% % We consider the argument identification task as statistical classification 
+% % for each role of the frame in context.
+% Let the classification input be a dependency-parsed sentence $\mathbf{x}$, 
+% the token(s) $p$ constituting the predicate in question, and the frame $f$ evoked by $p$
+% (as determined by frame identification). 
+% We use the heuristic procedure from \citep{das-14} for extracting candidate argument spans 
+% for the predicate; call this $\textit{spans}(\mathbf{x}, p, f)$.
+% $\textit{spans}$ always includes a special span denoting an empty or non-overt role, denoted~$\emptyset$. 
+% The scoring function (\cref{eq:score}) 
+% is computed for each candidate span $a \in \textit{spans}(\mathbf{x}, p, f)$.
+% 
+% At inference time, we use a \term{global classifier}.
+% The global classifier chooses a joint assignment of all arguments of a frame, while respecting the following constraints:
+% \begin{itemize}
+%   \item a role may be assigned to at most one span, and
+%   \item spans of overt arguments must not overlap.
+% \end{itemize}
+% Formally, let a joint assigment be represented as a function $\mathbf{a}: \textit{roles}(f) \rightarrow \textit{spans}(\mathbf{x}, p, f)$, % \cup \{\emptyset\}$, %= \{ (r, a) \mid r \in \textit{roles}(f) \}$
+%  and let $\mathcal{A}$ be the set of all non-overlapping joint assignments.
+% We give $\mathbf{a}$ the score:
+% \begin{equation}
+% \textit{score}_{\mathbf{w}}(\mathbf{a} \mid \mathbf{x}, p, f) =
+%     \sum_{r \in \textit{roles}(f)}{\textit{score}_\mathbf{x}(\mathbf{a}(r) \mid \mathbf{x}, p, f, r)}
+% \end{equation}
+% and choose the joint assignment:
+% \begin{equation}
+% \label{eq:args}
+% \textit{args}(\mathbf{x}, p, f) =
+%     \argmax_{\mathbf{a} \in \mathcal{A}} {
+%         \textit{score}_{\mathbf{w}}(\mathbf{a} \mid \mathbf{x}, p, f, r)
+%     }.
+% \end{equation}
+% Beam search, with a beam size of 100, is used to find this $\argmax$.%
+% \footnote{Recent work has improved upon global decoding techniques \citep{tackstrom-15}.
+% We expect such improvements to be complementary to the gains due to the added features and data reported here.}
 
-At inference time, we use a \term{global classifier}.
-The global classifier chooses a joint assignment of all arguments of a frame, while respecting the following constraints:
-\begin{itemize}
-  \item a role may be assigned to at most one span, and
-  \item spans of overt arguments must not overlap.
-\end{itemize}
-Formally, let a joint assigment be represented as a function $\mathbf{a}: \textit{roles}(f) \rightarrow \textit{spans}(\mathbf{x}, p, f)$, % \cup \{\emptyset\}$, %= \{ (r, a) \mid r \in \textit{roles}(f) \}$
- and let $\mathcal{A}$ be the set of all non-overlapping joint assignments.
-We give $\mathbf{a}$ the score:
-\begin{equation}
-\textit{score}_{\mathbf{w}}(\mathbf{a} \mid \mathbf{x}, p, f) =
-    \sum_{r \in \textit{roles}(f)}{\textit{score}_\mathbf{x}(\mathbf{a}(r) \mid \mathbf{x}, p, f, r)}
-\end{equation}
-and choose the joint assignment:
-\begin{equation}
-\label{eq:args}
-\textit{args}(\mathbf{x}, p, f) =
-    \argmax_{\mathbf{a} \in \mathcal{A}} {
-        \textit{score}_{\mathbf{w}}(\mathbf{a} \mid \mathbf{x}, p, f, r)
-    }.
-\end{equation}
-Beam search, with a beam size of 100, is used to find this $\argmax$.%
-\footnote{Recent work has improved upon global decoding techniques \citep{tackstrom-15}.
-We expect such improvements to be complementary to the gains due to the added features and data reported here.}
-
-\subsection{Learning}
+\section{Learning}
 \label{sec:learning}
 
-Following SEMAFOR, we train using a \term{local} objective instead of using a global classifier.
-In other words, we treat each role and span pair as an independent training instance.
+\st{TODO: shorten}
+
+Following SEMAFOR, we train using a \term{local} objective,
+%  instead of using a global classifier.
+% In other words, we 
+treating each role and span pair as an independent training instance.
 % \nss{does beam search require normalizing to probabilities?}\st{no. maybe it should, but SEMAFOR didn't, and we don't.}
 But we have made several modifications to training in order to speed up experiments:
 
@@ -884,7 +971,7 @@ But we have made several modifications to training in order to speed up experime
 %   \item We use elastic net ($\ell_1 + \ell_2$) regularization. Adding $\ell_1$ also has the effect of keeping the parameter vector sparse.\nss{what hyperparameter(s)? are $\ell_1$ and $\ell_2$ tuned separately?}
 % \end{itemize}
 % We use these changes for all systems, including the baseline.
-While the impact on full-text performance is negligible, 
+While the impact on full-text accuracy is negligible, 
 these changes decreased training time significantly.\footnote{With SEMAFOR's original features and training data, 
 the result of the above changes is that full-text $F_1$ decreases from 59.3\% to 59.1\%, 
 while training time (running optimization to convergence) 
@@ -926,13 +1013,6 @@ We learn $\mathbf{w}$ by minimizing the $\ell_2$-regularized average loss on the
     \} + \frac{1}{2} \lambda \| \mathbf{w} \|_2^2
 }
 \end{equation}
-
-
-\mk{introduce this as a supervised domain adaptation problem? What is the source and what's the target?}
-\mk{Let $D_{ft}$ represent the FT data and $D_{ex}$ the exemplars?}
-
-
-\nss{Domain adaptation/multitask learning techniques}
 
 
 \section{Experimental setup}
@@ -988,9 +1068,9 @@ The last row of Table \ref{tbl:datastats} shows the unseen role types faced by a
 In the FT test set it is 103, lower by $\approx$190 than what a FT-only model will see, thus leading us to expect that a model that combines
 both sets of data will certainly benefit in performance.
 
-While the FT test set represents the benchmark set for evaluating the 
-performance of a frame semantic role labeling system, the exemplars test set being from a different distribution of text, gives us
-an indication of how well a model generalizes.
+% While the FT test set represents the benchmark set for evaluating the 
+% performance of a frame semantic role labeling system, the exemplars test set being from a different distribution of text, gives us
+% an indication of how well a model generalizes.
 
 
 \section{Results}
@@ -1128,5 +1208,6 @@ FUNDING}
 \setlength{\bibsep}{1pt}
 {\fontsize{10}{12.25}\selectfont
 \bibliography{argid}}
+
 
 \end{document}
