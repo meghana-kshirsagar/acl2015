@@ -530,7 +530,7 @@ There are 4,138 \textbf{Inheritance} and 589 \textbf{Subframe} links between rol
 
 \subsection{Annotations}
 Statistics for the annotations appear in \cref{tbl:datastats}.\\
-\textbf{Full-text (FT)}: This portion of the FrameNet corpus consists of documents and has about 5,000
+\textbf{Full-text (FT):} This portion of the FrameNet corpus consists of documents and has about 5,000
 sentences for which annotators assigned frames and arguments to as many words as possible.
 Beginning with the SemEval-2007 shared task on FrameNet analysis,
 frame-semantic parsers have been trained and evaluated on the full-text data
@@ -598,12 +598,13 @@ Roles & 2,644 & 1,420 & 4,821 & 1,224 \\
 % and a lexicographer identifies a selection, or \textbf{subcorpus}, of sentences 
 % illustrating the predicate's behavior \citep{boas-05}.
 % The subcorpus sentences are then annotated, but \emph{only with respect to the predicate in question}.
-\noindent\textbf{Exemplars}: To document a given predicate, lexicographers manually select corpus examples and annotate them
+\noindent\textbf{Exemplars:} To document a given predicate, lexicographers manually select corpus examples and annotate them
 \emph{only with respect to the predicate in question}.
 These singly-annotated sentences from FrameNet are called lexicographic \textbf{exemplars}.
 %The subset of exemplars containing argument annotations is described in \cref{tbl:datastats}.
 There are over 140,000 sentences containing argument annotations % (an additional 35,000 exemplar sentences contain no overt arguments).
-and relative to the FT dataset, these contain an order of magnitude more frame annotations over two orders of magnitude 
+and relative to the FT dataset, these contain an order of magnitude more frame annotations\nss{or: annotations, or frame types annotated?? 
+(I think I wrote this sentence, but now I can't find the number of unique frames in FT vs. Exemplars.)} over two orders of magnitude 
 more sentences. Since these were manually selected, the rate of overt arguments per frame
 is noticeably higher than in the FT data.
 % Because we are conditioning on the identified frame, 
@@ -1149,17 +1150,17 @@ according to the FrameNet hierarchy and incorporating PB-SRL data in the form of
 \end{figure}
 
 
-\paragraph{Combining all resources}: The last two rows of Table \ref{tbl:results} show the performance upon combining the best approaches. 
+\paragraph{Combining all resources.} The last two rows of Table \ref{tbl:results} show the performance upon combining the best approaches. 
 Here, both models use the optimal training data configuration: (FT+exemplars) but differ in the feature augmentation used. 
 We find that the model that uses the hierarchy achieves the best recall, and the PB-SRL guide features result in the 
 best precision. %This result is intuitive because we expect the hierarchy to help \mk{insert good explanation here}.
 Our best result of 63.07 beats the baseline by 3.95 F points.
-\paragraph{Frame element--level evaluation}:
-We present a detailed picture of the gains from the additional coverage by analyzing the $F_1$ at the
-level of frame-elements i.e role type. Figure \ref{fig:num_inst} shows the frequency of all roles that appear in the FT-test set.
+\paragraph{Frame element--level evaluation.}
+We present a detailed picture of gains from the additional coverage by analyzing the $F_1$ at the
+level of frame-elements (role types). Figure \ref{fig:num_inst} shows the frequency of all roles that appear in the FT-test set.
 Figure \ref{fig:coolplot} shows the $F_1$ per role-type, for the baseline and the two best models from Table \ref{tbl:results}.
 In both plots, each point on the x-axis represents one role, with the roles sorted in the decreasing order of their frequency.
-Our models achieve the best improvements for the rarer roles and are at par with the baseline on the frequent roles.
+Our models achieve the best improvements for the rarer roles and are on par with the baseline for frequent roles.
 
 \finalversion{\nss{impact of automatic frames?}}
 %\subsection{Frame element--level evaluation}
