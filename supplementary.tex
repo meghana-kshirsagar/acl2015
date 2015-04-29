@@ -1,0 +1,49 @@
+\documentclass[a4paper,11pt,titlepage]{article}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage[top=0.7in, bottom=0.9in, left=0.8in, right=0.8in]{geometry}
+
+\begin{document}
+
+\title{Additional Results}
+
+\maketitle
+
+\section{SemLink}
+SemLink \citep{bonial-13} is a partial and semi-automatic augmentation
+of the PropBank corpus's roleset annotations with mappings to FrameNet and VerbNet.
+It contains two types of mappings. The \emph{sense-level mappings} give correspondences between the concepts
+from each resource---i.e., between `frames' from FN, `rolesets' from PB, and `roles' from VN.
+Since they map different interpretations and granularities
+of concepts, the sense-level mappings may be one-to-one, one-to-many, or many-to-many.
+PropBank and FrameNet are mapped indirectly via VerbNet. %, introducing additional coverage gaps and ambiguities.
+Second, SemLink provides some \emph{token-level parallel annotations}
+for the 3~representations in a subset of the PB-WSJ text: hereafter SL-WSJ.
+
+We focus on using token-level SemLink version~1.2.2c annotations as a (disambiguated) mapping from PB to FN tokens.
+Of the available 74,977 SL-WSJ verbs, a majority cannot be mapped to FN frames for various reasons.
+Around 31\% of the predicates have the frame label \texttt{IN} (``indefinite'') where the mapping from VerbNet to FrameNet is ambiguous.
+About 20\% of the instances are labeled \texttt{NF} (``no frame''), indicating a coverage gap in FrameNet.
+21\% of verbs have frame labels but no frame element annotations. Most of these are predicates with modifier arguments.
+Other arguments pointed to null anaphora that could not be resolved to overt arguments.
+This leaves 15,323 mappable instances with at least one overt argument, or 20\% of SL-WSJ verbs. This is a very small
+subset of the entire PB annotated data.
+
+Some of the FN information in SemLink is out of date due to subsequent changes in FrameNet.
+There are some erroneous FN annotations as well: e.g., all 14~instances of \vpred{liquidate} are
+labeled \fnf{Killing}, despite being used in the financial sense; and in 17~cases \vpred{direct}
+is erroneously marked as \fnf{Behind\_the\_scenes} (i.e., film direction).
+These kind of errors are hard to detect and remove.
+
+\paragraph{$F_1$ on FT test}. Including the SemLink token-level annotations in the training data (FT+SemLink)
+causes $F_1$ to drop to 47.9 (by a whopping 11.2\%) below the baseline. 
+The guide features, however, modulate the influence of the SemLink annotations, 
+giving a minor increase of 0.05\% over the baseline.
+
+
+\section{Evaluation on exemplars}
+
+\end{document}
