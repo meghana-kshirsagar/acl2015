@@ -122,7 +122,7 @@
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
 %\setlength\titlebox{6.5cm}    % Expanding the titlebox
-\setlength\titlebox{5.5cm}    % Expanding the titlebox
+
 
 \usepackage{nameref}
 \usepackage{cleveref}
@@ -439,7 +439,12 @@ for supervised argument identification  are integrated into SEMAFOR
 \citep{das-14},  the leading open-source frame-semantic parser for English.\footnote{\url{http://www.ark.cs.cmu.edu/SEMAFOR}} 
 We observe a 4\% $F_1$ improvement in argument identification on the
 FrameNet test set, leading to a 1\% $F_1$ improvement on the full
-frame-semantic parsing task.
+frame-semantic parsing task \nascomment{this point was not explained
+  in experiments; either cut it or make sure there's a follow up}.
+
+\nascomment{nothing in the paper points forward to supplementary
+  materials.  if we submit them, the paper needs to give a complete
+  account of what can be found there}
 
 \begin{figure}
 \includegraphics[width=\columnwidth]{fig/harbor-fn.pdf}
@@ -1020,8 +1025,8 @@ decreases from 729 minutes to 82 minutes\nss{say something about hardware this w
 
 % The details of squared hinge loss are as follows.
 Let $((\mathbf{x}, p, f, r), a)$ %$(r^{(i)}, a^{(i)})$
-be the $i^{\text{th}}$ training example.
-Then the squared hinge loss is given by:
+be the $i$th training example.
+Then the squared hinge loss is given by $L_{\mathbf{w}}(i) =$
 \begin{align*}
 %\lefteqn{\textit{SqHinge}_\mathbf{w}(i) =} \\
 \left(\max_{a^\prime} \left\{ \begin{array}{c} \mathbf{w}^\top \mathbf{\phi}(a^\prime, \mathbf{x}, p, f,
@@ -1042,9 +1047,7 @@ r) \\ + \boldsymbol{1}\{a^\prime \not = a\} \end{array}\right \} -
 We learn $\mathbf{w}$ by minimizing the $\ell_2$-regularized average loss on the dataset:
 \begin{equation}
 \mathbf{w^*} = \argmin_\mathbf{w}{
-    \frac{1}{N}\sum_{i = 1}^N\{
-        \textit{SqHinge}_\mathbf{w}(i)
-    \} + \frac{1}{2} \lambda \| \mathbf{w} \|_2^2
+    \frac{1}{N}\sum_{i = 1}^N L_{\mathbf{w}}(i) + \frac{1}{2} \lambda \| \mathbf{w} \|_2^2
 }
 \end{equation}
 \nascomment{why squared and not just hinge?  is there a reason for
@@ -1133,7 +1136,7 @@ both sets of data will certainly benefit in performance.
 We present precision, recall, and $F_1$-measure microaveraged across the test
 instances in Table \ref{tbl:results}, for all approaches. % that we
                                 % tried.
-\nascomment{the following sentence is confusing.  is it a claim about
+\nascomment{the following two sentences  are confusing.  is it a claim about
   the baseline system SEMAFOR (first line of the table)?  or is it a claim
   about the evaluation score used by Das (but not invented by them)?
   it sounds like the latter, in which case this sentence should be
@@ -1142,13 +1145,23 @@ assesses both frames and arguments; since our focus is on SRL, we only
 report $F_1$ for arguments, rendering our scores more interpretable
 (but not directly comparable to those reported by Das et al.).}
 The baseline $F_1$ on argument identification \citep{das-14} adds `pseudo' scores for getting gold frames right. 
-Since our focus is on SRL, we report $F_1$ computed over arguments only. 
-The first column shows the resource used (FT/Exemplars/PB-SRL) along with the method. 
-The marker `$\xrightarrow{\text{guide}}$' refers to the feature augmentation described in \cref{sec:guide},
-`Hier' represents the hierarchical features from \cref{sec:hierfeats} and `EasyAdapt' refers to the frustratingly easy DA model
-from \cref{sec:frust}.%\nss{if using the term EasyAdapt, define it above}
+Since our focus is on SRL, we report $F_1$ computed over arguments
+only. 
+
+\nascomment{complete rewrite here, please check carefully}
+The first block shows baseline performance.  The next block shows the
+benefit of FrameNet hierarchy sibling features (+1.2\% $F_1$); parent features
+are less helpful, perhaps due to overfitting.  The third block shows
+that using exemplars as training data, especially with domain
+adaptation, is preferable to using them as guide features (2.8\% $F_1$
+vs.~0.9\% $F_1$).  PropBank
+as guide features offers a small (0.4\% $F_1$) gain. \nascomment{check:}
+
+
+
+
+
 \mk{Analyze the sparsity of the models? Which features have highest importance?}
-We also show the sizes of the learned models in the column `Millions of features'.
 \mk{IMPORTANT: change the features column to refer instantiated features}
 %All the models are quite sparse with $\approx$60-70\% of the features assigned a weight of zero.
 %The larger models take roughly 6 times as long as the baseline to train. 
@@ -1157,50 +1170,62 @@ We also show the sizes of the learned models in the column `Millions of features
 
 %In Table \ref{tbl:results}, the first row corresponds to the state-of-art $F_1$ from \citet{das-14}.\finalversion{\nss{not quite, because of the changes to learning in SEMAFOR, right?}}
 
-Using the \textit{FN Hierarchy}, we find that adding the sibling-level hierarchical features to the baseline improves 
-$F_1$ by 1.2 points. The `siblings+parents' features which consider two levels of the hierarchy produce unnoticeable benefits,
-suggesting that higher levels in the hierarchy can be too general \mk{give example?} and cause very dissimilar roles to fire the same hierarchy features.%
-%\footnote{We also tried adding grandparents and found only minor improvements. Using an expert-pruned hierarchy with relations that are
-%most likely to help can give greater benefits, and is beyond the focus of this work.}
-Guide features defined using the exemplars give us a modest improvement of 1.1, 
-while including exemplars in the training data results in a bigger increase of 2.8. 
-%On the exemplars-test we observe a similar trend: guide features give a smaller benefit but the (FT+Exemplars) model increases $F_1$ by $\approx$23 $F_1$-points.
-`EasyAdapt', the frustratingly easy DA approach to incorporate exemplars
-gives a minor increase of 0.3 points on the FT-test. %but a reduction of 2.8 points on the exemplars-test.
-The PB-SRL data in the form of guide features gives small improvements over the baseline. 
-Overall we observe that an additional resource that is very similar to the original resource helps more as training data than as a `guide model'---%
-whereas the guide features help more when the additional resource is too distinct (like PB). 
-To conclude, including the FrameNet exemplars in the training data, grouping features 
-according to the FrameNet hierarchy and incorporating PB-SRL data in the form of guide features all improve performance.
+% Using the \textit{FN Hierarchy}, we find that adding the sibling-level hierarchical features to the baseline improves 
+% $F_1$ by 1.2 points. The `siblings+parents' features which consider two levels of the hierarchy produce unnoticeable benefits,
+% suggesting that higher levels in the hierarchy can be too general \mk{give example?} and cause very dissimilar roles to fire the same hierarchy features.%
+% %\footnote{We also tried adding grandparents and found only minor improvements. Using an expert-pruned hierarchy with relations that are
+% %most likely to help can give greater benefits, and is beyond the focus of this work.}
+% Guide features defined using the exemplars give us a modest improvement of 1.1, 
+% while including exemplars in the training data results in a bigger increase of 2.8. 
+% %On the exemplars-test we observe a similar trend: guide features give a smaller benefit but the (FT+Exemplars) model increases $F_1$ by $\approx$23 $F_1$-points.
+% `EasyAdapt', the frustratingly easy DA approach to incorporate exemplars
+% gives a minor increase of 0.3 points on the FT-test. %but a reduction of 2.8 points on the exemplars-test.
+% The PB-SRL data in the form of guide features gives small improvements over the baseline. 
+% Overall we observe that an additional resource that is very similar to the original resource helps more as training data than as a `guide model'---%
+% whereas the guide features help more when the additional resource is too distinct (like PB). 
+% To conclude, including the FrameNet exemplars in the training data, grouping features 
+% according to the FrameNet hierarchy and incorporating PB-SRL data in the form of guide features all improve performance.
 
 %To summarize, we find that adding the sibling-level hierarchical features, using exemplars as gold-standard training data and 
 %incorporating PB-SRL data in the form of guide features all help in improving the performance.
 
 \begin{figure}[t]
-	\begin{subfigure}[b]{0.5\textwidth}
-		\includegraphics[width=\textwidth]{fig/num_instances}
-		\caption{Frequency of each role appearing in the test set.}\label{fig:num_inst}
-	\end{subfigure}
-	\begin{subfigure}[b]{0.5\textwidth}
-		\vspace{-1cm}
-		\includegraphics[width=\textwidth]{fig/f1_sorted_by_num_instances}
-		\caption{$F_1$ of the best methods compared with the baseline.}\label{fig:coolplot}
-	\end{subfigure}
-	\caption{Count and $F_1$ for each role appearing in the test set. $F_1$ values have been smoothed with \texttt{loess}, with a smoothing parameter of 0.2.}
+%	\begin{subfigure}[b]{0.5\textwidth}
+%		\includegraphics[width=\textwidth]{fig/num_instances}
+%		\caption{Frequency of each role appearing in the test set.}\label{fig:num_inst}
+%	\end{subfigure}
+%	\begin{subfigure}[b]{0.5\textwidth}
+%		\vspace{-1cm}
+		\includegraphics[width=0.5\textwidth]{fig/f1_sorted_by_num_instances}
+%		\caption{$F_1$ of the best methods compared with the baseline.}\label{fig:coolplot}
+%	\end{subfigure}
+%	\caption{Count and $F_1$ for each role appearing in the test
+%	set. $F_1$ values have been smoothed with \texttt{loess}, with
+%	a smoothing parameter of 0.2.}
+\caption{\label{fig:coolplot}$F_1$ by role, ranked by frequency
+  (smoothed using \texttt{loess} with parameter 0.2). \nascomment{make
+  font bigger in the figure, and make lines thicker}}
 \end{figure}
 
 
-\paragraph{Combining all resources.} The last two rows of Table \ref{tbl:results} show the performance upon combining the best approaches. 
-Here, both models use the optimal training data configuration: (FT+exemplars) but differ in the feature augmentation used. 
-We find that the model that uses the hierarchy achieves the best recall, and the PB-SRL guide features result in the 
-best precision. %This result is intuitive because we expect the hierarchy to help \mk{insert good explanation here}.
-Our best result of 63.07 beats the baseline by 3.95 F points.
+\paragraph{Combining all resources.} The last two rows of Table
+\ref{tbl:results} show the performance upon combining the best
+approaches.  Both models use full-text and exemplars for training; the
+first adds hierarchy (sibling) features, and the second uses PropBank
+as guide features.  The best result is the former, gaining 3.95\%
+$F_1$ over the baseline.
+
+
+% Here, both models use the optimal training data configuration: (FT+exemplars) but differ in the feature augmentation used. 
+% We find that the model that uses the hierarchy achieves the best recall, and the PB-SRL guide features result in the 
+% best precision. %This result is intuitive because we expect the hierarchy to help \mk{insert good explanation here}.
+% Our best result of 63.07 beats the baseline by 3.95 F points.
 \paragraph{Frame element--level evaluation.}
-We present a detailed picture of gains from the additional coverage by analyzing the $F_1$ at the
-level of frame-elements (role types). Figure \ref{fig:num_inst} shows the frequency of all roles that appear in the FT-test set.
-Figure \ref{fig:coolplot} shows the $F_1$ per role-type, for the baseline and the two best models from Table \ref{tbl:results}.
-In both plots, each point on the x-axis represents one role, with the roles sorted in the decreasing order of their frequency.
-Our models achieve the best improvements for the rarer roles and are on par with the baseline for frequent roles.
+Figure \ref{fig:coolplot} shows $F_1$ per frame element, for the
+baseline and the two best models from Table \ref{tbl:results}.  Each
+$x$-axis value is one role, sorted by decreasing frequency (the
+distribution, not shown for space, is Zipf-like).  For frequent roles,
+performance is similar; our models achieve gains on rarer roles.
 
 \finalversion{\nss{impact of automatic frames?}}
 %\subsection{Frame element--level evaluation}
@@ -1221,7 +1246,9 @@ considered various ways of grouping role labels together in order to share stati
 % They present an efficient dynamic program for solving the joint role assignment problem (equation~\ref{eq:args}), and show that using it at training time is helpful.
 % Their work is complementary to our own.
 \citet{das-11,das-12} investigated semi-supervised techniques using the exemplars and WordNet for frame identification.
-\citet{hermann-14} also improve frame identification in a way that allows sharing of statistical strength among related frames, by mapping frames and predicates into the same continous vector space.
+\citet{hermann-14} also improve frame identification by mapping frames
+and predicates into the same continuous vector space, allowing
+statistical sharing.
 
 % \nss{Dipanjan's other papers (focusing on different parts of the task)}
 \nss{be sure to cite: \citep{merlo-09} (multiple resources + levels of generalization), \citep{furstenau-09} (semi-supervised)}
