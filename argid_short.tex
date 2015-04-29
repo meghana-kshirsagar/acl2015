@@ -820,6 +820,9 @@ $\text{"sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge
   what is ``parent(r)''?  is there a way to say this in English
   without making assumptions that people can understand our cryptic
   notation (which we don't have space to explain fully)?}
+  {\mk parent(r)=the role corresponding to r in the parent of frame f. 
+  We include "sib": an indicator that this is a sibling feature, to distinguish it from the 
+  already existing conjunction features in SEMAFOR: $\phi_i \wedge <role>$. }
 
   \item\noindent\textbf{parent+siblings}: Roles share features with their parent and siblings. 
 For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a two new features:
@@ -1072,13 +1075,10 @@ Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} a
 %\paragraph{Full-Text.}
 \paragraph{Preprocessing.}
 Out of a total of 145,838 exemplar sentences, we removed
-$\approx$4,000 \nascomment{give exact number as a way for others to
-  check that they are replicating correctly; there is no reason to
-  obfuscate by giving approximate numbers, it doesn't save space} sentences which had no role annotations.
+4,191 sentences which had no role annotations.
 %  (under the assumption that these are likely to be incomplete annotations).
 We removed duplicate sentences that already appeared in the full-text
-data.
-We also merged spans which were adjacent and had the
+data. We also merged spans which were adjacent and had the
 same role label.
 
 
@@ -1087,7 +1087,7 @@ same role label.
 \paragraph{Hyperparameter tuning.}
 We tuned the $\ell_2$ regularization parameter $\lambda$ on the FT dev set,
 searching over the following values: 10$^{-5}$, 10$^{-7}$, 10$^{-9}$, 10$^{-12}$.
-We use the performance \nascomment{vague:  what score?  $F_1$?} on the FT dev set to determine the stopping criterion for optimization.
+We use the $F_1$ on the FT dev set to determine the stopping criterion for optimization.
 % The FT dev set was used  only to tune parameters and not as part of model
 % construction.
 %Also note that we do not tune any parameters w.r.t the exemplars data.
