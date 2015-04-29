@@ -372,65 +372,70 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-The high cost of semantic structure annotation is a major obstacle 
-to automating semantic analysis with broad coverage.
-%The fully annotated datasets that exist are often small, 
-%hindering the accuracy and domain robustness of models trained on them.
-%However, 
-%
-% Low-resource tasks may benefit from exploiting \emph{out-of-domain} annotated data, 
-% as well as data with \emph{different} (but related) forms of annotation,
-% for additional training data or features.
-This paper considers the argument identification and classification subtask 
-of frame-semantic parsing.
-% To date, systems evaluated on the full-sentence FrameNet parsing task 
-% have relied exclusively upon a small corpus of full-text annotations 
-% for learning to recognize arguments. 
-We augment supervised learning with additional 
-``indirect'' training data and features 
-so as to leverage resources internal and external to FrameNet (e.g., PropBank). 
-Experiments demonstrate that these resources are valuable for 
-more accurate and robust frame-semantic role labeling,
-with the best model achieving nearly a 4-point increase in $F_1$ over the
-\st{SOTA?} baseline.
+We consider the task of identifying and labeling the semantic
+arguments of a predicate that evokes a FrameNet frame.  This task is
+challenging because there are only a few thousand fully annotated
+sentences for supervised training.  Our approach augments an existing, state-of-the-art
+model with features derived from FrameNet and PropBank and with
+partially annotated exemplars from FrameNet.  We observe a 4\% $F_1$
+performance increase over the original model.
+
+% The high cost of semantic structure annotation is a major obstacle 
+% to automating semantic analysis with broad coverage.
+% %The fully annotated datasets that exist are often small, 
+% %hindering the accuracy and domain robustness of models trained on them.
+% %However, 
+% %
+% % Low-resource tasks may benefit from exploiting \emph{out-of-domain} annotated data, 
+% % as well as data with \emph{different} (but related) forms of annotation,
+% % for additional training data or features.
+% This paper considers the argument identification and classification subtask 
+% of frame-semantic parsing.
+% % To date, systems evaluated on the full-sentence FrameNet parsing task 
+% % have relied exclusively upon a small corpus of full-text annotations 
+% % for learning to recognize arguments. 
+% We augment supervised learning with additional 
+% ``indirect'' training data and features 
+% so as to leverage resources internal and external to FrameNet (e.g., PropBank). 
+% Experiments demonstrate that these resources are valuable for 
+% more accurate and robust frame-semantic role labeling,
+% with the best model achieving nearly a 4-point increase in $F_1$ over the
+% \st{SOTA?} baseline.
 \end{abstract}
 
 \section{Introduction}
 
-Sparsity of data resources is a challenge for many computational semantics tasks\st{cite?}.
-Frame-semantic parsing \citep{gildea-02,das-14} is a case in point.
-This is the task of automating the rich linguistic structure analyses 
-of the FrameNet lexicon and corpus \citep{baker-98}.\footnote{\url{http://framenet.icsi.berkeley.edu/}}
-Given a sentence, frame-semantic parsing is the task of mapping tokens in the sentences
-to evoked \textbf{frames}, and for each evoked frame, finding and labeling its \textbf{argument} phrases 
+Paucity of data resources is a challenge for semantic analyses like
+frame-semantic parsing \citep{gildea-02,das-14} using the
+FrameNet lexicon \citep{baker-98}.\footnote{\url{http://framenet.icsi.berkeley.edu}}
+Given a sentence, a frame-semantic parse maps word tokens
+to \textbf{frames} they evoke, and for each frame, finds and labels
+its \textbf{argument} phrases  
 with frame-specific \textbf{roles}. 
-An example appears in \cref{fig:harbor-fn} %; it will be explained in detail in \cref{sec:fn}.
+An example appears in \cref{fig:harbor-fn}. %; it will be explained in detail in \cref{sec:fn}.
 
-In this paper, we address the \textbf{argument identification} 
-subtask of finding and labeling arguments 
-given a predicate in context and the frame it evokes.
-This is a form of semantic role labeling (SRL), 
+In this paper, we address this \textbf{argument identification} 
+subtask, a form of semantic role labeling (SRL), 
 a task introduced by \citet{gildea-02} using an earlier version of FrameNet.
-We address the sparsity of training data by using standard domain
-adaptation techniques to introduce supervision from three sources:
+Our contribution addresses the paucity of annotated data for training 
+using  standard domain
+adaptation techniques.  We repurpose three annotation sources:
 \begin{itemize}
   \item the frame-to-frame relations in FrameNet, by using
   hierarchical features to share statistical strength among related roles
   (\S\ref{sec:hierfeats}),
   \item FrameNet's corpus of partially-annotated \textbf{exemplar} sentences,
-  by using frustratingly easy domain adaptation (\S\ref{sec:frust}), and
+  by using ``frustratingly easy'' domain adaptation (\S\ref{sec:frust}), and
   \item a PropBank-style SRL system, by using guide features (\S\ref{sec:guide}).
 \end{itemize}
 % We show that these internal and external resources improve frame-semantic
 % parsing, as evaluated on full-text text annotations.
-Our experiments expand the \emph{training data} and the \emph{feature space}
-of supervised argument identification
-in order to integrate evidence from these three sources 
-into SEMAFOR \citep{das-14}, the leading open-source frame-semantic parser for English.\footnote{\url{http://www.ark.cs.cmu.edu/SEMAFOR/}} 
-Our results show that these sources of evidence boost $F_1$ for argument
-identification by almost 4 points, leading to an improvement in end-to-end
-frame-semantic parsing of about 1 point.\nss{relationship to SOTA?}
-
+These expansions of the \emph{training corpus} and the \emph{feature set}
+for supervised argument identification  are integrated into SEMAFOR
+\citep{das-14},  the leading open-source frame-semantic parser for English.\footnote{\url{http://www.ark.cs.cmu.edu/SEMAFOR}} 
+We observe a 4\% $F_1$ improvement in argument identification on the
+FrameNet test set, leading to a 1\% $F_1$ improvement on the full
+frame-semantic parsing task.
 
 \begin{figure}
 \includegraphics[width=\columnwidth]{fig/harbor-fn.pdf}
@@ -440,7 +445,7 @@ frame-semantic parsing of about 1 point.\nss{relationship to SOTA?}
 \fnf{Observable\_body\_parts} by \textit{necks}, 
 and \fnf{Punctual\_perception} by \textit{glimpse}.
 (Further, \textit{harbor} is annotated as evoking the \fnf{Locale\_by\_use} frame 
-and doubles as its sole argument.) 
+and doubles as its sole argument; not shown.) 
 Horizontal lines representing argument spans 
 are labeled with role names.}
 \label{fig:harbor-fn}
