@@ -381,7 +381,7 @@ arguments of a predicate that evokes a FrameNet frame.  This task is
 challenging because there are only a few thousand fully annotated
 sentences for supervised training.  Our approach augments an existing, state-of-the-art
 model with features derived from FrameNet and PropBank and with
-partially annotated exemplars from FrameNet.  We observe a 4\% $F_1$
+partially annotated exemplars from FrameNet.  We observe a 4\% $F_1$ \mk{why percentage for $F_1$? i dont think it is the norm}
 performance increase over the original model.
 
 % The high cost of semantic structure annotation is a major obstacle 
@@ -1145,18 +1145,21 @@ instances in Table \ref{tbl:results}, for all approaches. % that we
 assesses both frames and arguments; since our focus is on SRL, we only
 report $F_1$ for arguments, rendering our scores more interpretable
 (but not directly comparable to those reported by Das et al.).}
+\mk{It is the latter, but the scoring that uses gold frames does not make much sense if one wants to only evaluate SRL.
+If one wants to report the full-system's performance, a frame-id system should be used to get the frames. 
+In any case, we do have the numbers using their scoring scheme: 77.12. The revised number from Das et al. after correction is 76.34.}
 The baseline $F_1$ on argument identification \citep{das-14} adds `pseudo' scores for getting gold frames right. 
 Since our focus is on SRL, we report $F_1$ computed over arguments
 only. 
 
-\nascomment{complete rewrite here, please check carefully}
 The first block shows baseline performance.  The next block shows the
 benefit of FrameNet hierarchy sibling features (+1.2\% $F_1$); parent features
 are less helpful, perhaps due to overfitting.  The third block shows
 that using exemplars as training data, especially with domain
 adaptation, is preferable to using them as guide features (2.8\% $F_1$
 vs.~0.9\% $F_1$).  PropBank
-as guide features offers a small (0.4\% $F_1$) gain. \nascomment{check:}
+as guide features offers a small (0.4\% $F_1$) gain.
+
 
 
 
@@ -1211,9 +1214,16 @@ as guide features offers a small (0.4\% $F_1$) gain. \nascomment{check:}
 \paragraph{Combining all resources.} The last two rows of Table
 \ref{tbl:results} show the performance upon combining the best
 approaches.  Both models use full-text and exemplars for training; the
-first adds hierarchy (sibling) features, and the second uses PropBank
-as guide features.  The best result is the former, gaining 3.95\%
-$F_1$ over the baseline.
+first uses PropBank as guide features, and the second adds hierarchy (sibling) features.  
+The best result is the former, gaining 3.95\% $F_1$ over the baseline.
+\paragraph{Full-system $F_1$}: of the baseline SEMAFOR system is 
+66.78 and that of our combined model (last row in Table \ref{tbl:results}) is 67.91.
+\mk{New text above.. please check. Do we want to quote the result: 70.27 on full-system 
+from Tackstrom 2015? If you see the plot I sent over email, they
+are doing much better than SEMAFOR on the frequent roles. We improve F1 on the rare ones.
+Hence should we say that if we use their system as baseline, we would still
+expect to see benefits from the additional resources? } 
+
 
 
 % Here, both models use the optimal training data configuration: (FT+exemplars) but differ in the feature augmentation used. 
