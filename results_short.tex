@@ -1,66 +1,51 @@
-\begin{table*}\centering\small
-\begin{tabular}{>{\itshape}clr<{\hspace*{15pt}}rrr@{~~}}%r@{~~}rrr}
+
+\setlength\tabcolsep{5pt}
+
+\begin{table}\centering\small
+%\begin{tabular}{lr<{\hspace*{15pt}}rrr@{~~}}%r@{~~}rrr}
+\def\arraystretch{1}
+\begin{tabular}{lr<{\hspace*{5pt}}rrr}%r@{~~}rrr}
 \toprule
-\normalfont\textbf{Additional} 
-& \multicolumn{1}{c}{\textbf{Training Configuration}} 
-& \multicolumn{1}{c}{\textbf{Millions of}} 
+\multicolumn{1}{c}{\textbf{Training Configuration}} 
+& \multicolumn{1}{c}{\textbf{Model}} 
 & \multicolumn{3}{c}{\textbf{Full-Text}} \\ %&& \multicolumn{3}{c}{\textbf{Exemplars}} \\
-\cline{4-6}%\cline{8-10}
-\normalfont\textbf{Resource} 
-&  \multicolumn{1}{c}{\textbf{(Features)}} 
-& \multicolumn{1}{c}{\textbf{Features}} 
-& P\hphantom{11} & R\hphantom{11} & $F_1$\hphantom{0} \\
+\cline{3-5}%\cline{8-10}
+ \multicolumn{1}{c}{\textbf{(Features)}} 
+& \multicolumn{1}{c}{\textbf{size*}} 
+& P & R & $F_1$ \\
 % && P\hphantom{11} 
 % & R\hphantom{11} 
 % & $F_1$\hphantom{0} \\
 \midrule
 %(Baseline) & FT (Basic) & 66.03 & 53.79 & 59.29 && 64.90 & 33.60 & 44.27 \\
-(Baseline) & FT (Basic) & 2.7 & 65.57 & 53.82 & 59.12 \\ %&& 62.63 & 37.65 &
+FT (Baseline) & 2.7 & 65.6 & 53.8 & 59.1 \\ %&& 62.63 & 37.65 &
 % 47.03 \\
 \midrule
-\multirow{2}{*}{FN Hierarchy} & FT (siblings) & 5.4 & 67.24 & 54.76 & 60.36 \\
+FT (siblings) & 5.4 & 67.2 & 54.8 & 60.4 \\
 % && 64.81 & 39.09 & 48.77 \\
-& FT (siblings+parents) & 8.5 & 67.67 & 52.79 & 59.31 \\
+FT (siblings+parents) & 8.5 & 67.7 & 52.8 & 59.3 \\
 % && 65.25 & 38.18 & 48.18 \\
 \midrule
-& Exemplars $\xrightarrow{\text{guide}}$ FT & 3.5 & 65.24 & 55.96 & 60.24 \\
+Exemplars $\xrightarrow{\text{guide}}$ FT & 3.5 & 65.2 & 55.9 & 60.2 \\
 % && 67.71 & 48.08 & 56.23\\
-Exemplars & FT+Exemplars (Basic) & 13\nss{.?} & 66.06 & 58.23 & 61.90 \\
+FT+Exemplars (Basic) & 13\nss{.?} & 66.0 & 58.2 & 61.9 \\
 % && 75.44 & 65.11 & \bf{69.89} \\
-& FT+Exemplars (EasyAdapt) & 16\nss{.?} & 65.70 & 59.04 & \bf{62.19} \\
+FT+Exemplars (EasyAdapt) & 16\nss{.?} & 65.7 & 59.0 & 62.2 \\
 % && 73.88 & 61.40 & 67.06 \\
 \midrule
-PB-SRL & PB-SRL $\xrightarrow{\text{guide}}$ FT & 3.6 & 64.96 & 54.83 & 59.47 \\
+PB-SRL $\xrightarrow{\text{guide}}$ FT & 3.6 & 65.0 & 54.8 & 59.5 \\
 %  && 61.38 & 39.14 & 47.80 \\
+\midrule
+\multicolumn{5}{c}{\em{Combining the best methods}}\\
+\midrule
+FT+Exemplars (siblings) & 34 & 66.0 & 60.4 & \textbf{63.1} \\
+% && 76.14 & 67.71 & \textbf{71.70} \\
+PB-SRL $\xrightarrow{\text{guide}}$ FT+Exemplars & 17 & 67.4 & 58.8 & 62.8 \\
 \bottomrule
 \end{tabular}
 \caption{Results on the full-text test set:
 Baseline vs.~individual other resources.
-Precision, recall, and $F_1$ are given as percentages.}
+Precision, recall, and $F_1$ are given as percentages. The model size is shown in millions of features.}
 \label{tbl:results}
-\end{table*}
+\end{table}
 
-\begin{table*}\centering\small
-\begin{tabular}{lr<{\hspace*{15pt}}rrr@{~~}}%r@{~~}rrr}
-\toprule
-\multicolumn{1}{c}{\textbf{Training Configuration}} 
-& \multicolumn{1}{c}{\textbf{Millions of}} 
-& \multicolumn{3}{c}{\textbf{Full-Text}} \\ 
-% && \multicolumn{3}{c}{\textbf{Exemplars}} \\
-\cline{3-5}%\cline{7-9}
-\multicolumn{1}{c}{\textbf{(Features)}} 
-& \multicolumn{1}{c}{\textbf{Features}} 
-& P\hphantom{11} & R\hphantom{11} & $F_1$\hphantom{0} \\
-% && P\hphantom{11} & R\hphantom{11} & $F_1$\hphantom{0} \\
-\midrule
-FT+Exemplars (Hier: siblings) & 34 & 66.00 & 60.40 & \textbf{63.07} \\
-% && 76.14 & 67.71 & \textbf{71.70} \\
-PB-SRL $\xrightarrow{\text{guide}}$ FT+Exemplars & 17 & 67.36 & 58.79 & 62.80 \\
-% && 77.15 & 65.47 & 70.83 \\
-%FT+Exemplars (PB-SRL, Hier: siblings) \\
-\bottomrule
-\end{tabular}
-\caption{Combining the best individual techniques}%across resources \nss{TODO}}
-\st{TODO: Hermann results}
-\label{tbl:bestTech}
-\end{table*}

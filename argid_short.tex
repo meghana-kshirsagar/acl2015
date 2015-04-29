@@ -447,12 +447,12 @@ are labeled with role names.}
 \label{fig:harbor-fn}
 \end{figure}
 
-\begin{figure}
-\includegraphics[width=\columnwidth]{fig/harbor-pb.pdf}
-\caption{Ideal PropBank (\cref{sec:pb}) annotations for verbs. Though PB uses lexical frames rather than deep frames,
-there are clear similarities to the FrameNet annotations in \cref{fig:harbor-fn}.}
-\label{fig:harbor-pb}
-\end{figure}
+%\begin{figure}
+%\includegraphics[width=\columnwidth]{fig/harbor-pb.pdf}
+%\caption{Ideal PropBank (\cref{sec:pb}) annotations for verbs. Though PB uses lexical frames rather than deep frames,
+%there are clear similarities to the FrameNet annotations in \cref{fig:harbor-fn}.}
+%\label{fig:harbor-pb}
+%\end{figure}
 
 
 
@@ -497,18 +497,23 @@ The FrameNet lexicon is organized as a network, with several kinds of \textbf{fr
 linking pairs of frames and (subsets of) their arguments \citep{ruppenhofer-10}. 
 In this work, we consider two kinds of frame-to-frame relations:
 \paragraph{Inheritance:} 
-E.g., \fnf{Punctual\_perception} (e.g., \fnlu{glimpse.v}) inherits from 
-\fnf{Perception\_experience} (e.g., \fnlu{see.v}), which inherits from \fnf{Perception}. 
+E.g., \fnf{Robbery} inherits from \fnf{Committing\_crime}, which inherits from \fnf{Misdeed}. 
+Crucially, roles in inheriting frames are mapped to corresponding roles in inherited frames: \fnf{Robbery}.\fnr{Perpetrator} links to
+\fnf{Committing\_crime}.\fnr{Perpetrator}, which links to \fnf{Misdeed}.\fnr{Wrongdoer} and so forth.
+
+%E.g., \fnf{Punctual\_perception} (e.g., \fnlu{glimpse.v}) inherits from 
+%\fnf{Perception\_experience} (e.g., \fnlu{see.v}), which inherits from \fnf{Perception}. 
 %Other frames inheriting from \fnf{Perception} include \fnf{Sensation} (e.g., \fnlu{sight.n}) and  
 %\fnf{Becoming\_aware} (e.g., \fnlu{notice.v}). 
-Crucially, roles in inheriting (conceptually more specific) frames are mapped 
-where they correspond to a role in the inherited frame: so \fnf{Punctual\_perception}.\fnr{Perceiver} links to \fnf{Perception\_experience}.\fnr{Perceiver\_passive}, 
-which links to \fnf{Perception}.\fnr{Perceiver}, and so forth.
+%Crucially, roles in inheriting (conceptually more specific) frames are mapped 
+%where they correspond to a role in the inherited frame: so \fnf{Punctual\_perception}.\fnr{Perceiver} links to \fnf{Perception\_experience}.\fnr{Perceiver\_passive}, 
+%which links to \fnf{Perception}.\fnr{Perceiver}, and so forth.
 %, which links to \fnf{Sensation}.\fnr{Perceiver\_passive} and \fnf{Becoming\_aware}.\fnr{Cognizer}.
 
 \paragraph{Subframe:} This indicates a subevent within a complex event. 
 E.g., the \fnf{Criminal\_process} frame groups together subframes 
-\fnf{Arrest}, \fnf{Arraignment}, \fnf{Trial}, and \fnf{Sentencing}. 
+\fnf{Arrest}, \fnf{Arraignment} and \fnf{Trial}.
+%\fnf{Arrest}, \fnf{Arraignment}, \fnf{Trial}, and \fnf{Sentencing}. 
 \fnf{Criminal\_process}.\fnr{Defendant}, for instance, is mapped to 
 \fnf{Arrest}.\fnr{Suspect}% \fnf{Arraignment}.\fnr{Defendant}, 
 \finalversion{
@@ -525,9 +530,9 @@ There are 4,138 \textbf{Inheritance} and 589 \textbf{Subframe} links between rol
 
 
 \subsection{Annotations}
-
-The \textbf{full-text (FT)} portion of the FrameNet corpus provides about 5,000
-sentences annotated for all frames and their arguments.
+Statistics for the annotations appear in \cref{tbl:datastats}.\\
+\textbf{Full-text (FT)}: This portion of the FrameNet corpus consists of documents and has about 5,000
+sentences for which annotators assigned frames and arguments to as many words as possible.
 Beginning with the SemEval-2007 shared task on FrameNet analysis,
 frame-semantic parsers have been trained and evaluated on the full-text data
 % of the FrameNet corpus
@@ -554,8 +559,7 @@ is currently restricted to the sentence level.}
 % This was the case for \textit{passengers} and \textit{dizzying} in \cref{fig:harbor-fn}.}
 The full-text documents represent a mix of genres, prominently including travel guides 
 and bureaucratic reports about weapons stockpiles. 
-FrameNet~1.5 has about 5,000 full-text sentences in total.
-Statistics for the full-text corpus appear in \cref{tbl:datastats}.
+%FrameNet~1.5 has about 5,000 full-text sentences in total. 
 % , and an example annotated sentence in \cref{fig:harbor-fn}.
 
 \nss{Annotation density: (proportion of tokens evoking a frame. breakdown by POS?)}
@@ -585,37 +589,35 @@ Roles & 2,644 & 1,420 & 4,821 & 1,224 \\
 %\subsection{Exemplars}\label{sec:exemplars}
 
 \st{TODO: shorten exemplar section}
+\mk{^^^ Done I guess}
 %Conceived primarily as a lexicography project, 
-However, most FrameNet annotations serve to illustrate the argument structure potential 
-of particular predicates. 
+%However, most FrameNet annotations serve to illustrate the argument structure potential 
+%of particular predicates. 
 % When predicates are added to a frame, 
 % a large set of source corpora (primarily, the British National Corpus) covering a wide range of genres
 % is searched for various syntactic patterns, 
 % and a lexicographer identifies a selection, or \textbf{subcorpus}, of sentences 
 % illustrating the predicate's behavior \citep{boas-05}.
 % The subcorpus sentences are then annotated, but \emph{only with respect to the predicate in question}.
-To document a given predicate, lexicographers manually select corpus examples and annotate them
+\noindent\textbf{Exemplars}: To document a given predicate, lexicographers manually select corpus examples and annotate them
 \emph{only with respect to the predicate in question}.
-These singly-annotated sentences are called lexicographic \textbf{exemplars}.
-
-The subset of exemplars containing argument annotations is described in \cref{tbl:datastats}.
-There are over 140,000 such sentences (an additional 35,000 exemplar sentences contain no overt arguments).
-Relative to the full-text dataset, the exemplar dataset contains 
-an order of magnitude more frame annotations and two orders of magnitude 
-more sentences annotated.
+These singly-annotated sentences from FrameNet are called lexicographic \textbf{exemplars}.
+%The subset of exemplars containing argument annotations is described in \cref{tbl:datastats}.
+There are over 140,000 sentences containing argument annotations % (an additional 35,000 exemplar sentences contain no overt arguments).
+and relative to the FT dataset, these contain an order of magnitude more frame annotations over two orders of magnitude 
+more sentences. Since these were manually selected, the rate of overt arguments per frame
+is noticeably higher than in the FT data.
 % Because we are conditioning on the identified frame, 
 % the fact that the exemplar dataset has just one annotated frame per sentence
 % is not a concern in argument identification. However, the 
-But because exemplars have been manually selected, the rate of overt arguments per frame 
-is noticeably higher than in the full-text data, which potentially biases the 
-predictions of models trained on exemplars.\nss{cite \citep{palmer-10-eval} somewhere, maybe here}
+%But because exemplars have been manually selected, the rate of overt arguments per frame 
+%is noticeably higher than in the full-text data, which potentially biases the 
+%predictions of models trained on exemplars.\nss{cite \citep{palmer-10-eval} somewhere, maybe here}
 %model's tendency to predict certain kinds of arguments in a way that is not statistically representative of a natural corpus.
-
-The exemplar sentences formed the basis of early studies of frame-semantic role
-labeling
-\citep[e.g.,][]{gildea-02,thompson-03,fleischman-03,litkowski-04,kwon-04}.
+The exemplars formed the basis of early studies of frame-semantic role
+labeling \citep[e.g.,][]{gildea-02,thompson-03,fleischman-03,litkowski-04,kwon-04}.
 Thus far though, exemplars have not been exploited successfully to improve
-argument identification performance on full-text data, a more realistic task.
+argument identification performance on FT data, a more realistic task.
 % In this work, we seek to leverage these exemplar sentences. 
 % We deem it worthwhile to %(a)~
 % investigate whether the exemplars 
@@ -1099,37 +1101,42 @@ both sets of data will certainly benefit in performance.
 \nss{be sure to mention: gold frames}
 We present precision, recall, and $F_1$-measure microaveraged across the test
 instances in Table \ref{tbl:results}, for all approaches. % that we tried.
-The first column classifies the approaches based on what resource we use and the second column indicates what training data was used. 
-For each resource (one multi-row in the table) we show results obtained by various methods of combining it with the FT data.
-The marker `$\xrightarrow{\text{guide}}$' on some of the methods refers to the feature augmentation discussed in \cref{sec:guide},
+The baseline $F_1$ on argument identification \citep{das-14} adds `pseudo' scores for getting gold frames right. 
+Since our focus is on SRL, we report $F_1$ computed over arguments only. 
+The first column shows the resource used (FT/Exemplars/PB-SRL) along with the method. 
+The marker `$\xrightarrow{\text{guide}}$' refers to the feature augmentation described in \cref{sec:guide},
 `Hier' represents the hierarchical features from \cref{sec:hierfeats} and `EasyAdapt' refers to the frustratingly easy DA model
-described in \cref{sec:frust}.%\nss{if using the term EasyAdapt, define it above}
+from \cref{sec:frust}.%\nss{if using the term EasyAdapt, define it above}
+\mk{Analyze the sparsity of the models? Which features have highest importance?}
+We also show the sizes of the learned models in the column `Millions of features'.
+\mk{IMPORTANT: change the features column to refer instantiated features}
+%All the models are quite sparse with $\approx$60-70\% of the features assigned a weight of zero.
+%The larger models take roughly 6 times as long as the baseline to train. 
 
 
-The baseline $F_1$ on argument identification published in \citet{das-14} on the FT test set includes adding `pseudo' scores for getting gold frames right. 
-Because our focus is on SRL only, we opt to report $F_1$ computed only over arguments. 
-In Table \ref{tbl:results}, the first row corresponds to the state-of-art $F_1$ from \citet{das-14}.\finalversion{\nss{not quite, because of the changes to learning in SEMAFOR, right?}}
 
-The first resource that we consider is `FN Hierarchy'. We find that adding the sibling-level hierarchical features to the baseline improves 
-$F_1$ by 1.2 and 1.7 points on FT-test and exemplars-test respectively,
-with benefits to both precision and recall. The `siblings+parents' features which consider two levels of the hierarchy produce unnoticeable benefits,
-suggesting that higher levels in the hierarchy can be too general \mk{give example?} and cause very dissimilar roles firing the same hierarchy features.%
+%In Table \ref{tbl:results}, the first row corresponds to the state-of-art $F_1$ from \citet{das-14}.\finalversion{\nss{not quite, because of the changes to learning in SEMAFOR, right?}}
+
+Using the \textit{FN Hierarchy}, we find that adding the sibling-level hierarchical features to the baseline improves 
+$F_1$ by 1.2 points. The `siblings+parents' features which consider two levels of the hierarchy produce unnoticeable benefits,
+suggesting that higher levels in the hierarchy can be too general \mk{give example?} and cause very dissimilar roles to fire the same hierarchy features.%
 %\footnote{We also tried adding grandparents and found only minor improvements. Using an expert-pruned hierarchy with relations that are
 %most likely to help can give greater benefits, and is beyond the focus of this work.}
-
-With the exemplars resource, we find that the guide features give us a modest improvement of 1.1 points on FT-test, 
-while using it as gold-standard training data results in a bigger increase of 2.8 points. 
-On the exemplars-test we observe a similar trend: guide features give a smaller benefit but the (FT+Exemplars) model increases $F_1$ by $\approx$23 $F_1$-points.
-`EasyAdapt', the frustratingly easy DA approach to incorporate the Exemplars
-gives a minor increase of 0.3 points on the FT-test but a reduction of 2.8 points on the exemplars-test.
-
-Finally, using the PB-SRL data in the form of guide features also results in small improvements over the baseline. 
+Guide features defined using the exemplars give us a modest improvement of 1.1, 
+while including exemplars in the training data results in a bigger increase of 2.8. 
+%On the exemplars-test we observe a similar trend: guide features give a smaller benefit but the (FT+Exemplars) model increases $F_1$ by $\approx$23 $F_1$-points.
+`EasyAdapt', the frustratingly easy DA approach to incorporate exemplars
+gives a minor increase of 0.3 points on the FT-test. %but a reduction of 2.8 points on the exemplars-test.
+The PB-SRL data in the form of guide features gives small improvements over the baseline. 
 Overall we observe that an additional resource that is very similar to the original resource helps more as training data than as a `guide model'---%
 whereas the guide features help more when the additional resource is too distinct (like PB). 
-To summarize the results, we find that adding the sibling-level hierarchical features, using Exemplars as gold-standard training data and 
-incorporating PB-SRL data in the form of guide features all help in improving the performance over the baseline on both FT-test and exemplars-test.
+To conclude, including the FrameNet exemplars in the training data, grouping features 
+according to the FrameNet hierarchy and incorporating PB-SRL data in the form of guide features all improve performance.
 
-\begin{figure}
+%To summarize, we find that adding the sibling-level hierarchical features, using exemplars as gold-standard training data and 
+%incorporating PB-SRL data in the form of guide features all help in improving the performance.
+
+\begin{figure}[t]
 	\begin{subfigure}[b]{0.5\textwidth}
 		\includegraphics[width=\textwidth]{fig/num_instances}
 		\caption{Frequency of each role appearing in the test set.}\label{fig:num_inst}
@@ -1143,32 +1150,22 @@ incorporating PB-SRL data in the form of guide features all help in improving th
 \end{figure}
 
 
-\subsection{Combining all resources}
-
-We pick the techniques that performed best across the resources and combine them in two models. Table \ref{tbl:bestTech} shows the results on these.
-Both models use the optimal training data configuration: (FT+Exemplars). The first one integrates the FN Hierarchy using the `siblings' features
-and the second integrates PB-SRL data in the form of guide features. These two models outperform the models discussed in Table \ref{tbl:results}.
-On both test sets, we find that the model using the hierarchy achieves the best recall, and the PB-SRL guide features result in the 
+\paragraph{Combining all resources}: The last two rows of Table \ref{tbl:results} show the performance upon combining the best approaches. 
+Here, both models use the optimal training data configuration: (FT+exemplars) but differ in the feature augmentation used. 
+We find that the model that uses the hierarchy achieves the best recall, and the PB-SRL guide features result in the 
 best precision. %This result is intuitive because we expect the hierarchy to help \mk{insert good explanation here}.
-Our best result of 63.07 on the FT test set beats the baseline (59.12) by 3.95 F points.
+Our best result of 63.07 beats the baseline by 3.95 F points.
+\paragraph{Frame element--level evaluation}:
+We present a detailed picture of the gains from the additional coverage by analyzing the $F_1$ at the
+level of frame-elements i.e role type. Figure \ref{fig:num_inst} shows the frequency of all roles that appear in the FT-test set.
+Figure \ref{fig:coolplot} shows the $F_1$ per role-type, for the baseline and the two best models from Table \ref{tbl:results}.
+In both plots, each point on the x-axis represents one role, with the roles sorted in the decreasing order of their frequency.
+Our models achieve the best improvements for the rarer roles and are at par with the baseline on the frequent roles.
 
 \finalversion{\nss{impact of automatic frames?}}
-
-\subsection{Frame element--level evaluation}
-The results so far have discussed the overall improvement in $F_1$, but do not present a detailed picture of how we gain from the additional
-coverage.
-Towards this, we present a frame-element i.e role type level analysis comparing the best results with the baseline.
-Figure \ref{fig:num_inst} shows the frequency of all roles that appear in the FT-test set.
-Figure \ref{fig:coolplot} shows the $F_1$ per role-type, for the baseline and the two models from Table \ref{tbl:bestTech}.
-In both plots, each point on the x-axis represents one role, with the roles sorted in the decreasing order of their frequency.
-The $F_1$ curves clearly show that our models achieve the best improvements for the rarer roles and are at par with the baseline on the frequent roles.
-
-\mk{Analyze the sparsity of the models? Which features have highest importance?}
-%In addition to the performance, 
-We also show the sizes of the various models in the column `Millions of features'.
-All the models are quite sparse however,
-with $\approx$60-70\% of the features assigned a weight of zero.
-%The larger models take roughly 6 times as long as the baseline to train. 
+%\subsection{Frame element--level evaluation}
+%The results so far have discussed the overall improvement in $F_1$, but do not present a detailed picture of how we gain from the additional
+%coverage. Towards this, we present a frame-element i.e role type level analysis comparing the best results with the baseline.
 
 
 \section{Related Work}
@@ -1196,16 +1193,18 @@ considered various ways of grouping role labels together in order to share stati
 \section{Conclusion}
 
 We have empirically shown that auxiliary semantic resources
-can benefit the challenging task of frame-semantic role labeling.
-Complementary gains on the standard full-text evaluation are achieved
-by including the FrameNet exemplars in the training data 
-and by grouping features according to the FrameNet hierarchy. 
-There are smaller, but nevertheless promising, signs that data annotated 
-with the PropBank scheme can be leveraged as well.
-In addition to making SRL more \emph{accurate}, 
-a parallel evaluation on a sample of exemplars suggests the 
-improved models are also more \emph{robust}, 
-capturing a broader swath of the English language.
+can benefit the challenging task of frame-semantic role labeling. 
+The significant gains come from the FrameNet exemplars and the FrameNet hierarchy, with
+some signs that data annotated with the PropBank scheme can be leveraged as well.
+
+\mk{For short version: the rest of the conclusion is already present in the Results section}
+%Complementary gains on the standard full-text evaluation are achieved
+%by including the FrameNet exemplars in the training data 
+%and by grouping features according to the FrameNet hierarchy. 
+%There are smaller, but nevertheless promising, signs that data annotated 
+%with the PropBank scheme can be leveraged as well.
+%In addition to making SRL more \emph{accurate}, a parallel evaluation on a sample of exemplars suggests the 
+%improved models are also more \emph{robust}, capturing a broader swath of the English language.
 
 \finalversion{We are optimistic that future improvements to lexical semantic resources, 
 including planned changes for PropBank \citep{bonial-14} and SemLink \citep{bonial-13}, 
