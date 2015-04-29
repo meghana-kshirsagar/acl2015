@@ -192,6 +192,8 @@
 \NewDocumentEnvironment{describe}{}{\renewcommand\item[1][]{\Item \textbf{##1:} }\begin{itemize}}{\end{itemize}}
 \NewDocumentEnvironment{edescribe}{}{\renewcommand\item[1][]{\Item \textbf{##1:} }\begin{enumerate}}{\end{enumerate}}
 
+\newcommand{\exemplars}{\mathrm{ex}}
+\newcommand{\fulltext}{\mathrm{ft}}
 
 % Author comments
 \usepackage{color}
@@ -831,15 +833,15 @@ notation as above}
 % \label{sec:aug_data}
 % 
 % This is the simplest possible technique:
-% we add the exemplars training data, $\mathcal{D}_{ex}$, to the full text training data, $\mathcal{D}_{ft}$, without differentiating between the two, and train on the combined dataset.
+% we add the exemplars training data, $\mathcal{D}_{\exemplars}$, to the full text training data, $\mathcal{D}_{\fulltext}$, without differentiating between the two, and train on the combined dataset.
 
-\subsection{Exemplars / Domain Adaptation}
+\subsection{Domain Adaptation and Exemplars}
 \label{sec:frust}
-\Citet{daume-07} proposed a feature augmentation approach that was shown to work well in supervised domain adaptation scenarios, 
-such as ours.
+\Citet{daume-07} proposed a feature augmentation approach that is now
+widely used in supervised domain adaptation scenarios.
 % We %apply their method to incorporate the exemplars data  by introducing
 % introduce a domain indicator %$I_{\textit{domain}}(\mathbf{x}) =
-% $\indicator{\mathbf{x} \in \mathcal{D}_{ft}}$,
+% $\indicator{\mathbf{x} \in \mathcal{D}_{\fulltext}}$,
 % where $\indicator{P}$ is the indicator function, with value 1 if $P$ is true, 0 otherwise.
 % \[
 % \indicator{P} = \left\{\begin{array}{lr}
@@ -848,11 +850,13 @@ such as ours.
 % \end{array}
 % \right.
 % \]
-Let $\mathcal{D}_{ex}$ denote the exemplars training data, and
-$\mathcal{D}_{ft}$ denote the full text training data.
+Let $\mathcal{D}_{\exemplars}$ denote the exemplars training data, and
+$\mathcal{D}_{\fulltext}$ denote the full text training data.
 For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a new
-feature that fires only if $\phi_i$ fires and $\x \in \mathcal{D}_{ft}$:
-$\text{"ft"} \wedge \phi_i(a, \mathbf{x}, p, f, r)$.\finalversion{\nss{why the $i$ subscript? is that for the training instance as above?}}
+feature that fires only if $\phi_i$ fires and $\x \in \mathcal{D}_{\fulltext}$:
+$\text{"ft"} \wedge \phi_i(a, \mathbf{x}, p, f,
+r)$.\finalversion{\nss{why the $i$ subscript? is that for the training
+    instance as above?}} \nascomment{same notation issue as before}
 
 % For each original feature $\phi_i$, we create a new feature 
 % We expand the feature space by concatenating the original feature vector with a version of the feature vector that has been element-wise conjoined with the domain indicator:
@@ -868,20 +872,24 @@ $\text{"ft"} \wedge \phi_i(a, \mathbf{x}, p, f, r)$.\finalversion{\nss{why the $
 % &&
 % \left[\begin{array}{c}
 % \phi(a, \mathbf{x}, p, f, r) \\
-% \phi(a, \mathbf{x}, p, f, r) \text{ \& } \indicator{\mathbf{x} \in \mathcal{D}_{ft}}%I_{\textit{domain}}(\mathbf{x})
+% \phi(a, \mathbf{x}, p, f, r) \text{ \& } \indicator{\mathbf{x} \in \mathcal{D}_{\fulltext}}%I_{\textit{domain}}(\mathbf{x})
 % \end{array}
 % \right]
 % % \left[\phi(a, \mathbf{x}, p, f, r) ; \phi(a, \mathbf{x}, p, f, r) \wedge I_{\textit{domain}}(\mathbf{x}) \right]
 % \end{align*}
 % \st{this ``vector concatenation'' view is sort of inconsistent with the ``adding features" view in the guide/hierarchy sections}
 
-% FT annotations $x \in \mathcal{D}_{ft}$, and $\Phi^{ex}(x) = (x, 0)$ for the exemplars $x \in D_{ex}$. The resulting transformed data 
+% FT annotations $x \in \mathcal{D}_{\fulltext}$, and $\Phi^{\exemplars}(x) = (x, 0)$ for the exemplars $x \in D_{\exemplars}$. The resulting transformed data 
 % from the two domains is then used to learn a single model.
 The intuition is that we are allowing
 each feature to contribute both ``general'' and ``domain-specific'' weights to the model depending on whether the feature
 behaves similarly in both domains or not.
 The general feature contributes to both domains, so regularization encourages the model to use the general version over the domain-specific, if possible.
-
+\nascomment{this doesn't seem exactly like the Daume thing, which
+  would have three sets of features: a general one, and one for each
+  domain.  shouldn't there also be a copy for the exemplars, so that
+  there are coefficients to do some of the predictive power for the
+  exemplars that will not influence test performance?}
 
 \subsection{Guide Features}
 \label{sec:guide}
@@ -918,11 +926,12 @@ For the exemplars, %case where $M_s$ produces labels
 % (for instance, the exemplars use the same schema as the FT annotations\st{our set of source domains is small enough that we can enumerate which ones this applies to. Is it exemplars + SemLink?}), 
 we use an additional feature $\phi_{match}(r_t,r_g)$ to indicate that 
 the `guide' role label $r_g$ of the span $a$ is the same as the role label
-being filled, $r_t$.
+being filled, $r_t$. \nascomment{why subscript t?  notation here should
+  be cleaned up and made precise}
 
 
 % \mk{introduce this as a supervised domain adaptation problem? What is the source and what's the target?}
-% \mk{Let $D_{ft}$ represent the FT data and $D_{ex}$ the exemplars?}
+% \mk{Let $D_{\fulltext}$ represent the FT data and $D_{\exemplars}$ the exemplars?}
 % 
 % 
 % \nss{Domain adaptation/multitask learning techniques}
@@ -1014,10 +1023,10 @@ Let $((\mathbf{x}, p, f, r), a)$ %$(r^{(i)}, a^{(i)})$
 be the $i^{\text{th}}$ training example.
 Then the squared hinge loss is given by:
 \begin{align*}
-\lefteqn{\textit{SqHinge}_\mathbf{w}(i) =} \\
-&& (\max_{a^\prime}{\{\mathbf{w}^\top \mathbf{\phi}(a^\prime, \mathbf{x}, p, f,
-r) + \text{cost}(a^\prime, a)\}} - \\ 
-&&  \mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r))^2.
+%\lefteqn{\textit{SqHinge}_\mathbf{w}(i) =} \\
+\left(\max_{a^\prime} \left\{ \begin{array}{c} \mathbf{w}^\top \mathbf{\phi}(a^\prime, \mathbf{x}, p, f,
+r) \\ + \boldsymbol{1}\{a^\prime \not = a\} \end{array}\right \} - 
+  \mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r)\right)^2
 \end{align*}
 % and squared hinge loss is:
 % \begin{equation}
@@ -1027,8 +1036,9 @@ r) + \text{cost}(a^\prime, a)\}} - \\
 % We use $\text{cost}(a^\prime, a) = \indicator{a^\prime \ne a}$,
 % where $\indicator{P}$ is the indicator function, taking value 1 if $P$ is true,
 % 0 otherwise.
-where $\text{cost}(a^\prime, a)$ is 0 if $a^\prime = a$ and 1 otherwise.%
-\footnote{We experimented with recall-oriented training, where errors of omission are assigned a higher cost, but found that while recall increased, overall $F_1$ went down\nss{or: failed to improve?}.}
+%where $\text{cost}(a^\prime, a)$ is 0 if $a^\prime = a$ and 1 otherwise.%
+\nascomment{I cut a footnote here}
+%\footnote{We experimented with recall-oriented training, where errors of omission are assigned a higher cost, but found that while recall increased, overall $F_1$ went down\nss{or: failed to improve?}.}
 We learn $\mathbf{w}$ by minimizing the $\ell_2$-regularized average loss on the dataset:
 \begin{equation}
 \mathbf{w^*} = \argmin_\mathbf{w}{
@@ -1037,9 +1047,11 @@ We learn $\mathbf{w}$ by minimizing the $\ell_2$-regularized average loss on the
     \} + \frac{1}{2} \lambda \| \mathbf{w} \|_2^2
 }
 \end{equation}
+\nascomment{why squared and not just hinge?  is there a reason for
+  this, or did you compare it and find that it works better?  this is
+  begging for explanation since it's unusual}
 
-
-\section{Experimental setup}
+\section{Experimental Setup}
 
 % All of our experiments use the same form of regularization, 
 % and condition on the same oracle frame predictions 
@@ -1056,7 +1068,9 @@ Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} a
 %\paragraph{Full-Text.}
 \paragraph{Preprocessing.}
 Out of a total of 145,838 exemplar sentences, we removed
-$\approx$4,000 sentences which had no role annotations.
+$\approx$4,000 \nascomment{give exact number as a way for others to
+  check that they are replicating correctly; there is no reason to
+  obfuscate by giving approximate numbers, it doesn't save space} sentences which had no role annotations.
 %  (under the assumption that these are likely to be incomplete annotations).
 We removed duplicate sentences that already appeared in the full-text
 data.
@@ -1069,7 +1083,7 @@ same role label.
 \paragraph{Hyperparameter tuning.}
 We tuned the $\ell_2$ regularization parameter $\lambda$ on the FT dev set,
 searching over the following values: 10$^{-5}$, 10$^{-7}$, 10$^{-9}$, 10$^{-12}$.
-We use the performance on the FT dev set to determine the stopping criterion for optimization.
+We use the performance \nascomment{vague:  what score?  $F_1$?} on the FT dev set to determine the stopping criterion for optimization.
 % The FT dev set was used  only to tune parameters and not as part of model
 % construction.
 %Also note that we do not tune any parameters w.r.t the exemplars data.
@@ -1081,7 +1095,7 @@ We use the performance on the FT dev set to determine the stopping criterion for
 A complete frame-semantic parsing system involves frame identification and argument identification.
 We perform two evaluations: one assuming gold-standard frames are given, to
 separate the errors made by frame identification;
-and one using the output of \citet{hermann-14}, the current state-of-the-art in
+and one using the output of \nascomment{the system described by ?} \citet{hermann-14}, the current state-of-the-art in
 frame identification, to demonstrate that our improvements are retained when
 incorporated into a full system.
 % Since the focus of this work is argument identification, we assume that
@@ -1117,7 +1131,16 @@ both sets of data will certainly benefit in performance.
 \nss{comparison to prior work (baseline, best result). args+frames score vs. args only}
 \nss{be sure to mention: gold frames}
 We present precision, recall, and $F_1$-measure microaveraged across the test
-instances in Table \ref{tbl:results}, for all approaches. % that we tried.
+instances in Table \ref{tbl:results}, for all approaches. % that we
+                                % tried.
+\nascomment{the following sentence is confusing.  is it a claim about
+  the baseline system SEMAFOR (first line of the table)?  or is it a claim
+  about the evaluation score used by Das (but not invented by them)?
+  it sounds like the latter, in which case this sentence should be
+  more like:  The standard evaluation score for frame-semantic parsing
+assesses both frames and arguments; since our focus is on SRL, we only
+report $F_1$ for arguments, rendering our scores more interpretable
+(but not directly comparable to those reported by Das et al.).}
 The baseline $F_1$ on argument identification \citep{das-14} adds `pseudo' scores for getting gold frames right. 
 Since our focus is on SRL, we report $F_1$ computed over arguments only. 
 The first column shows the resource used (FT/Exemplars/PB-SRL) along with the method. 
