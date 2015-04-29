@@ -249,6 +249,8 @@
 \newcommand{\overbar}[1]{\mkern 1.5mu\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu} % \bar is too narrow in math
 \newcommand{\cost}{c}
 
+\newcommand{\nascomment}[1]{\textcolor{blue}{\textbf{\small [#1 --NAS]}}}
+
 \newcommand{\term}[1]{\textbf{#1}} % term being defined
 
 \newcommand{\citeposs}[2][]{\citeauthor{#2}'s (\citeyear[#1]{#2})}
@@ -472,7 +474,7 @@ are labeled with role names.}
 
 % \subsection{FrameNet}\label{sec:fn}
 
-FrameNet represents kinds of events, scenarios, and relationships 
+FrameNet represents events, scenarios, and relationships 
 with an inventory of \textbf{frames} (such as \fnf{Shopping}, \fnf{Scarcity}, and \fnf{Shoot\_projectiles}). 
 Each frame is associated with a set of \textbf{roles} (or \textbf{frame elements}) 
 called to mind in order to understand the scenario,
@@ -528,8 +530,9 @@ E.g., the \fnf{Criminal\_process} frame groups together subframes
 % This permits an inference that a person tried for a crime likely
 % has been or will be arrested, arraigned, and sentenced for that crime.
 
-We say that the $\textit{parent}$ of a role is one that has either the \textbf{Inheritance} or \textbf{Subframe} relation to it.\nss{clarify?}
-There are 4,138 \textbf{Inheritance} and 589 \textbf{Subframe} links between role types in FrameNet 1.5.
+We say that the \nascomment{``the'' here suggests the parent is
+  unique; I think we want ``a'' not ``the''} $\textit{parent}$ of a role is one that has either the \textbf{Inheritance} or \textbf{Subframe} relation to it.\nss{clarify?}
+There are 4,138 \textbf{Inheritance} and 589 \textbf{Subframe} links among role types in FrameNet 1.5.
 
 
 
@@ -576,7 +579,7 @@ and bureaucratic reports about weapons stockpiles.
 \midrule
 Sentences  & 2,780 & 2,420 & 137,515 & 4,132 \\
 Frames & 15,019 & 4,458 & 137,515 & 4,132 \\
-Overt args & 25,918 & 7,210 & 278,985 & 8,417 \\
+Overt arguments & 25,918 & 7,210 & 278,985 & 8,417 \\
 \midrule
 \multicolumn{5}{c}{\textsc{types}} \\
 Roles & 2,644 & 1,420 & 4,821 & 1,224 \\
@@ -621,8 +624,8 @@ is noticeably higher than in the FT data.
 %model's tendency to predict certain kinds of arguments in a way that is not statistically representative of a natural corpus.
 The exemplars formed the basis of early studies of frame-semantic role
 labeling \citep[e.g.,][]{gildea-02,thompson-03,fleischman-03,litkowski-04,kwon-04}.
-Thus far though, exemplars have not been exploited successfully to improve
-argument identification performance on FT data, a more realistic task.
+xemplars have not yet been exploited successfully to improve
+argument identification performance on the more realistic FT task.
 % In this work, we seek to leverage these exemplar sentences. 
 % We deem it worthwhile to %(a)~
 % investigate whether the exemplars 
@@ -705,7 +708,7 @@ We use the model from SEMAFOR \citep{das-14}, detailed in
 , as a starting point.
 We experiment with %several domain adaptation (DA) techniques, augmenting 
 techniques that augment
-the model's training data (\cref{sec:frust}) and feature space %$\mathbf{\phi}$
+the model's training data (\cref{sec:frust}) and feature set %$\mathbf{\phi}$
 (\cref{sec:hierfeats},~\cref{sec:guide}).
 
 \subsection{Baseline}
@@ -718,14 +721,17 @@ prediction problem.
 Let the classification input be a dependency-parsed sentence $\mathbf{x}$, 
 the token(s) $p$ constituting the predicate in question, and the frame $f$ evoked by $p$
 (as determined by frame identification). 
-We use the heuristic procedure from \citep{das-14} for extracting candidate argument spans 
-for the predicate; call this $\textit{spans}(\mathbf{x}, p, f)$.
+We use the heuristic procedure described by \citep{das-14} for extracting candidate argument spans 
+for the predicate (omitted for space); call this $\textit{spans}(\mathbf{x}, p, f)$.
 $\textit{spans}$ always includes a special span denoting an empty or non-overt
 role, denoted~$\emptyset$.
-For each candidate argument $a \in \textit{spans}(\mathbf{x}, p, f)$ for a role
+For each candidate argument $a \in \textit{spans}(\mathbf{x}, p, f)$
+and each role
 $r$, binary features $\mathbf{\phi}(a, \mathbf{x}, p, f, r)$ are extracted.
 We use the feature extractors from \citep{das-14} as a baseline, adding
-additional feature extractors in our experiments
+additional feature extractors in our experiments \nascomment{I can't
+  figure out someone's latex macros here, but there are two \S s and
+  there should only be one inside the parens that follow this comment}
 (\cref{sec:hierfeats,sec:frust,sec:guide}).
 Each $a$ is given a real-valued score by a linear model:
 % At the core of SEMAFOR's argument
@@ -746,9 +752,9 @@ data (\cref{sec:learning}).
 % The scoring function (\cref{eq:score}) 
 % is computed for each candidate span $a \in \textit{spans}(\mathbf{x}, p, f)$.
 
-At inference time, we use a \term{global classifier}.
-The global classifier chooses a joint assignment of all arguments of a frame,
-while respecting the constraints that a role may be assigned to at most one span, and
+Prediction requires choosing a joint assignment of all arguments of a
+frame,
+respecting the constraints that a role may be assigned to at most one span, and
 spans of overt arguments must not overlap.
 % Formally, let a joint assigment be represented as a function $\mathbf{a}: \textit{roles}(f) \rightarrow \textit{spans}(\mathbf{x}, p, f)$, % \cup \{\emptyset\}$, %= \{ (r, a) \mid r \in \textit{roles}(f) \}$
 %  and let $\mathcal{A}$ be the set of all non-overlapping joint assignments.
@@ -766,7 +772,8 @@ spans of overt arguments must not overlap.
 %     }.
 % \end{equation}
 Beam search, with a beam size of 100, is used to find this $\argmax$.%
-\footnote{Recent work has improved upon global decoding techniques \citep{tackstrom-15}.
+\footnote{Recent work has improved upon global decoding techniques
+  \nascomment{also cite Das and Martins et al at *SEM 2012} \citep{tackstrom-15}.
 We expect such improvements to be complementary to the gains due to the added features and data reported here.}
 
 
@@ -800,7 +807,11 @@ We experiment with two kinds of features using the \textbf{Inheritance} and \tex
   \item 
 \noindent\textbf{siblings}: Roles that have a common parent share features.
 For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a new feature which is the conjunction: 
-$\text{"sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge \textit{parent}(r)$. 
+$\text{"sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge
+\textit{parent}(r)$.  \nascomment{I don't understand this notation.
+  what is ``parent(r)''?  is there a way to say this in English
+  without making assumptions that people can understand our cryptic
+  notation (which we don't have space to explain fully)?}
 
   \item\noindent\textbf{parent+siblings}: Roles share features with their parent and siblings. 
 For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a two new features:
@@ -809,7 +820,8 @@ For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a two new features:
 
 \noindent$\text{"par+sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge r$.\footnote{We also experimented with using more than one level of the hierarchy (e.g., grandparents). 
 The additional features made the model computationally more expensive, 
-but did not improve its predictions.}
+but did not improve its predictions.} \nascomment{same issue about
+notation as above}
 \end{itemize}
 
 
@@ -821,9 +833,9 @@ but did not improve its predictions.}
 % This is the simplest possible technique:
 % we add the exemplars training data, $\mathcal{D}_{ex}$, to the full text training data, $\mathcal{D}_{ft}$, without differentiating between the two, and train on the combined dataset.
 
-\subsection{Exemplars / Frustratingly Easy}
+\subsection{Exemplars / Domain Adaptation}
 \label{sec:frust}
-\Citet{daume-07} proposed a simple feature augmentation approach that was shown to work well in supervised domain adaptation scenarios, 
+\Citet{daume-07} proposed a feature augmentation approach that was shown to work well in supervised domain adaptation scenarios, 
 such as ours.
 % We %apply their method to incorporate the exemplars data  by introducing
 % introduce a domain indicator %$I_{\textit{domain}}(\mathbf{x}) =
