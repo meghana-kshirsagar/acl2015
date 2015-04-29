@@ -235,8 +235,8 @@
 \newcommand{\stmarker}{\ensuretext{\textcolor{blue}{\ensuremath{^{\textsc{S}}_{\textsc{T}}}}}}
 \newcommand{\jbmarker}{\ensuretext{\textcolor{orange}{\ensuremath{^{\textsc{J}}_{\textsc{B}}}}}}
 \newcommand{\dbmarker}{\ensuretext{\textcolor{purple}{\ensuremath{^{\textsc{D}}_{\textsc{B}}}}}}
-% \newcommand{\arkcomment}[3]{\ensuretext{\textcolor{#3}{[#1 #2]}}}
-\newcommand{\arkcomment}[3]{}
+\newcommand{\arkcomment}[3]{\ensuretext{\textcolor{#3}{[#1 #2]}}}
+%\newcommand{\arkcomment}[3]{}
 \newcommand{\cjd}[1]{\arkcomment{\cjdmarker}{#1}{red}}
 \newcommand{\nss}[1]{\arkcomment{\nssmarker}{#1}{magenta}}
 \newcommand{\mk}[1]{\arkcomment{\mkmarker}{#1}{mdgreen}}
@@ -579,10 +579,10 @@ and bureaucratic reports about weapons stockpiles.
 \nss{Annotation density: (proportion of tokens evoking a frame. breakdown by POS?)}
 
 \begin{table}\centering\small
-\begin{tabular}{@{}p{2cm}r@{~~}r@{~~}r@{~~}r@{}}
+\begin{tabular}{@{}p{2.25cm}r@{~~}r@{~~}r@{~~}r@{}}
 %\toprule
 \normalfont & \multicolumn{2}{c}{\textbf{\hspace{40pt}Full-Text}} & \multicolumn{2}{c}{\textbf{Exemplars}} \\
-& \multicolumn{1}{c}{\hspace{40pt}\textit{train}} & \multicolumn{1}{c}{\textit{test}} & \multicolumn{1}{c}{\textit{train}} & \multicolumn{1}{c}{\textit{test}} \\
+& \multicolumn{1}{c}{\hspace{30pt}\textit{train}} & \multicolumn{1}{c}{\textit{test}} & \multicolumn{1}{c}{\textit{train}} & \multicolumn{1}{c}{\textit{test}} \\
 \midrule
 Sentences  & 2,780 & 2,420 & 137,515 & 4,132 \\
 Frames & 15,019 & 4,458 & 137,515 & 4,132 \\
@@ -595,7 +595,8 @@ Roles & 2,644 & 1,420 & 4,821 & 1,224 \\
 \multicolumn{2}{@{}l}{Unseen roles \quad \textit{vs.~train:}} & 289 & & 38 \\
 \multicolumn{2}{@{}l}{Unseen roles \quad \textit{vs.~combined train:}} & 103 & & 32 \\
 \end{tabular}
-\caption{Characteristics of the training and test data. (These statistics exclude the development set, which contains 4,463 frames over 746 sentences.)}
+\caption{Characteristics of the training and test data. (These statistics exclude the development set, which contains 4,463 frames over 746 sentences.)
+\nss{above role types, add frame types?}}
 \label{tbl:datastats}
 \end{table}
 
@@ -603,7 +604,7 @@ Roles & 2,644 & 1,420 & 4,821 & 1,224 \\
 %\subsection{Exemplars}\label{sec:exemplars}
 
 \st{TODO: shorten exemplar section}
-\mk{^^^ Done I guess}
+\mk{$\uparrow$ Done I guess}
 %Conceived primarily as a lexicography project, 
 %However, most FrameNet annotations serve to illustrate the argument structure potential 
 %of particular predicates. 
@@ -631,7 +632,7 @@ is noticeably higher than in the FT data.
 %model's tendency to predict certain kinds of arguments in a way that is not statistically representative of a natural corpus.
 The exemplars formed the basis of early studies of frame-semantic role
 labeling \citep[e.g.,][]{gildea-02,thompson-03,fleischman-03,litkowski-04,kwon-04}.
-xemplars have not yet been exploited successfully to improve
+Exemplars have not yet been exploited successfully to improve
 argument identification performance on the more realistic FT task.
 % In this work, we seek to leverage these exemplar sentences. 
 % We deem it worthwhile to %(a)~
