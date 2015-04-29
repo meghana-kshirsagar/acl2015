@@ -1220,12 +1220,11 @@ first uses PropBank as guide features, and the second adds hierarchy (sibling) f
 The best result is the former, gaining 3.95\% $F_1$ over the baseline.
 \paragraph{Full-system $F_1$}: of the baseline SEMAFOR system is 
 66.78 and that of our combined model (last row in Table \ref{tbl:results}) is 67.91.
-\mk{New text above.. please check. Do we want to quote the result: 70.27 on full-system 
+\mk{New text above and below.. please check. Do we want to quote the result: 70.27 on full-system 
 from Tackstrom 2015? If you see the plot I sent over email, they
 are doing much better than SEMAFOR on the frequent roles. We improve F1 on the rare ones.
 Hence should we say that if we use their system as baseline, we would still
 expect to see benefits from the additional resources? } 
-
 
 
 % Here, both models use the optimal training data configuration: (FT+exemplars) but differ in the feature augmentation used. 
@@ -1238,6 +1237,11 @@ baseline and the two best models from Table \ref{tbl:results}.  Each
 $x$-axis value is one role, sorted by decreasing frequency (the
 distribution, not shown for space, is Zipf-like).  For frequent roles,
 performance is similar; our models achieve gains on rarer roles.
+
+\paragraph{Additional results} (check Supplementary): We experiment with another resource,
+SemLink \citep{bonial-13} with no improvements in $F_1$. All models are also evaluated
+on a test set constructed using the exemplars, which has a different text and type distribution.
+
 
 \finalversion{\nss{impact of automatic frames?}}
 %\subsection{Frame element--level evaluation}
@@ -1276,7 +1280,7 @@ can benefit the challenging task of frame-semantic role labeling.
 The significant gains come from the FrameNet exemplars and the FrameNet hierarchy, with
 some signs that data annotated with the PropBank scheme can be leveraged as well.
 
-\mk{For short version: the rest of the conclusion is already present in the Results section}
+%\mk{For short version: the rest of the conclusion is already present in the Results section}
 %Complementary gains on the standard full-text evaluation are achieved
 %by including the FrameNet exemplars in the training data 
 %and by grouping features according to the FrameNet hierarchy. 
