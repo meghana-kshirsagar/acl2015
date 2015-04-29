@@ -475,9 +475,9 @@ are labeled with role names.}
 
 \section{FrameNet}\label{sec:fn}
 
-\nss{incl. data analysis of differences from full-text}
+%\nss{incl. data analysis of differences from full-text}
 
-\nss{w/in each mention: genre/overall vocabulary; coverage and distributions of predicates, FE labels; oracle coverage of FT test}
+%\nss{w/in each mention: genre/overall vocabulary; coverage and distributions of predicates, FE labels; oracle coverage of FT test}
 
 % \subsection{FrameNet}\label{sec:fn}
 
@@ -501,7 +501,7 @@ prepositional phrase adjunct (\textit{for dizzying glimpses of the harbor}).
 }
 In FrameNet~1.5, there are over 1,000 frames and 12,000~lexical predicates.
 
-\nss{mention somewhere?: roles may be implicit, but are often realized in the sentence.}
+%\nss{mention somewhere?: roles may be implicit, but are often realized in the sentence.}
 
 
 \subsection{Hierarchy}
@@ -576,7 +576,7 @@ and bureaucratic reports about weapons stockpiles.
 %FrameNet~1.5 has about 5,000 full-text sentences in total. 
 % , and an example annotated sentence in \cref{fig:harbor-fn}.
 
-\nss{Annotation density: (proportion of tokens evoking a frame. breakdown by POS?)}
+%\nss{Annotation density: (proportion of tokens evoking a frame. breakdown by POS?)}
 
 \begin{table}\centering\small
 \begin{tabular}{@{}p{2.25cm}r@{~~}r@{~~}r@{~~}r@{}}
@@ -781,7 +781,7 @@ spans of overt arguments must not overlap.
 % \end{equation}
 Beam search, with a beam size of 100, is used to find this $\argmax$.%
 \footnote{Recent work has improved upon global decoding techniques
-  \nascomment{also cite Das and Martins et al at *SEM 2012} \citep{tackstrom-15}.
+  \nascomment{also cite \citep{das-martins-12}} \citep{tackstrom-15}.
 We expect such improvements to be complementary to the gains due to the added features and data reported here.}
 
 
@@ -1082,7 +1082,7 @@ We also merged spans which were adjacent and had the
 same role label.
 
 
-\nss{OntoNotes PropBank preprocessing (NLTK)?}
+\finalversion{\nss{OntoNotes PropBank preprocessing (NLTK)?}}
 
 \paragraph{Hyperparameter tuning.}
 We tuned the $\ell_2$ regularization parameter $\lambda$ on the FT dev set,
@@ -1132,8 +1132,8 @@ both sets of data will certainly benefit in performance.
 \input{results_short.tex}
 
 
-\nss{comparison to prior work (baseline, best result). args+frames score vs. args only}
-\nss{be sure to mention: gold frames}
+%\nss{comparison to prior work (baseline, best result). args+frames score vs. args only}
+%\nss{be sure to mention: gold frames}
 We present precision, recall, and $F_1$-measure microaveraged across the test
 instances in Table \ref{tbl:results}, for all approaches. % that we
                                 % tried.
@@ -1255,8 +1255,8 @@ statistical sharing.
 \nss{be sure to cite: \citep{merlo-09} (multiple resources + levels of generalization), \citep{furstenau-09} (semi-supervised)}
 
 
-\nss{multitask learning?}
-\mk{there's no room for citing MTL.. we can do that later}
+%\nss{multitask learning?}
+%\mk{there's no room for citing MTL.. we can do that later}
 
 \section{Conclusion}
 
