@@ -1,8 +1,15 @@
 \documentclass[a4paper,11pt,titlepage]{article}
 
-\usepackage{graphicx}
-\usepackage{amsmath}
-\usepackage{amssymb}
+\usepackage{style/acl2015}
+\usepackage{natbib}
+
+\newcommand{\fnf}[1]{\textsc{\textsf{#1}}} % FrameNet frame
+\newcommand{\fnr}[1]{\textbf{\textsf{#1}}} % FrameNet role (frame element name)
+\newcommand{\fnlu}[1]{\textsf{#1}} % FrameNet lexical unit (predicate)
+\newcommand{\pbf}[1]{\mbox{\textsf{#1}}} % PropBank frame (roleset)
+\newcommand{\pbr}[1]{\textbf{\textsf{#1}}} % PropBank role (numbered or modifier argument label)
+\newcommand{\vpred}[1]{\textbf{#1}} % verb predicate
+
 
 \usepackage[top=0.7in, bottom=0.9in, left=0.8in, right=0.8in]{geometry}
 
@@ -45,5 +52,12 @@ giving a minor increase of 0.05\% over the baseline.
 
 
 \section{Evaluation on exemplars}
+
+\bibliographystyle{style/aclnat}
+% you bib file should really go here
+\setlength{\bibsep}{1pt}
+{\fontsize{10}{12.25}\selectfont
+\bibliography{argid}}
+
 
 \end{document}
