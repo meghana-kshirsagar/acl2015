@@ -1037,9 +1037,9 @@ be the $i$th training example.
 Then the squared hinge loss is given by $L_{\mathbf{w}}(i) =$
 \begin{align*}
 %\lefteqn{\textit{SqHinge}_\mathbf{w}(i) =} \\
-\left(\max_{a^\prime} \left\{ \begin{array}{c} \mathbf{w}^\top \mathbf{\phi}(a^\prime, \mathbf{x}, p, f,
+\left(\max_{a^\prime} \left\{ \begin{array}{c} \mathbf{w}^\top \mathbf{g}(a^\prime, \mathbf{x}, p, f,
 r) \\ + \boldsymbol{1}\{a^\prime \not = a\} \end{array}\right \} - 
-  \mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r)\right)^2
+  \mathbf{w}^\top \mathbf{g}(a, \mathbf{x}, p, f, r)\right)^2
 \end{align*}
 % and squared hinge loss is:
 % \begin{equation}
@@ -1276,6 +1276,7 @@ We have empirically shown that auxiliary semantic resources
 can benefit the challenging task of frame-semantic role labeling. 
 The significant gains come from the FrameNet exemplars and the FrameNet hierarchy, with
 some signs that data annotated with the PropBank scheme can be leveraged as well.
+\nss{release of code and models}
 
 %\mk{For short version: the rest of the conclusion is already present in the Results section}
 %Complementary gains on the standard full-text evaluation are achieved
