@@ -381,8 +381,9 @@ arguments of a predicate that evokes a FrameNet frame.  This task is
 challenging because there are only a few thousand fully annotated
 sentences for supervised training.  Our approach augments an existing, state-of-the-art
 model with features derived from FrameNet and PropBank and with
-partially annotated exemplars from FrameNet.  We observe a 4\% $F_1$ \mk{why percentage for $F_1$? i dont think it is the norm}
-performance increase over the original model.
+partially annotated exemplars from FrameNet.  We observe a 4\% absolute increase in $F_1$ 
+%\mk{why percentage for $F_1$? i dont think it is the norm}\nss{yes, it is typical in NLP}
+versus the original model.
 
 % The high cost of semantic structure annotation is a major obstacle 
 % to automating semantic analysis with broad coverage.
@@ -1047,7 +1048,6 @@ r) \\ + \boldsymbol{1}\{a^\prime \not = a\} \end{array}\right \} -
 % where $\indicator{P}$ is the indicator function, taking value 1 if $P$ is true,
 % 0 otherwise.
 %where $\text{cost}(a^\prime, a)$ is 0 if $a^\prime = a$ and 1 otherwise.%
-\nascomment{I cut a footnote here}
 %\footnote{We experimented with recall-oriented training, where errors of omission are assigned a higher cost, but found that while recall increased, overall $F_1$ went down\nss{or: failed to improve?}.}
 We learn $\mathbf{w}$ by minimizing the $\ell_2$-regularized average loss on the dataset:
 \begin{equation}
