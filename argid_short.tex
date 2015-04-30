@@ -604,8 +604,8 @@ Roles & 2,644 & 1,420 & 4,821 & 1,224 \\
 
 %\subsection{Exemplars}\label{sec:exemplars}
 
-\st{TODO: shorten exemplar section}
-\mk{$\uparrow$ Done I guess}
+%\st{TODO: shorten exemplar section}
+%\mk{$\uparrow$ Done I guess}
 %Conceived primarily as a lexicography project, 
 %However, most FrameNet annotations serve to illustrate the argument structure potential 
 %of particular predicates. 
@@ -895,19 +895,19 @@ The intuition is that we are allowing
 each feature to contribute both ``general'' and ``domain-specific'' weights to the model depending on whether the feature
 behaves similarly in both domains or not.
 The general feature contributes to both domains, so regularization encourages the model to use the general version over the domain-specific, if possible.
-\nascomment{this doesn't seem exactly like the Daume thing, which
-  would have three sets of features: a general one, and one for each
-  domain.  shouldn't there also be a copy for the exemplars, so that
-  there are coefficients to do some of the predictive power for the
-  exemplars that will not influence test performance?}
-  \mk{they are equivalent, we do it this way to avoid too many features.}
+% \nascomment{this doesn't seem exactly like the Daume thing, which
+%   would have three sets of features: a general one, and one for each
+%   domain.  shouldn't there also be a copy for the exemplars, so that
+%   there are coefficients to do some of the predictive power for the
+%   exemplars that will not influence test performance?}
+%   \mk{they are equivalent, we do it this way to avoid too many features.}
 
 \subsection{Guide Features}
 \label{sec:guide}
 
 Another approach to domain adaptation %, 
 % which does not combine the labeled data from the two domains, 
-is to train a supervised model on a source domain, make predictions using that
+is to train a supervised predictor $h_0(a,\mathbf{x},p,f)$ on a source domain, make predictions using that
 model on the target domain, then use those predictions as additional features
 while training a new model on the target domain.
 % is to use a supervised model built on the source domain to augment features in the target domain.
@@ -930,15 +930,16 @@ full-text data.
 % the source domain (for instance, the PropBank data). 
 % For every target domain sentence $\x$, we introduce ``guide'' features which use the output $M_s(\x)$
 % obtained by applying $M_s$ on $\x$, which consists of the role labels assigned to various text spans in $\x$.
-We used two types of guide features:
-one indicates that a span $a$ was assigned \emph{any} role, and the other encodes the role label $r_g$ itself.
+We use two types of guide features:
+one encodes the role label predicted by the source model,
+and the other indicates that a span $a$ was assigned \emph{some} role, 
+i.e.~$h_0(a,\mathbf{x},p,f)\neq\emptyset$.
 For the exemplars, %case where $M_s$ produces labels
 % that belong to the same schema as the target domain 
 % (for instance, the exemplars use the same schema as the FT annotations\st{our set of source domains is small enough that we can enumerate which ones this applies to. Is it exemplars + SemLink?}), 
-we use an additional feature $\phi_{match}(r_t,r_g)$ to indicate that 
-the `guide' role label $r_g$ of the span $a$ is the same as the role label
-being filled, $r_t$. \nascomment{why subscript t?  notation here should
-  be cleaned up and made precise}
+we use an additional feature to indicate that 
+the predicted role matches the role being filled, 
+i.e.~$\phi_{\text{match}}(a,\mathbf{x},p,f,r) = \mathbf{1}\{h_0(a,\mathbf{x},p,f)=r\}$.
 
 
 % \mk{introduce this as a supervised domain adaptation problem? What is the source and what's the target?}
@@ -993,7 +994,7 @@ being filled, $r_t$. \nascomment{why subscript t?  notation here should
 \section{Learning}
 \label{sec:learning}
 
-\st{TODO: shorten}
+%\st{TODO: shorten}
 
 Following SEMAFOR, we train using a \term{local} objective,
 %  instead of using a global classifier.
@@ -1100,7 +1101,8 @@ We use the $F_1$ on the FT dev set to determine the stopping criterion for optim
 A complete frame-semantic parsing system involves frame identification and argument identification.
 We perform two evaluations: one assuming gold-standard frames are given, to
 separate the errors made by frame identification;
-and one using the output of \nascomment{the system described by ?} \citet{hermann-14}, the current state-of-the-art in
+and one using the output of %\nascomment{the system described by ?} 
+\citet{hermann-14}, the current state-of-the-art in
 frame identification, to demonstrate that our improvements are retained when
 incorporated into a full system.
 % Since the focus of this work is argument identification, we assume that
