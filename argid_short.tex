@@ -817,26 +817,17 @@ for individual roles.
 We experiment with two kinds of features using the \textbf{Inheritance} and \textbf{Subframe} relations:
 
 \begin{itemize}
-  \item 
-\noindent\textbf{siblings}: Roles that have a common parent share features.
+\item\noindent\textbf{parent+siblings}: Roles share features with their parent and siblings. 
 For every observation feature (percept) $\phi(a, \mathbf{x}, p, f)$ 
 in the base feature set,\footnote{i.e., $g^i_r(a,\mathbf{x},p,f,r) = \phi_i(a,\mathbf{x},p,f) \wedge r$} 
-and for every role $r'$,
-we add a new feature which is the conjunction: 
-$g^{\text{sib}}_{r'}(a,\mathbf{x},p,f,r) = \phi(a, \mathbf{x}, p, f) \wedge \textit{parent}(r)=r'$.  
-% \nascomment{I don't understand this notation.
-%   what is ``parent(r)''?  is there a way to say this in English
-%   without making assumptions that people can understand our cryptic
-%   notation (which we don't have space to explain fully)?}
-%   \mk{ parent(r)=the role corresponding to r in the parent of frame f. 
-%   We include "sib": an indicator that this is a sibling feature, to distinguish it from the 
-%   already existing conjunction features in SEMAFOR: $\phi_i \wedge <role>$. }
-
-  \item\noindent\textbf{parent+siblings}: Roles share features with their parent and siblings. 
-For every observation feature $\phi(a, \mathbf{x}, p, f)$ and every role $r'$, we add features of the form:
-$g^{\text{par+sib}}_{r'}(a,\mathbf{x},p,f,r) = \phi(a, \mathbf{x}, p, f) \wedge r' \in \{r, \textit{parent}(r)\}$.\footnote{We also experimented with using more than one level of the hierarchy (e.g., grandparents). 
+and for every non-leaf role $r'$, we add a feature:
+$g^{\text{par+sib}}_{r'}(a,\mathbf{x},p,f,r) = \phi(a, \mathbf{x}, p, f) \wedge \left(r' \in \{r, \textit{parent}(r)\}\right)$.\footnote{We also experimented with using more than one level of the hierarchy (e.g., grandparents). 
 The additional features made the model computationally more expensive, 
 but did not improve its predictions.}
+\item\noindent\textbf{siblings}: Roles that have a common parent share features.
+This is a narrower version of the \textbf{parents+siblings} 
+feature: for every non-leaf role $r'$,
+$g^{\text{sib}}_{r'}(a,\mathbf{x},p,f,r) = g^{\text{par+sib}}_{r'}(a,\mathbf{x},p,f,r) \wedge \left(r'=\textit{parent}(r)\right)$.
 \end{itemize}
 
 
