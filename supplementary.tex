@@ -20,6 +20,17 @@
 \maketitle
 
 \section{SemLink}
+
+Bridging across different kinds of lexical resources 
+with different levels of coverage can expand the playing field of semantic parsers.
+E.g., \citet{shi-05} used a rule-based mapping between FrameNet and VerbNet, and between VerbNet and WordNet, 
+\nss{Also look at: \citep{merlo-09} (multiple resources + levels of generalization), \citep{furstenau-09} (semi-supervised)}
+from which they built a rule-based semantic parser.
+Here, we aim to expand the training data (token-level) by rule-based mapping 
+from distant annotations into the FrameNet representation.
+
+
+
 SemLink \citep{bonial-13} is a partial and semi-automatic augmentation
 of the PropBank corpus's roleset annotations with mappings to FrameNet and VerbNet.
 It contains two types of mappings. The \emph{sense-level mappings} give correspondences between the concepts
