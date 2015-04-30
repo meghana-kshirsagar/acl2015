@@ -865,12 +865,8 @@ widely used in supervised domain adaptation scenarios.
 % \]
 Let $\mathcal{D}_{\exemplars}$ denote the exemplars training data, and
 $\mathcal{D}_{\fulltext}$ denote the full text training data.
-For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a new
-feature that fires only if $\phi_i$ fires and $\x \in \mathcal{D}_{\fulltext}$:
-$\text{"ft"} \wedge \phi_i(a, \mathbf{x}, p, f,
-r)$.\finalversion{\nss{why the $i$ subscript? is that for the training
-    instance as above?}} \nascomment{same notation issue as before}
-
+For every observation feature $\phi(a, \mathbf{x}, p, f)$ in the base model, we add a new
+feature $\phi_{\fulltext}(\cdot)$ that fires only if $\phi(\cdot)$ fires and $\x \in \mathcal{D}_{\fulltext}$.
 % For each original feature $\phi_i$, we create a new feature 
 % We expand the feature space by concatenating the original feature vector with a version of the feature vector that has been element-wise conjoined with the domain indicator:
 % % We apply their method to incorporate the exemplars data  by introducing a feature mapping $\Phi : \mathds{R}^d \rightarrow \mathds{R}^{2d}$ given by
@@ -891,13 +887,15 @@ r)$.\finalversion{\nss{why the $i$ subscript? is that for the training
 % % \left[\phi(a, \mathbf{x}, p, f, r) ; \phi(a, \mathbf{x}, p, f, r) \wedge I_{\textit{domain}}(\mathbf{x}) \right]
 % \end{align*}
 % \st{this ``vector concatenation'' view is sort of inconsistent with the ``adding features" view in the guide/hierarchy sections}
-
+%
 % FT annotations $x \in \mathcal{D}_{\fulltext}$, and $\Phi^{\exemplars}(x) = (x, 0)$ for the exemplars $x \in D_{\exemplars}$. The resulting transformed data 
 % from the two domains is then used to learn a single model.
-The intuition is that we are allowing
-each feature to contribute both ``general'' and ``domain-specific'' weights to the model depending on whether the feature
-behaves similarly in both domains or not.
-The general feature contributes to both domains, so regularization encourages the model to use the general version over the domain-specific, if possible.
+The intuition is that each base feature contributes both a ``general'' weight and a ``domain-specific'' weight 
+to the model; thus, it can exhibit a general preference for specific roles,  
+but this general preference can be fine-tuned for the domain.
+Regularization encourages the model to use the general version over the domain-specific, if possible.
+(Explicit features for both domains would not make the model any more expressive; 
+effectively, the source domain is the default.)
 % \nascomment{this doesn't seem exactly like the Daume thing, which
 %   would have three sets of features: a general one, and one for each
 %   domain.  shouldn't there also be a copy for the exemplars, so that
