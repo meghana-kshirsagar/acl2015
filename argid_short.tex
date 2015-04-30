@@ -748,7 +748,7 @@ Each $a$ is given a real-valued score by a linear model:
 % candidate argument $a \in \textit{spans(\mathbf{x}, p, f)}$ to a role $r$: % of
 % the frame $f$:
 \begin{equation}\label{eq:score}
-\textit{score}_\mathbf{w}(a \mid \mathbf{x}, p, f, r) = \mathbf{w}^\top \mathbf{\phi}(a, \mathbf{x}, p, f, r)
+\textit{score}_\mathbf{w}(a \mid \mathbf{x}, p, f, r) = \mathbf{w}^\top \mathbf{g}(a, \mathbf{x}, p, f, r)
 \end{equation}
 %  this is evaluated 
 % for every frame-evoking lexical predicate $p$ in that sentence 
@@ -815,25 +815,24 @@ We experiment with two kinds of features using the \textbf{Inheritance} and \tex
 \begin{itemize}
   \item 
 \noindent\textbf{siblings}: Roles that have a common parent share features.
-For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a new feature which is the conjunction: 
-$\text{"sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge
-\textit{parent}(r)$.  \nascomment{I don't understand this notation.
-  what is ``parent(r)''?  is there a way to say this in English
-  without making assumptions that people can understand our cryptic
-  notation (which we don't have space to explain fully)?}
-  \mk{ parent(r)=the role corresponding to r in the parent of frame f. 
-  We include "sib": an indicator that this is a sibling feature, to distinguish it from the 
-  already existing conjunction features in SEMAFOR: $\phi_i \wedge <role>$. }
+For every observation feature (percept) $\phi(a, \mathbf{x}, p, f)$ 
+in the base feature set,\footnote{i.e., $g^i_r(a,\mathbf{x},p,f,r) = \phi_i(a,\mathbf{x},p,f) \wedge r$} 
+and for every role $r'$,
+we add a new feature which is the conjunction: 
+$g^{\text{sib}}_{r'}(a,\mathbf{x},p,f,r) = \phi(a, \mathbf{x}, p, f) \wedge r'=\textit{parent}(r)$.  
+% \nascomment{I don't understand this notation.
+%   what is ``parent(r)''?  is there a way to say this in English
+%   without making assumptions that people can understand our cryptic
+%   notation (which we don't have space to explain fully)?}
+%   \mk{ parent(r)=the role corresponding to r in the parent of frame f. 
+%   We include "sib": an indicator that this is a sibling feature, to distinguish it from the 
+%   already existing conjunction features in SEMAFOR: $\phi_i \wedge <role>$. }
 
   \item\noindent\textbf{parent+siblings}: Roles share features with their parent and siblings. 
-For every feature $\phi_i(a, \mathbf{x}, p, f, r)$, we add a two new features:
-
-\noindent$\text{"par+sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge \textit{parent}(r)$, and
-
-\noindent$\text{"par+sib"} \wedge \phi_i(a, \mathbf{x}, p, f, r) \wedge r$.\footnote{We also experimented with using more than one level of the hierarchy (e.g., grandparents). 
+For every observation feature $\phi(a, \mathbf{x}, p, f)$ and every role $r'$, we add features of the form:
+$g^{\text{par+sib}}_{r'}(a,\mathbf{x},p,f,r) = \phi(a, \mathbf{x}, p, f) \wedge r' \in \{r, \textit{parent}(r)\}$.\footnote{We also experimented with using more than one level of the hierarchy (e.g., grandparents). 
 The additional features made the model computationally more expensive, 
-but did not improve its predictions.} \nascomment{same issue about
-notation as above}
+but did not improve its predictions.}
 \end{itemize}
 
 
@@ -939,7 +938,7 @@ For the exemplars, %case where $M_s$ produces labels
 % (for instance, the exemplars use the same schema as the FT annotations\st{our set of source domains is small enough that we can enumerate which ones this applies to. Is it exemplars + SemLink?}), 
 we use an additional feature to indicate that 
 the predicted role matches the role being filled, 
-i.e.~$\phi_{\text{match}}(a,\mathbf{x},p,f,r) = \mathbf{1}\{h_0(a,\mathbf{x},p,f)=r\}$.
+i.e.~$g_{\text{match}}(a,\mathbf{x},p,f,r) = \mathbf{1}\{h_0(a,\mathbf{x},p,f)=r\}$.
 
 
 % \mk{introduce this as a supervised domain adaptation problem? What is the source and what's the target?}
