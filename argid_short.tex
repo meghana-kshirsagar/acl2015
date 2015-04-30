@@ -817,17 +817,16 @@ for individual roles.
 
 %A simple mechanism to share information is via shared model parameters between related roles. 
 %Towards this, 
-We experiment with two kinds of features using the \textbf{Inheritance} and \textbf{Subframe} relations:
+We experiment with two kinds of features using the \textbf{Inheritance} and \textbf{Subframe} relations.
+For every feature $\phi(a, \mathbf{x}, p, f, r)$ in the base feature set, 
+we add two disjunctive features:
 
 \begin{itemize}
-\item\noindent\textbf{siblings}: Roles that have a common parent share features. 
-For every feature $\phi(a, \mathbf{x}, p, f, r)$ 
-in the base feature set, 
-we add a disjunctive feature:
+\item\noindent\textbf{siblings} (roles that have a common parent share features):  
 $\phi^{\text{sib}}(a,\mathbf{x},p,f,r) = \bigvee_{r' \in \textit{siblings}(r)} \phi(a, \mathbf{x}, p, f, r')$.
-\item\noindent\textbf{parent+siblings}: Roles share features with their parent and siblings. 
-We add an additional feature disjunction for each \textbf{sib} feature:
-$\phi^{\text{par+sib}}(a,\mathbf{x},p,f,r) = \phi^{\text{sib}}(a,\mathbf{x},p,f,r) \vee \phi(a, \mathbf{x}, p, f, \textit{parent}(r))$.\footnote{We also experimented with using more than one level of the hierarchy (e.g., grandparents). 
+\item\noindent\textbf{parent+siblings} (sibling roles and their parent share features):  
+$\phi^{\text{par+sib}}(a,\mathbf{x},p,f,r) = \bigvee_{r' \in \textit{siblings}(r) \cup \{\textit{parent}(r)\}} \phi(a, \mathbf{x}, p, f, r')$.%
+\footnote{We also experimented with using more than one level of the hierarchy (e.g., grandparents). 
 The additional features made the model computationally more expensive, 
 but did not improve its predictions.}
 \end{itemize}
