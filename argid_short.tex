@@ -745,7 +745,7 @@ $\textit{spans}$ always includes a special span denoting an empty or non-overt
 role, denoted~$\emptyset$.
 For each candidate argument $a \in \textit{spans}(\mathbf{x}, p, f)$
 and each role
-$r$, a binary feature vector $\mathbf{g}(a, \mathbf{x}, p, f, r)$ is extracted.
+$r$, a binary feature vector $\boldsymbol{\phi}(a, \mathbf{x}, p, f, r)$ is extracted.
 We use the feature extractors from \citep{das-14} as a baseline, adding
 additional ones in our experiments 
 (\cref{sec:hierfeats}--\cref{sec:guide}). %\ref{sec:frust}
@@ -755,7 +755,7 @@ Each $a$ is given a real-valued score by a linear model:
 % candidate argument $a \in \textit{spans(\mathbf{x}, p, f)}$ to a role $r$: % of
 % the frame $f$:
 \begin{equation}\label{eq:score}
-\textit{score}_\mathbf{w}(a \mid \mathbf{x}, p, f, r) = \mathbf{w}^\top \mathbf{g}(a, \mathbf{x}, p, f, r)
+\textit{score}_\mathbf{w}(a \mid \mathbf{x}, p, f, r) = \mathbf{w}^\top \boldsymbol{\phi}(a, \mathbf{x}, p, f, r)
 \end{equation}
 %  this is evaluated 
 % for every frame-evoking lexical predicate $p$ in that sentence 
@@ -820,17 +820,16 @@ for individual roles.
 We experiment with two kinds of features using the \textbf{Inheritance} and \textbf{Subframe} relations:
 
 \begin{itemize}
+\item\noindent\textbf{siblings}: Roles that have a common parent share features. 
+For every feature $\phi(a, \mathbf{x}, p, f, r)$ 
+in the base feature set, 
+we add a disjunctive feature:
+$\phi^{\text{sib}}(a,\mathbf{x},p,f,r) = \bigvee_{r' \in \textit{siblings}(r)} \phi(a, \mathbf{x}, p, f, r')$.
 \item\noindent\textbf{parent+siblings}: Roles share features with their parent and siblings. 
-For every observation feature (percept) $\phi(a, \mathbf{x}, p, f)$ 
-in the base feature set,\footnote{i.e., $g^i_r(a,\mathbf{x},p,f,r) = \phi_i(a,\mathbf{x},p,f) \wedge r$} 
-and for every non-leaf role $r'$, we add a feature:
-$g^{\text{par+sib}}_{r'}(a,\mathbf{x},p,f,r) = \phi(a, \mathbf{x}, p, f) \wedge \left(r' \in \{r, \textit{parent}(r)\}\right)$.\footnote{We also experimented with using more than one level of the hierarchy (e.g., grandparents). 
+We add an additional feature disjunction for each \textbf{sib} feature:
+$\phi^{\text{par+sib}}(a,\mathbf{x},p,f,r) = \phi^{\text{sib}}(a,\mathbf{x},p,f,r) \vee \phi(a, \mathbf{x}, p, f, \textit{parent}(r))$.\footnote{We also experimented with using more than one level of the hierarchy (e.g., grandparents). 
 The additional features made the model computationally more expensive, 
 but did not improve its predictions.}
-\item\noindent\textbf{siblings}: Roles that have a common parent share features.
-This is a narrower version of the \textbf{parents+siblings} 
-feature: for every non-leaf role $r'$,
-$g^{\text{sib}}_{r'}(a,\mathbf{x},p,f,r) = g^{\text{par+sib}}_{r'}(a,\mathbf{x},p,f,r) \wedge \left(r'=\textit{parent}(r)\right)$.
 \end{itemize}
 
 
@@ -859,7 +858,7 @@ widely used in supervised domain adaptation scenarios.
 % \]
 Let $\mathcal{D}_{\exemplars}$ denote the exemplars training data, and
 $\mathcal{D}_{\fulltext}$ denote the full text training data.
-For every observation feature $\phi(a, \mathbf{x}, p, f)$ in the base model, we add a new
+For every feature $\phi(a, \mathbf{x}, p, f, r)$ in the base model, we add a new
 feature $\phi_{\fulltext}(\cdot)$ that fires only if $\phi(\cdot)$ fires and $\x \in \mathcal{D}_{\fulltext}$.
 % For each original feature $\phi_i$, we create a new feature 
 % We expand the feature space by concatenating the original feature vector with a version of the feature vector that has been element-wise conjoined with the domain indicator:
@@ -1033,9 +1032,9 @@ be the $i$th training example.
 Then the squared hinge loss is given by $L_{\mathbf{w}}(i) =$
 \begin{align*}
 %\lefteqn{\textit{SqHinge}_\mathbf{w}(i) =} \\
-\left(\max_{a^\prime} \left\{ \begin{array}{c} \mathbf{w}^\top \mathbf{g}(a^\prime, \mathbf{x}, p, f,
+\left(\max_{a^\prime} \left\{ \begin{array}{c} \mathbf{w}^\top \boldsymbol{\phi}(a^\prime, \mathbf{x}, p, f,
 r) \\ + \boldsymbol{1}\{a^\prime \not = a\} \end{array}\right \} - 
-  \mathbf{w}^\top \mathbf{g}(a, \mathbf{x}, p, f, r)\right)^2
+  \mathbf{w}^\top \boldsymbol{\phi}(a, \mathbf{x}, p, f, r)\right)^2
 \end{align*}
 % and squared hinge loss is:
 % \begin{equation}
