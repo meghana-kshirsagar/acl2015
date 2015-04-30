@@ -1,7 +1,50 @@
-\documentclass[a4paper,11pt,titlepage]{article}
+\PassOptionsToPackage{usenames}{color}
+\documentclass[11pt,a4paper]{article}
 
+\usepackage{relsize} % relative font sizes (e.g. \smaller). must precede ACL style
 \usepackage{style/acl2015}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,filecolor=black,urlcolor=black]{hyperref}
 \usepackage{natbib}
+
+%\usepackage{times}
+%\usepackage{latexsym}
+
+\usepackage{microtype}
+\usepackage{ dsfont }
+
+
+\usepackage{amssymb}	%amsfonts,eucal,amsbsy,amsthm,amsopn
+\usepackage{amsmath}
+
+\usepackage{mathptmx}	% txfonts
+\usepackage[scaled=.8]{beramono}
+\usepackage[scaled=.85]{helvet}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\usepackage{MnSymbol}	% must be after mathptmx
+
+\usepackage{latexsym}
+
+
+\newcommand{\ensuretext}[1]{#1}
+\newcommand{\cjdmarker}{\ensuretext{\textcolor{mdgreen}{\ensuremath{^{\textsc{CJ}}_{\textsc{D}}}}}}
+\newcommand{\nssmarker}{\ensuretext{\textcolor{magenta}{\ensuremath{^{\textsc{NS}}_{\textsc{S}}}}}}
+\newcommand{\mkmarker}{\ensuretext{\textcolor{red}{\ensuremath{^{\textsc{M}}_{\textsc{K}}}}}}
+\newcommand{\stmarker}{\ensuretext{\textcolor{orange}{\ensuremath{^{\textsc{S}}_{\textsc{T}}}}}}
+\newcommand{\nasmarker}{\ensuretext{\textcolor{blue}{\ensuremath{^{\textsc{NA}}_{\textsc{S}}}}}}
+\newcommand{\jbmarker}{\ensuretext{\textcolor{orange}{\ensuremath{^{\textsc{J}}_{\textsc{B}}}}}}
+\newcommand{\dbmarker}{\ensuretext{\textcolor{purple}{\ensuremath{^{\textsc{D}}_{\textsc{B}}}}}}
+\newcommand{\arkcomment}[3]{\ensuretext{\textcolor{#3}{[#1 #2]}}}
+%\newcommand{\arkcomment}[3]{}
+\newcommand{\cjd}[1]{\arkcomment{\cjdmarker}{#1}{mdgreen}}
+\newcommand{\nss}[1]{\arkcomment{\nssmarker}{#1}{magenta}}
+\newcommand{\mk}[1]{\arkcomment{\mkmarker}{#1}{red}}
+\newcommand{\st}[1]{\arkcomment{\stmarker}{#1}{orange}}
+\newcommand{\jb}[1]{\arkcomment{\jbmarker}{#1}{blue}}
+\newcommand{\db}[1]{\arkcomment{\dbmarker}{#1}{purple}}
+\newcommand{\nascomment}[1]{\arkcomment{\nasmarker}{#1}{blue}}
+
 
 \newcommand{\fnf}[1]{\textsc{\textsf{#1}}} % FrameNet frame
 \newcommand{\fnr}[1]{\textbf{\textsf{#1}}} % FrameNet role (frame element name)
@@ -11,7 +54,7 @@
 \newcommand{\vpred}[1]{\textbf{#1}} % verb predicate
 
 
-\usepackage[top=0.7in, bottom=0.9in, left=0.8in, right=0.8in]{geometry}
+%\usepackage[top=0.7in, bottom=0.9in, left=0.8in, right=0.8in]{geometry}
 
 \begin{document}
 
@@ -56,7 +99,7 @@ labeled \fnf{Killing}, despite being used in the financial sense; and in 17~case
 is erroneously marked as \fnf{Behind\_the\_scenes} (i.e., film direction).
 These kind of errors are hard to detect and remove.
 
-\paragraph{$F_1$ on FT test}. Including the SemLink token-level annotations in the training data (FT+SemLink)
+\paragraph{$F_1$ on FT test.} Including the SemLink token-level annotations in the training data (FT+SemLink)
 causes $F_1$ to drop to 47.9 (by a whopping 11.2\%) below the baseline. 
 The guide features, however, modulate the influence of the SemLink annotations, 
 giving a minor increase of 0.05\% over the baseline.
