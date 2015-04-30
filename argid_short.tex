@@ -444,10 +444,6 @@ FrameNet test set, leading to a 1\% $F_1$ improvement on the full
 frame-semantic parsing task \nascomment{this point was not explained
   in experiments; either cut it or make sure there's a follow up}.
 
-\nascomment{nothing in the paper points forward to supplementary
-  materials.  if we submit them, the paper needs to give a complete
-  account of what can be found there}
-
 \begin{figure}
 \includegraphics[width=\columnwidth]{fig/harbor-fn.pdf}
 \caption{Example sentence from FrameNet full-text annotation. 
@@ -749,11 +745,9 @@ $\textit{spans}$ always includes a special span denoting an empty or non-overt
 role, denoted~$\emptyset$.
 For each candidate argument $a \in \textit{spans}(\mathbf{x}, p, f)$
 and each role
-$r$, binary features $\mathbf{g}(a, \mathbf{x}, p, f, r)$ are extracted.
+$r$, a binary feature vector $\mathbf{g}(a, \mathbf{x}, p, f, r)$ is extracted.
 We use the feature extractors from \citep{das-14} as a baseline, adding
-additional feature extractors in our experiments \nascomment{I can't
-  figure out someone's latex macros here, but there are two \S s and
-  there should only be one inside the parens that follow this comment}\st{fixed}
+additional ones in our experiments 
 (\cref{sec:hierfeats}--\cref{sec:guide}). %\ref{sec:frust}
 Each $a$ is given a real-valued score by a linear model:
 % At the core of SEMAFOR's argument
@@ -1059,11 +1053,11 @@ We learn $\mathbf{w}$ by minimizing the $\ell_2$-regularized average loss on the
     \frac{1}{N}\sum_{i = 1}^N L_{\mathbf{w}}(i) + \frac{1}{2} \lambda \| \mathbf{w} \|_2^2
 }
 \end{equation}
-\nascomment{why squared and not just hinge?  is there a reason for
-  this, or did you compare it and find that it works better?  this is
-  begging for explanation since it's unusual}
-\st{that's my fault. i implemented both but left squared hinge as the default
-by accident. we didn't do a comparison.}
+% \nascomment{why squared and not just hinge?  is there a reason for
+%   this, or did you compare it and find that it works better?  this is
+%   begging for explanation since it's unusual}
+% \st{that's my fault. i implemented both but left squared hinge as the default
+% by accident. we didn't do a comparison.}
 
 \section{Experimental Setup}
 
