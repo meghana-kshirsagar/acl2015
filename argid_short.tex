@@ -749,7 +749,7 @@ $\textit{spans}$ always includes a special span denoting an empty or non-overt
 role, denoted~$\emptyset$.
 For each candidate argument $a \in \textit{spans}(\mathbf{x}, p, f)$
 and each role
-$r$, binary features $\mathbf{\phi}(a, \mathbf{x}, p, f, r)$ are extracted.
+$r$, binary features $\mathbf{g}(a, \mathbf{x}, p, f, r)$ are extracted.
 We use the feature extractors from \citep{das-14} as a baseline, adding
 additional feature extractors in our experiments \nascomment{I can't
   figure out someone's latex macros here, but there are two \S s and
@@ -908,7 +908,9 @@ effectively, the source domain is the default.)
 
 Another approach to domain adaptation %, 
 % which does not combine the labeled data from the two domains, 
-is to train a supervised predictor $h_0(a,\mathbf{x},p,f)$ on a source domain, make predictions using that
+is to train a supervised model
+%predictor $h_0(a,\mathbf{x},p,f)$ 
+on a source domain, make predictions using that
 model on the target domain, then use those predictions as additional features
 while training a new model on the target domain.
 % is to use a supervised model built on the source domain to augment features in the target domain.
@@ -933,14 +935,14 @@ full-text data.
 % obtained by applying $M_s$ on $\x$, which consists of the role labels assigned to various text spans in $\x$.
 We use two types of guide features:
 one encodes the role label predicted by the source model,
-and the other indicates that a span $a$ was assigned \emph{some} role, 
-i.e.~$h_0(a,\mathbf{x},p,f)\neq\emptyset$.
+and the other indicates that a span $a$ was assigned \emph{some} role. 
+%i.e.~$h_0(a,\mathbf{x},p,f)\neq\emptyset$.
 For the exemplars, %case where $M_s$ produces labels
 % that belong to the same schema as the target domain 
 % (for instance, the exemplars use the same schema as the FT annotations\st{our set of source domains is small enough that we can enumerate which ones this applies to. Is it exemplars + SemLink?}), 
 we use an additional feature to indicate that 
-the predicted role matches the role being filled, 
-i.e.~$g_{\text{match}}(a,\mathbf{x},p,f,r) = \mathbf{1}\{h_0(a,\mathbf{x},p,f)=r\}$.
+the predicted role matches the role being filled. 
+%i.e.~$g_{\text{match}}(a,\mathbf{x},p,f,r) = \mathbf{1}\{h_0(a,\mathbf{x},p,f)=r\}$.
 
 
 % \mk{introduce this as a supervised domain adaptation problem? What is the source and what's the target?}
