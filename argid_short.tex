@@ -232,7 +232,8 @@
 \newcommand{\cjdmarker}{\ensuretext{\textcolor{mdgreen}{\ensuremath{^{\textsc{CJ}}_{\textsc{D}}}}}}
 \newcommand{\nssmarker}{\ensuretext{\textcolor{magenta}{\ensuremath{^{\textsc{NS}}_{\textsc{S}}}}}}
 \newcommand{\mkmarker}{\ensuretext{\textcolor{red}{\ensuremath{^{\textsc{M}}_{\textsc{K}}}}}}
-\newcommand{\stmarker}{\ensuretext{\textcolor{blue}{\ensuremath{^{\textsc{S}}_{\textsc{T}}}}}}
+\newcommand{\stmarker}{\ensuretext{\textcolor{orange}{\ensuremath{^{\textsc{S}}_{\textsc{T}}}}}}
+\newcommand{\nasmarker}{\ensuretext{\textcolor{blue}{\ensuremath{^{\textsc{NA}}_{\textsc{S}}}}}}
 \newcommand{\jbmarker}{\ensuretext{\textcolor{orange}{\ensuremath{^{\textsc{J}}_{\textsc{B}}}}}}
 \newcommand{\dbmarker}{\ensuretext{\textcolor{purple}{\ensuremath{^{\textsc{D}}_{\textsc{B}}}}}}
 \newcommand{\arkcomment}[3]{\ensuretext{\textcolor{#3}{[#1 #2]}}}
@@ -240,9 +241,10 @@
 \newcommand{\cjd}[1]{\arkcomment{\cjdmarker}{#1}{mdgreen}}
 \newcommand{\nss}[1]{\arkcomment{\nssmarker}{#1}{magenta}}
 \newcommand{\mk}[1]{\arkcomment{\mkmarker}{#1}{red}}
-\newcommand{\st}[1]{\arkcomment{\stmarker}{#1}{blue}}
-\newcommand{\jb}[1]{\arkcomment{\jbmarker}{#1}{orange}}
+\newcommand{\st}[1]{\arkcomment{\stmarker}{#1}{orange}}
+\newcommand{\jb}[1]{\arkcomment{\jbmarker}{#1}{blue}}
 \newcommand{\db}[1]{\arkcomment{\dbmarker}{#1}{purple}}
+\newcommand{\nascomment}[1]{\arkcomment{\nasmarker}{#1}{blue}}
 \newcommand{\wts}{\mathbf{w}}
 \newcommand{\g}{\mathbf{g}}
 \newcommand{\f}{\mathbf{f}}
@@ -251,7 +253,6 @@
 \newcommand{\overbar}[1]{\mkern 1.5mu\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu} % \bar is too narrow in math
 \newcommand{\cost}{c}
 
-\newcommand{\nascomment}[1]{\textcolor{blue}{\textbf{\small [#1 --NAS]}}}
 
 \newcommand{\term}[1]{\textbf{#1}} % term being defined
 
@@ -538,9 +539,12 @@ E.g., the \fnf{Criminal\_process} frame groups together subframes
 % This permits an inference that a person tried for a crime likely
 % has been or will be arrested, arraigned, and sentenced for that crime.
 
-We say that the \nascomment{``the'' here suggests the parent is
-  unique; I think we want ``a'' not ``the''} $\textit{parent}$ of a role is one that has either the \textbf{Inheritance} or \textbf{Subframe} relation to it.\nss{clarify?}
-There are 4,138 \textbf{Inheritance} and 589 \textbf{Subframe} links among role types in FrameNet 1.5.
+We say that a \nascomment{``the'' here suggests the parent is
+unique; I think we want ``a'' not ``the''}\st{changed} $\textit{parent}$ of a
+role is one that has either the \textbf{Inheritance} or \textbf{Subframe}
+relation to it.\nss{clarify?}
+There are 4,138 \textbf{Inheritance} and 589 \textbf{Subframe} links among role
+types in FrameNet 1.5.
 
 
 
@@ -740,8 +744,8 @@ $r$, binary features $\mathbf{\phi}(a, \mathbf{x}, p, f, r)$ are extracted.
 We use the feature extractors from \citep{das-14} as a baseline, adding
 additional feature extractors in our experiments \nascomment{I can't
   figure out someone's latex macros here, but there are two \S s and
-  there should only be one inside the parens that follow this comment}
-(\cref{sec:hierfeats,sec:frust,sec:guide}).
+  there should only be one inside the parens that follow this comment}\st{fixed}
+(\S\ref{sec:hierfeats}--\ref{sec:guide}). %\ref{sec:frust}
 Each $a$ is given a real-valued score by a linear model:
 % At the core of SEMAFOR's argument
 % identification procedure is a feature-based scoring function that assigns a real value to a possible assignment of a
@@ -1058,6 +1062,8 @@ We learn $\mathbf{w}$ by minimizing the $\ell_2$-regularized average loss on the
 \nascomment{why squared and not just hinge?  is there a reason for
   this, or did you compare it and find that it works better?  this is
   begging for explanation since it's unusual}
+\st{that's my fault. i implemented both but left squared hinge as the default
+by accident. we didn't do a comparison.}
 
 \section{Experimental Setup}
 
@@ -1226,7 +1232,9 @@ The best result is the former, gaining 3.95\% $F_1$ over the baseline.
 from Tackstrom 2015? If you see the plot I sent over email, they
 are doing much better than SEMAFOR on the frequent roles. We improve F1 on the rare ones.
 Hence should we say that if we use their system as baseline, we would still
-expect to see benefits from the additional resources? } 
+expect to see benefits from the additional resources? }
+\st{this isn't actually the baseline SEMAFOR system, is it? I thought it was
+using Hermann frames, which is not part of SEMAFOR.}
 
 
 % Here, both models use the optimal training data configuration: (FT+exemplars) but differ in the feature augmentation used. 
