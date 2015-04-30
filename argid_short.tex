@@ -429,10 +429,10 @@ adaptation techniques.  We exploit three annotation sources:
 \begin{itemize}
   \item the frame-to-frame relations in FrameNet, by using
   hierarchical features to share statistical strength among related roles
-  (\S\ref{sec:hierfeats}),
+  (\cref{sec:hierfeats}),
   \item FrameNet's corpus of partially-annotated \textbf{exemplar} sentences,
-  by using ``frustratingly easy'' domain adaptation (\S\ref{sec:frust}), and
-  \item a PropBank-style SRL system, by using guide features (\S\ref{sec:guide}).
+  by using ``frustratingly easy'' domain adaptation (\cref{sec:frust}), and
+  \item a PropBank-style SRL system, by using guide features (\cref{sec:guide}).
 \end{itemize}
 % We show that these internal and external resources improve frame-semantic
 % parsing, as evaluated on full-text text annotations.
@@ -717,7 +717,7 @@ SemLink sentences in the training data only hurt performance.}
 \section{Model}
 
 We use the model from SEMAFOR \citep{das-14}, detailed in
-\S\ref{sec:base_model}%--\ref{sec:learning} 
+\cref{sec:base_model}%--\ref{sec:learning} 
 , as a starting point.
 We experiment with %several domain adaptation (DA) techniques, augmenting 
 techniques that augment
@@ -745,7 +745,7 @@ We use the feature extractors from \citep{das-14} as a baseline, adding
 additional feature extractors in our experiments \nascomment{I can't
   figure out someone's latex macros here, but there are two \S s and
   there should only be one inside the parens that follow this comment}\st{fixed}
-(\S\ref{sec:hierfeats}--\ref{sec:guide}). %\ref{sec:frust}
+(\cref{sec:hierfeats}--\cref{sec:guide}). %\ref{sec:frust}
 Each $a$ is given a real-valued score by a linear model:
 % At the core of SEMAFOR's argument
 % identification procedure is a feature-based scoring function that assigns a real value to a possible assignment of a
@@ -1119,14 +1119,14 @@ The performance of the various methods is compared on the FT test set.
 % (1) Full-text: the FrameNet 1.5 FT test split that was used in the evaluation in \citet{das-14}.
 % This data consists of sentences from 23 documents. 
 % (2) Exemplars: a randomly sampled set of sentences from the exemplars data, with approximately the same number of targets as the FT test set.
-Statistics of both the test sets are given in Table \ref{tbl:datastats}. 
+Statistics of both the test sets are given in \cref{tbl:datastats}. 
 The FT test set has 289 unseen role types, which is much higher than
 the 38 in the exemplars test set.
 There are no unseen frame types in the exemplars test data, whereas the FT test has 46 of them. 
 These differences are due to the manner in which the train and test splits were
 created, with document-level splits being used for FT and sentence-level splits
 for the exemplars.
-The last row of Table \ref{tbl:datastats} shows the unseen role types faced by a model that was built on both the FT and exemplars training data.
+The last row of \cref{tbl:datastats} shows the unseen role types faced by a model that was built on both the FT and exemplars training data.
 In the FT test set it is 103, lower by $\approx$190 than what a FT-only model will see, thus leading us to expect that a model that combines
 both sets of data will certainly benefit in performance.
 }
@@ -1143,7 +1143,7 @@ both sets of data will certainly benefit in performance.
 %\nss{comparison to prior work (baseline, best result). args+frames score vs. args only}
 %\nss{be sure to mention: gold frames}
 We present precision, recall, and $F_1$-measure microaveraged across the test
-instances in Table \ref{tbl:results}, for all approaches. % that we
+instances in \cref{tbl:results}, for all approaches. % that we
                                 % tried.
 \nascomment{the following two sentences  are confusing.  is it a claim about
   the baseline system SEMAFOR (first line of the table)?  or is it a claim
@@ -1221,13 +1221,13 @@ as guide features offers a small (0.4\% $F_1$) gain.
 \end{figure}
 
 
-\paragraph{Combining all resources.} The last two rows of Table
-\ref{tbl:results} show the performance upon combining the best
+\paragraph{Combining all resources.} The last two rows of 
+\cref{tbl:results} show the performance upon combining the best
 approaches.  Both models use full-text and exemplars for training; the
 first uses PropBank as guide features, and the second adds hierarchy (sibling) features.  
 The best result is the former, gaining 3.95\% $F_1$ over the baseline.
 \paragraph{Full-system $F_1$}: of the baseline SEMAFOR system is 
-66.78 and that of our combined model (last row in Table \ref{tbl:results}) is 67.91.
+66.78 and that of our combined model (last row in \cref{tbl:results}) is 67.91.
 \mk{New text above and below.. please check. Do we want to quote the result: 70.27 on full-system 
 from Tackstrom 2015? If you see the plot I sent over email, they
 are doing much better than SEMAFOR on the frequent roles. We improve F1 on the rare ones.
@@ -1242,8 +1242,8 @@ using Hermann frames, which is not part of SEMAFOR.}
 % best precision. %This result is intuitive because we expect the hierarchy to help \mk{insert good explanation here}.
 % Our best result of 63.07 beats the baseline by 3.95 F points.
 \paragraph{Frame element--level evaluation.}
-Figure \ref{fig:coolplot} shows $F_1$ per frame element, for the
-baseline and the two best models from Table \ref{tbl:results}.  Each
+\Cref{fig:coolplot} shows $F_1$ per frame element, for the
+baseline and the two best models from \cref{tbl:results}.  Each
 $x$-axis value is one role, sorted by decreasing frequency (the
 distribution, not shown for space, is Zipf-like).  For frequent roles,
 performance is similar; our models achieve gains on rarer roles.
