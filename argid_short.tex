@@ -819,13 +819,13 @@ for individual roles.
 %A simple mechanism to share information is via shared model parameters between related roles. 
 %Towards this, 
 All roles that have a common parent based on the
-\textbf{Inheritance} and \textbf{Subframe} relations will share a common
-feature.
+\textbf{Inheritance} and \textbf{Subframe} relations will share a set of
+features in common.
 %Define $\textit{siblings}(r)=\{r' \mid parents(r') \cap parents(r) \ne
 %\emptyset\}$.
 % We create a new family of feature templates: 
-For each base feature $\phi$ which is conjoined with the role $r$ in the
-baseline model ($\phi \wedge \text{"role=r"}$), and for each parent $r^\prime$ of
+Specifically, for each base feature $\phi$ which is conjoined with the role $r$
+in the baseline model ($\phi \wedge \text{"role=r"}$), and for each parent $r^\prime$ of
 $r$, we add a new feature that is the base feature conjoined with the parent role,
 ($\phi \wedge \text{"parent\_role=r'"}$).
 We experimented with using more than one level of the hierarchy (e.g.,
