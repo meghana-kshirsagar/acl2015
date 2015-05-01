@@ -818,17 +818,26 @@ for individual roles.
 
 %A simple mechanism to share information is via shared model parameters between related roles. 
 %Towards this, 
-Our shared features are based on the \textbf{Inheritance} and \textbf{Subframe}
-relations.
+All roles that have a common parent based on the
+\textbf{Inheritance} and \textbf{Subframe} relations will share a common
+feature.
 %Define $\textit{siblings}(r)=\{r' \mid parents(r') \cap parents(r) \ne
 %\emptyset\}$.
-Given the base set of features of the form $\phi(a, \mathbf{x}, p, f, r)$, 
-we add two types of features:
-\paragraph{siblings}: all roles $r$ that have a common parent $r'$ share features.
-The feature vector is: [$\phi(a, \mathbf{x}, p, f, r)$ ; $\phi(a, \mathbf{x}, p, f, r')]$
-\paragraph{parents+siblings}: all roles $r$ share features with their siblings and parent role $r'$.
-All siblings will have the feature vector shown above, and the parent's feature vector will be:
-[$\phi(a, \mathbf{x}, p, f, r')$ ; $\phi(a, \mathbf{x}, p, f, r')]$.
+% We create a new family of feature templates: 
+For each base feature $\phi$ which is conjoined with the role $r$ in the
+baseline model ($\phi \wedge \text{"role=r"}$), and for each parent $r^\prime$ of
+$r$, we add a new feature that is the base feature conjoined with the parent role,
+($\phi \wedge \text{"parent\_role=r'"}$).
+We experimented with using more than one level of the hierarchy (e.g.,
+grandparents),
+but the additional levels did not improve performance.
+% Given the base set of features of the form $\phi(a, \mathbf{x}, p, f, r)$, 
+% we add two types of features:\\
+% \paragraph{siblings}: all roles $r$ that have a common parent $r'$ share features.
+% The feature vector is: [$\phi(a, \mathbf{x}, p, f, r)$ ; $\phi(a, \mathbf{x}, p, f, r')]$\\
+% \paragraph{parents+siblings}: all roles $r$ share features with their siblings and parent role $r'$.
+% All siblings will have the feature vector shown above, and the parent's feature vector will be:
+% [$\phi(a, \mathbf{x}, p, f, r')$ ; $\phi(a, \mathbf{x}, p, f, r')]$.
 
 %we add two kinds of feature disjunctions:
 
@@ -1178,8 +1187,9 @@ The first block shows baseline performance.
 % The 0.2\% difference from \cite{das-14} is due to our slightly different
 % training objective.
 The next block shows the
-benefit of FrameNet hierarchy sibling features (+1.2\% $F_1$); parent features
-are less helpful. %, perhaps due to overfitting.
+benefit of FrameNet hierarchy %sibling 
+features (+1.2\% $F_1$). %; parent features are less helpful.
+%, perhaps due to overfitting.
 The third block shows
 that using exemplars as training data, especially with domain
 adaptation, is preferable to using them as guide features (2.8\% $F_1$
@@ -1241,7 +1251,8 @@ as guide features offers a small (0.4\% $F_1$) gain.
 The last two rows of 
 \cref{tbl:results} show the performance upon combining the best
 approaches.  Both use full-text and exemplars for training; the
-first uses PropBank as guide features, and the second adds hierarchy (sibling) features.  
+first uses PropBank as guide features, and the second adds hierarchy %(sibling) 
+features.  
 The best result is the latter, gaining 3.95\% $F_1$ over the baseline.
 \paragraph{Full system.} When using the frame output of \cite{hermann-14}, $F_1$
 improves by 1.1, from 66.8 for the baseline, to 67.9 for our combined
