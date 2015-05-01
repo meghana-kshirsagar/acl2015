@@ -1,0 +1,43 @@
+
+\setlength\tabcolsep{4pt}
+
+\begin{table}\centering\small
+\def\arraystretch{1}
+\begin{tabular}{lrrrr}%r@{~~}rrr}
+\toprule
+\multicolumn{1}{c}{\textbf{Training Configuration}} 
+& \multicolumn{1}{c}{\textbf{Model}} &  \multicolumn{1}{c}{P} &
+\multicolumn{1}{c}{R} 
+&  \multicolumn{1}{c}{$F_1$} \\
+% & \multicolumn{3}{c}{} \\ %&& \multicolumn{3}{c}{\textbf{Exemplars}} \\
+%\cline{3-5}%\cline{8-10}
+ \multicolumn{1}{c}{\textbf{(Features)}} 
+& \multicolumn{1}{c}{\textbf{Size}} 
+&  \multicolumn{1}{c}{(\%)} &  \multicolumn{1}{c}{(\%)} &  \multicolumn{1}{c}{(\%)}\\
+% && P\hphantom{11} 
+% & R\hphantom{11} 
+% & $F_1$\hphantom{0} \\
+\midrule
+%(Baseline) & FT (Basic) & 66.03 & 53.79 & 59.29 && 64.90 & 33.60 & 44.27 \\
+FT (Baseline) & 1.1 & 62.63 & 37.65 & 47.03 \\
+\midrule
+FT (siblings) & 1.9 & 64.81 & 39.09 & 48.77 \\
+FT (siblings+parents) & 2.6 & 65.25 & 38.18 & 48.18 \\
+\midrule
+Exemplars $\xrightarrow{\text{guide}}$ FT & 1.2 & 67.71 & 48.08 & 56.23\\
+FT+Exemplars (Basic) & 5.0 & 75.44 & 65.11 & \bf{69.89} \\
+FT+Exemplars (DA) & 5.8 & 73.88 & 61.40 & 67.06 \\
+\midrule
+PB-SRL $\xrightarrow{\text{guide}}$ FT & 1.2 & 61.38 & 39.14 & 47.80 \\
+\midrule
+\multicolumn{5}{c}{\em{Combining the best methods}}\\
+\midrule
+PB-SRL $\xrightarrow{\text{guide}}$ FT+Exemplars & 5.5 & 76.14 & 67.71 & \textbf{71.70} \\
+FT+Exemplars (siblings) & 9.3 & 77.15 & 65.47 & 70.83 \\
+\bottomrule
+\end{tabular}
+\caption{Argument identification results on the Exemplars test set.
+Model size is in millions of features.
+\label{tbl:results}}
+\end{table}
+
