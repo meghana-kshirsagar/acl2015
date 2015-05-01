@@ -236,8 +236,8 @@
 \newcommand{\nasmarker}{\ensuretext{\textcolor{blue}{\ensuremath{^{\textsc{NA}}_{\textsc{S}}}}}}
 \newcommand{\jbmarker}{\ensuretext{\textcolor{orange}{\ensuremath{^{\textsc{J}}_{\textsc{B}}}}}}
 \newcommand{\dbmarker}{\ensuretext{\textcolor{purple}{\ensuremath{^{\textsc{D}}_{\textsc{B}}}}}}
-\newcommand{\arkcomment}[3]{\ensuretext{\textcolor{#3}{[#1 #2]}}}
-%\newcommand{\arkcomment}[3]{}
+%\newcommand{\arkcomment}[3]{\ensuretext{\textcolor{#3}{[#1 #2]}}}
+\newcommand{\arkcomment}[3]{}
 \newcommand{\cjd}[1]{\arkcomment{\cjdmarker}{#1}{mdgreen}}
 \newcommand{\nss}[1]{\arkcomment{\nssmarker}{#1}{magenta}}
 \newcommand{\mk}[1]{\arkcomment{\mkmarker}{#1}{red}}
@@ -1097,14 +1097,15 @@ We use the $F_1$ on the FT dev set to determine the stopping criterion for optim
 \paragraph{Evaluation.}
 A complete frame-semantic parsing system involves frame identification and argument identification.
 We perform two evaluations: one assuming gold-standard frames are given, to
-separate the errors made by frame identification;
-and one using the output of %\nascomment{the system described by ?} 
-\citet{hermann-14}, the current state-of-the-art in
-frame identification, to demonstrate that our improvements are retained when
-incorporated into a full system.
+evaluate argument identification alone;
+and one using the output of the system described by \citet{hermann-14}, the
+current state-of-the-art in frame identification, to demonstrate that our
+improvements are retained when incorporated into a full system.
+% We evaluate argument identification performance for all of our models assuming
+% gold-standard frames are given.
+% We then evaluate full-system performance of the baseline and our best model by
 % Since the focus of this work is argument identification, we assume that
 % the gold-standard frames are given and evaluate the models on their role labeling performance.
-% The baseline model from \citet{das-14} that we compare against, is the current state-of-the-art for argument identification (i.e frame SRL).
 
 \finalversion{
 The performance of the various methods is compared on the FT test set.
