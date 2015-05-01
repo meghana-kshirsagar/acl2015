@@ -821,9 +821,9 @@ relations.
 %Define $\textit{siblings}(r)=\{r' \mid parents(r') \cap parents(r) \ne
 %\emptyset\}$.
 Given the base set of features of the form $\phi(a, \mathbf{x}, p, f, r)$, 
-we add two types of features:\\
+we add two types of features:
 \paragraph{siblings}: all roles $r$ that have a common parent $r'$ share features.
-The feature vector is: [$\phi(a, \mathbf{x}, p, f, r)$ ; $\phi(a, \mathbf{x}, p, f, r')]$\\
+The feature vector is: [$\phi(a, \mathbf{x}, p, f, r)$ ; $\phi(a, \mathbf{x}, p, f, r')]$
 \paragraph{parents+siblings}: all roles $r$ share features with their siblings and parent role $r'$.
 All siblings will have the feature vector shown above, and the parent's feature vector will be:
 [$\phi(a, \mathbf{x}, p, f, r')$ ; $\phi(a, \mathbf{x}, p, f, r')]$.
