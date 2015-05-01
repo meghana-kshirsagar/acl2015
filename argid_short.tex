@@ -1159,9 +1159,14 @@ The same number from the revised version of Das et al. (after correction) is 76.
 % only. 
 The evaluation used in \cite{das-14} assesses both frames and arguments;
 since our focus is on SRL, we only report performance for arguments, rendering
-our scores more interpretable (but not directly comparable).
+our scores more interpretable.
+Under our argument-only evaluation, the system of \cite{das-14} gets a 59.3\%
+$F_1$.
 
-The first block shows baseline performance.  The next block shows the
+The first block shows baseline performance.
+The 0.2\% difference from \cite{das-14} is due to our slightly different
+training objective.
+The next block shows the
 benefit of FrameNet hierarchy sibling features (+1.2\% $F_1$); parent features
 are less helpful. %, perhaps due to overfitting.
 The third block shows
