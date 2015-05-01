@@ -626,7 +626,7 @@ These singly-annotated sentences from FrameNet are called lexicographic \textbf{
 %The subset of exemplars containing argument annotations is described in \cref{tbl:datastats}.
 There are over 140,000 sentences containing argument annotations % (an additional 35,000 exemplar sentences contain no overt arguments).
 and relative to the FT dataset, these contain an order of magnitude more frame annotations
-over two orders of magnitude 
+and over two orders of magnitude 
 more sentences. As these were manually selected, the rate of overt arguments per frame
 is noticeably higher than in the FT data.
 % Because we are conditioning on the identified frame, 
@@ -1131,7 +1131,7 @@ both sets of data will certainly benefit in performance.
 
 \input{results_short.tex}
 
-
+\paragraph{Argument Identification.}
 %\nss{comparison to prior work (baseline, best result). args+frames score vs. args only}
 %\nss{be sure to mention: gold frames}
 We present precision, recall, and $F_1$-measure microaveraged across the test
@@ -1150,13 +1150,18 @@ sense if one wants to report the full-system's performance. The proper
 way is to use a frame-id system to get the frames. So I wouldn't call it ``standard''.
 In any case, we do have the numbers using their scoring scheme: 77.12 for our best model. 
 The same number from the revised version of Das et al. (after correction) is 76.34.}
-The baseline $F_1$ on argument identification \citep{das-14} adds `pseudo' scores for getting gold frames right. 
-Since our focus is on SRL, we report $F_1$ computed over arguments
-only. 
+\st{fixed}
+% The baseline $F_1$ on argument identification \citep{das-14} adds `pseudo' scores for getting gold frames right. 
+% Since our focus is on SRL, we report $F_1$ computed over arguments
+% only. 
+The evaluation script used in \cite{das-14} assesses both frames and arguments;
+since our focus is on SRL, we only report performance for arguments, rendering
+our scores more interpretable (but not directly comparable).
 
 The first block shows baseline performance.  The next block shows the
 benefit of FrameNet hierarchy sibling features (+1.2\% $F_1$); parent features
-are less helpful, perhaps due to overfitting.  The third block shows
+are less helpful. %, perhaps due to overfitting.
+The third block shows
 that using exemplars as training data, especially with domain
 adaptation, is preferable to using them as guide features (2.8\% $F_1$
 vs.~0.9\% $F_1$).  PropBank
@@ -1213,13 +1218,15 @@ as guide features offers a small (0.4\% $F_1$) gain.
 \end{figure}
 
 
-\paragraph{Combining all resources.} The last two rows of 
+% \paragraph{Combining all resources.}
+The last two rows of 
 \cref{tbl:results} show the performance upon combining the best
 approaches.  Both models use full-text and exemplars for training; the
 first uses PropBank as guide features, and the second adds hierarchy (sibling) features.  
 The best result is the former, gaining 3.95\% $F_1$ over the baseline.
-\paragraph{Full-system $F_1$}: of the baseline SEMAFOR system is 
-66.78 and that of our combined model (last row in \cref{tbl:results}) is 67.91.
+\paragraph{Full-system.} When using the frame output of \cite{hermann-14}, $F_1$
+improves by 1.1, from 66.78 for the baseline, to 67.91 for our combined
+model (last row in \cref{tbl:results}).
 \mk{New text above and below.. please check. Do we want to quote the result: 70.27 on full-system 
 from Tackstrom 2015? If you see the plot I sent over email, they
 are doing much better than SEMAFOR on the frequent roles. We improve F1 on the rare ones.
@@ -1233,7 +1240,7 @@ using Hermann frames, which is not part of SEMAFOR.}
 % We find that the model that uses the hierarchy achieves the best recall, and the PB-SRL guide features result in the 
 % best precision. %This result is intuitive because we expect the hierarchy to help \mk{insert good explanation here}.
 % Our best result of 63.07 beats the baseline by 3.95 F points.
-\paragraph{Frame element--level evaluation.}
+\paragraph{Role-level evaluation.}
 \Cref{fig:coolplot} shows $F_1$ per frame element, for the
 baseline and the two best models from \cref{tbl:results}.  Each
 $x$-axis value is one role, sorted by decreasing frequency (the
