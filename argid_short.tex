@@ -816,8 +816,10 @@ for individual roles.
 
 %A simple mechanism to share information is via shared model parameters between related roles. 
 %Towards this, 
-We experiment with shared features based on the \textbf{Inheritance} and \textbf{Subframe} relations. 
-Define $\textit{siblings}(r)=\{r'\text{:}\ |parents(r') \cap parents(r)|>0\}$.
+Our shared features are based on the \textbf{Inheritance} and \textbf{Subframe}
+relations.
+Define $\textit{siblings}(r)=\{r' \mid parents(r') \cap parents(r) \ne
+\emptyset\}$.
 Given the base set of features of the form $\phi(a, \mathbf{x}, p, f, r)$, 
 we add two kinds of feature disjunctions:
 
@@ -1225,7 +1227,7 @@ The last two rows of
 approaches.  Both use full-text and exemplars for training; the
 first uses PropBank as guide features, and the second adds hierarchy (sibling) features.  
 The best result is the latter, gaining 3.95\% $F_1$ over the baseline.
-\paragraph{Full-system.} When using the frame output of \cite{hermann-14}, $F_1$
+\paragraph{Full system.} When using the frame output of \cite{hermann-14}, $F_1$
 improves by 1.1, from 66.78 for the baseline, to 67.91 for our combined
 model (last row in \cref{tbl:results}).
 \mk{New text above and below.. please check. Do we want to quote the result: 70.27 on full-system 
