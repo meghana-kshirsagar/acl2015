@@ -818,20 +818,27 @@ for individual roles.
 %Towards this, 
 Our shared features are based on the \textbf{Inheritance} and \textbf{Subframe}
 relations.
-Define $\textit{siblings}(r)=\{r' \mid parents(r') \cap parents(r) \ne
-\emptyset\}$.
+%Define $\textit{siblings}(r)=\{r' \mid parents(r') \cap parents(r) \ne
+%\emptyset\}$.
 Given the base set of features of the form $\phi(a, \mathbf{x}, p, f, r)$, 
-we add two kinds of feature disjunctions:
+we add two types of features:\\
+\paragraph{siblings}: all roles $r$ that have a common parent $r'$ share features.
+The feature vector is: [$\phi(a, \mathbf{x}, p, f, r)$ ; $\phi(a, \mathbf{x}, p, f, r')]$\\
+\paragraph{parents+siblings}: all roles $r$ share features with their siblings and parent role $r'$.
+All siblings will have the feature vector shown above, and the parent's feature vector will be:
+[$\phi(a, \mathbf{x}, p, f, r')$ ; $\phi(a, \mathbf{x}, p, f, r')]$.
 
-\begin{itemize}
-\item\noindent\textbf{siblings} (roles that have a common parent share features):  
-$\phi^{\text{sib}}(a,\mathbf{x},p,f,r) = \bigvee_{r' \in \textit{siblings}(r)} \phi(a, \mathbf{x}, p, f, r')$.
-\item\noindent\textbf{parent+siblings} (sibling roles and their parents share features):  
-$\phi^{\text{par+sib}}(a,\mathbf{x},p,f,r) = \bigvee_{r' \in \textit{siblings}(r) \cup \textit{parents}(r)} \phi(a, \mathbf{x}, p, f, r')$.%
-\footnote{We also experimented with using more than one level of the hierarchy (e.g., grandparents). 
-The additional features made the model computationally more expensive, 
-but did not improve its predictions.}
-\end{itemize}
+%we add two kinds of feature disjunctions:
+
+%\begin{itemize}
+%%\item\noindent\textbf{siblings} (roles that have a common parent share features):  
+%$\phi^{\text{sib}}(a,\mathbf{x},p,f,r) = \bigvee_{r' \in \textit{siblings}(r)} \phi(a, \mathbf{x}, p, f, r')$.
+%\item\noindent\textbf{parent+siblings} (sibling roles and their parents share features):  
+%$\phi^{\text{par+sib}}(a,\mathbf{x},p,f,r) = \bigvee_{r' \in \textit{siblings}(r) \cup \textit{parents}(r)} \phi(a, \mathbf{x}, p, f, r')$.%
+%\footnote{We also experimented with using more than one level of the hierarchy (e.g., grandparents). 
+%The additional features made the model computationally more expensive, 
+%but did not improve its predictions.}
+%\end{itemize}
 
 
 
