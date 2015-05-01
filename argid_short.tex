@@ -998,7 +998,7 @@ Following SEMAFOR, we train using a \term{local} objective,
 % In other words, we 
 treating each role and span pair as an independent training instance.
 % \nss{does beam search require normalizing to probabilities?}\st{no. maybe it should, but SEMAFOR didn't, and we don't.}
-We have made several modifications to training which had negligible impact on
+We have made two modifications to training which had negligible impact on
 full-text accuracy, but decreased training time significantly:\footnote{With
 SEMAFOR's original features and training data, the result of the above changes is that full-text $F_1$ decreases from 59.3\% to 59.1\%, 
 while training time (running optimization to convergence) 
@@ -1006,18 +1006,18 @@ decreases from 729 minutes to 82 minutes\nss{say something about hardware this w
 %\mk{P/R/F numbers are in the table (see rows 1 and 2). Times: 12 hrs 9 mins for the earlier algorithm to converge. That took 290 iterations. An equivalent number of iterations took 45 minutes for the new system. Running till convergence (about 700 iterations) took 82 minutes, thus giving a speed-up of $\approx$ 9X. The P/R/F on exemplars improves (row 2); I believe it is due to the regularization in Sam's objective.}
 } 
 
-% \begin{itemize}
-%   \item
-  \paragraph{AdaDelta:}
+\begin{itemize}
+  \item
+%   \paragraph{AdaDelta:}
   We use the online optimization method AdaDelta \citep{zeiler-12} with minibatches, instead of the batch method L-BFGS \citep{liu-89}.
   We use minibatches of size 4,000  on the full text data, and 40,000 on the exemplar data.
-  \paragraph{Squared Hinge Loss:}
-  We minimize squared structured hinge loss (defined below) instead of a log-linear loss.
+  
+  \item 
+%   \paragraph{Squared Hinge Loss:}
+  We minimize squared structured hinge loss instead of a log-linear loss.
 %   Using hinge loss, there is no longer a need to calculate a partition function.
 %   Gradients, and hence parameters, are sparser than in a log-linear model, as they only depend on the correct span and the predicted span.
 %   \item
-
-
 % \st{TODO: local classifier is only used in my SVM version, not in Das's log-linear version.}
 % We define the \textbf{local classifier} as:
 % \begin{equation}
@@ -1026,7 +1026,6 @@ decreases from 729 minutes to 82 minutes\nss{say something about hardware this w
 % \end{equation}
 % 
 % \st{something about L2 regularization}
-
 % The details of squared hinge loss are as follows.
 Let $((\mathbf{x}, p, f, r), a)$ %$(r^{(i)}, a^{(i)})$
 be the $i$th training example.
@@ -1037,6 +1036,7 @@ Then the squared hinge loss is given by $L_{\mathbf{w}}(i) =$
 r) \\ + \boldsymbol{1}\{a^\prime \not = a\} \end{array}\right \} - 
   \mathbf{w}^\top \boldsymbol{\phi}(a, \mathbf{x}, p, f, r)\right)^2
 \end{align*}
+\end{itemize}
 % and squared hinge loss is:
 % \begin{equation}
 % \textit{SqHinge}_\mathbf{w}(i) =
