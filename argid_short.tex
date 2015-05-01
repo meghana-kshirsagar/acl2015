@@ -421,12 +421,14 @@ its \textbf{argument} phrases
 with frame-specific \textbf{roles}. 
 An example appears in \cref{fig:harbor-fn}. %; it will be explained in detail in \cref{sec:fn}.
 
+
 In this paper, we address this \textbf{argument identification} 
 subtask, a form of semantic role labeling (SRL), 
 a task introduced by \citet{gildea-02} using an earlier version of FrameNet.
 Our contribution addresses the paucity of annotated data for training 
 using  standard domain
 adaptation techniques.  We exploit three annotation sources:
+
 \begin{itemize}
   \item the frame-to-frame relations in FrameNet, by using
   hierarchical features to share statistical strength among related roles
@@ -434,6 +436,8 @@ adaptation techniques.  We exploit three annotation sources:
   \item FrameNet's corpus of partially-annotated \textbf{exemplar} sentences,
   by using ``frustratingly easy'' domain adaptation (\cref{sec:frust}), and
   \item a PropBank-style SRL system, by using guide features (\cref{sec:guide}).
+\footnote{Preliminary experiments training on PropBank annotations mapped to 
+FrameNet via SemLink \citep{bonial-13} hurt performance, likely due to errors and coverage gaps in the mappings.}
 \end{itemize}
 % We show that these internal and external resources improve frame-semantic
 % parsing, as evaluated on full-text text annotations.
@@ -831,7 +835,7 @@ in the baseline model ($\phi \wedge \text{"role=}r\text{"}$), and for each paren
 $r$, we add a new copy of the feature that is the base feature conjoined with
 the parent role, ($\phi \wedge \text{"parent\_role=}r'\text{"}$).
 We experimented with using more than one level of the hierarchy (e.g.,
-grandparents),
+parents, grandparents),
 but the additional levels did not improve performance.
 % Given the base set of features of the form $\phi(a, \mathbf{x}, p, f, r)$, 
 % we add two types of features:\\
@@ -1181,7 +1185,7 @@ features (+1.2\% $F_1$). %; parent features are less helpful.
 The third block shows
 that using exemplars as training data, especially with domain
 adaptation, is preferable to using them as guide features (2.8\% $F_1$
-vs.~0.9\% $F_1$).  PropBank
+vs.~0.9\% $F_1$).  PropBank SRL
 as guide features offers a small (0.4\% $F_1$) gain.
 
 
@@ -1216,14 +1220,14 @@ as guide features offers a small (0.4\% $F_1$) gain.
 %To summarize, we find that adding the sibling-level hierarchical features, using exemplars as gold-standard training data and 
 %incorporating PB-SRL data in the form of guide features all help in improving the performance.
 % \finalversion{
-\begin{figure}[t]
+\begin{figure}[!t]
 %	\begin{subfigure}[b]{0.5\textwidth}
 %		\includegraphics[width=\textwidth]{fig/num_instances}
 %		\caption{Frequency of each role appearing in the test set.}\label{fig:num_inst}
 %	\end{subfigure}
 %	\begin{subfigure}[b]{0.5\textwidth}
 %		\vspace{-1cm}
-		\includegraphics[width=0.5\textwidth]{fig/f1_sorted_by_num_instances}
+		\includegraphics[width=0.5\textwidth,trim = 0 0 0 1.5cm]{fig/f1_sorted_by_num_instances}
 %		\caption{$F_1$ of the best methods compared with the baseline.}\label{fig:coolplot}
 %	\end{subfigure}
 %	\caption{Count and $F_1$ for each role appearing in the test
@@ -1239,7 +1243,7 @@ as guide features offers a small (0.4\% $F_1$) gain.
 The last two rows of 
 \cref{tbl:results} show the performance upon combining the best
 approaches.  Both use full-text and exemplars for training; the
-first uses PropBank as guide features, and the second adds hierarchy %(sibling) 
+first uses PropBank SRL as guide features, and the second adds hierarchy %(sibling) 
 features.  
 The best result is the latter, gaining 3.95\% $F_1$ over the baseline.
 \paragraph{Full system.} When using the frame output of \cite{hermann-14}, $F_1$
@@ -1299,6 +1303,7 @@ We have empirically shown that auxiliary semantic resources
 can benefit the challenging task of frame-semantic role labeling. 
 The significant gains come from the FrameNet exemplars and the FrameNet hierarchy, with
 some signs that data annotated with the PropBank scheme can be leveraged as well.
+Our code and models will be released upon publication.
 \nss{release of code and models}
 % }
 %\mk{For short version: the rest of the conclusion is already present in the Results section}
