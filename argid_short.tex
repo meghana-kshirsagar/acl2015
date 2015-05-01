@@ -1199,7 +1199,7 @@ as guide features offers a small (0.4\% $F_1$) gain.
 
 %To summarize, we find that adding the sibling-level hierarchical features, using exemplars as gold-standard training data and 
 %incorporating PB-SRL data in the form of guide features all help in improving the performance.
-
+\finalversion{
 \begin{figure}[t]
 %	\begin{subfigure}[b]{0.5\textwidth}
 %		\includegraphics[width=\textwidth]{fig/num_instances}
@@ -1217,7 +1217,7 @@ as guide features offers a small (0.4\% $F_1$) gain.
   (smoothed using \texttt{loess} with parameter 0.2). \nascomment{make
   font bigger in the figure, and make lines thicker}}
 \end{figure}
-
+}
 
 % \paragraph{Combining all resources.}
 The last two rows of 
@@ -1241,17 +1241,21 @@ using Hermann frames, which is not part of SEMAFOR.}
 % We find that the model that uses the hierarchy achieves the best recall, and the PB-SRL guide features result in the 
 % best precision. %This result is intuitive because we expect the hierarchy to help \mk{insert good explanation here}.
 % Our best result of 63.07 beats the baseline by 3.95 F points.
+\finalversion{
 \paragraph{Role-level evaluation.}
 \Cref{fig:coolplot} shows $F_1$ per frame element, for the
 baseline and the two best models from \cref{tbl:results}.  Each
 $x$-axis value is one role, sorted by decreasing frequency (the
 distribution, not shown for space, is Zipf-like).  For frequent roles,
 performance is similar; our models achieve gains on rarer roles.
+}
 
+\finalversion{
 \paragraph{Additional results.} Experiments with another resource,
 SemLink \citep{bonial-13}, yielded negative results. We also evaluated
 all models on a test set sampled from the exemplars, which differs in distribution from the FT data.
 These results are provided in the supplement.
+}
 
 \finalversion{\nss{impact of automatic frames?}}
 %\subsection{Frame element--level evaluation}
