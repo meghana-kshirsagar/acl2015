@@ -827,9 +827,9 @@ features in common.
 %\emptyset\}$.
 % We create a new family of feature templates: 
 Specifically, for each base feature $\phi$ which is conjoined with the role $r$
-in the baseline model ($\phi \wedge \text{"role=r"}$), and for each parent $r^\prime$ of
+in the baseline model ($\phi \wedge \text{"role=}r\text{"}$), and for each parent $r'$ of
 $r$, we add a new copy of the feature that is the base feature conjoined with
-the parent role, ($\phi \wedge \text{"parent\_role=r'"}$).
+the parent role, ($\phi \wedge \text{"parent\_role=}r'\text{"}$).
 We experimented with using more than one level of the hierarchy (e.g.,
 grandparents),
 but the additional levels did not improve performance.
@@ -1162,20 +1162,6 @@ both sets of data will certainly benefit in performance.
 We present precision, recall, and $F_1$-measure microaveraged across the test
 instances in \cref{tbl:results}, for all approaches. % that we
                                 % tried.
-\nascomment{the following two sentences  are confusing.  is it a claim about
-  the baseline system SEMAFOR (first line of the table)?  or is it a claim
-  about the evaluation score used by Das (but not invented by them)?
-  it sounds like the latter, in which case this sentence should be
-  more like:  The standard evaluation score for frame-semantic parsing
-assesses both frames and arguments; since our focus is on SRL, we only
-report $F_1$ for arguments, rendering our scores more interpretable
-(but not directly comparable to those reported by Das et al.).}
-\mk{It is the latter. But their scoring uses gold frames and does not make much 
-sense if one wants to report the full-system's performance. The proper
-way is to use a frame-id system to get the frames. So I wouldn't call it ``standard''.
-In any case, we do have the numbers using their scoring scheme: 77.12 for our best model. 
-The same number from the revised version of Das et al. (after correction) is 76.34.}
-\st{fixed}
 % The baseline $F_1$ on argument identification \citep{das-14} adds `pseudo' scores for getting gold frames right. 
 % Since our focus is on SRL, we report $F_1$ computed over arguments
 % only. 
