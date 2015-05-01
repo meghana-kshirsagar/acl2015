@@ -826,8 +826,8 @@ features in common.
 % We create a new family of feature templates: 
 Specifically, for each base feature $\phi$ which is conjoined with the role $r$
 in the baseline model ($\phi \wedge \text{"role=r"}$), and for each parent $r^\prime$ of
-$r$, we add a new feature that is the base feature conjoined with the parent role,
-($\phi \wedge \text{"parent\_role=r'"}$).
+$r$, we add a new copy of the feature that is the base feature conjoined with
+the parent role, ($\phi \wedge \text{"parent\_role=r'"}$).
 We experimented with using more than one level of the hierarchy (e.g.,
 grandparents),
 but the additional levels did not improve performance.
