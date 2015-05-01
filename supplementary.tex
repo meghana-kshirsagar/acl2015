@@ -6,6 +6,13 @@
 \usepackage[colorlinks=true,linkcolor=black,citecolor=black,filecolor=black,urlcolor=black]{hyperref}
 \usepackage{natbib}
 
+\usepackage{multirow}
+\usepackage{booktabs} % pretty tables
+\usepackage{multicol}
+\usepackage{footnote}
+
+
+
 %\usepackage{times}
 %\usepackage{latexsym}
 
@@ -67,7 +74,7 @@
 Bridging across different kinds of lexical resources 
 with different levels of coverage can expand the playing field of semantic parsers.
 E.g., \citet{shi-05} used a rule-based mapping between FrameNet and VerbNet, and between VerbNet and WordNet, 
-\nss{Also look at: \citep{merlo-09} (multiple resources + levels of generalization), \citep{furstenau-09} (semi-supervised)}
+%\nss{Also look at: \citep{merlo-09} (multiple resources + levels of generalization), \citep{furstenau-09} (semi-supervised)}
 from which they built a rule-based semantic parser.
 Here, we aim to expand the training data (token-level) by rule-based mapping 
 from distant annotations into the FrameNet representation.
@@ -106,6 +113,12 @@ giving a minor increase of 0.05\% over the baseline.
 
 
 \section{Evaluation on exemplars}
+We also evaluated the models on a held out exemplar test set, and saw a drastic improvement in $F_1$ for models that use the exemplars. 
+However, the distribution of exemplars is skewed in unpredictable ways, so we take this only as a suggestive positive indication.
+Table \ref{tbl:results} shows these results. Our best model improves the baseline's $F_1$ by 24.7\%.
+
+\input{results_supp.tex}
+
 
 \bibliographystyle{style/aclnat}
 % you bib file should really go here
