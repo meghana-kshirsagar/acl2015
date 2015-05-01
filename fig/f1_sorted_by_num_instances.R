@@ -18,7 +18,7 @@ fes <- merge(merge(merge(merge(num.examples, baseline.fn), fn.exemplars), fn.exe
 #    "parents_combined_f1"
 #)
 
-fes <- fes[order(-fes$num_examples),]
+fes <- fes[order(-fes$num.examples),]
 
 pdf("num_instances.pdf", width=7, height=4)
 plot(
@@ -52,27 +52,32 @@ plot(
     NULL,
     xlab="Frame Element, ordered by test set frequency",
     ylab="F1",
+    lwd = 3,
     xlim=c(0, 1400),
     ylim=c(0.0, 0.8)
 )
 lines(
     baseline.fn.low,
     col=my.pallette[1],
+    lwd = 3,
     lty="dotted"
 )
 lines(
     fn.exemplars.low,
     col=my.pallette[2],
+    lwd = 3,
     lty="dashed"
 )
 lines(
     fn.exemplars.srl.low,
     col=my.pallette[3],
+    lwd = 3,
     lty="dotdash"
 )
 lines(
     fn.exemplars.siblings.low,
     col=my.pallette[4],
+    lwd = 3,
     lty="solid"
 )
 legend(
