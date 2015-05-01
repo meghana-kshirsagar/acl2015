@@ -1086,9 +1086,11 @@ same role label.
 \finalversion{\nss{OntoNotes PropBank preprocessing (NLTK)?}}
 
 \paragraph{Hyperparameter tuning.}
-We tuned the $\ell_2$ regularization parameter $\lambda$ on the FT dev set,
-searching over the following values: 10$^{-5}$, 10$^{-7}$, 10$^{-9}$, 10$^{-12}$.
-We use the $F_1$ on the FT dev set to determine the stopping criterion for optimization.
+We determined the stopping criterion and the $\ell_2$ regularization parameter
+$\lambda$ by tuning on the FT dev set, searching over the following values for
+$\lambda$:
+10$^{-5}$, 10$^{-7}$, 10$^{-9}$, 10$^{-12}$.
+% We use the $F_1$ on the FT dev set to determine the stopping criterion for optimization.
 % The FT dev set was used  only to tune parameters and not as part of model
 % construction.
 %Also note that we do not tune any parameters w.r.t the exemplars data.
