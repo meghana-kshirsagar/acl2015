@@ -1075,10 +1075,10 @@ Automatic syntactic dependency parses from MSTParserStacked \citep{martins-08} a
 %\label{sec:preproc}
 %\paragraph{Full-Text.}
 \paragraph{Preprocessing.}
-Out of a total of 145,838 exemplar sentences, we removed
+Out of 145,838 exemplar sentences, we removed
 4,191 sentences which had no role annotations.
 %  (under the assumption that these are likely to be incomplete annotations).
-We removed duplicate sentences that already appeared in the full-text
+We removed sentences that appeared in the full-text
 data. We also merged spans which were adjacent and had the
 same role label.
 
@@ -1166,8 +1166,8 @@ Under our argument-only evaluation, the system of \cite{das-14} gets a 59.3\%
 $F_1$.
 
 The first block shows baseline performance.
-The 0.2\% difference from \cite{das-14} is due to our slightly different
-training objective.
+% The 0.2\% difference from \cite{das-14} is due to our slightly different
+% training objective.
 The next block shows the
 benefit of FrameNet hierarchy sibling features (+1.2\% $F_1$); parent features
 are less helpful. %, perhaps due to overfitting.
@@ -1208,7 +1208,7 @@ as guide features offers a small (0.4\% $F_1$) gain.
 
 %To summarize, we find that adding the sibling-level hierarchical features, using exemplars as gold-standard training data and 
 %incorporating PB-SRL data in the form of guide features all help in improving the performance.
-\finalversion{
+% \finalversion{
 \begin{figure}[t]
 %	\begin{subfigure}[b]{0.5\textwidth}
 %		\includegraphics[width=\textwidth]{fig/num_instances}
@@ -1226,7 +1226,7 @@ as guide features offers a small (0.4\% $F_1$) gain.
   (smoothed using \texttt{loess} with parameter 0.2). \nascomment{make
   font bigger in the figure, and make lines thicker}}
 \end{figure}
-}
+% }
 
 % \paragraph{Combining all resources.}
 The last two rows of 
@@ -1250,14 +1250,14 @@ using Hermann frames, which is not part of SEMAFOR.}
 % We find that the model that uses the hierarchy achieves the best recall, and the PB-SRL guide features result in the 
 % best precision. %This result is intuitive because we expect the hierarchy to help \mk{insert good explanation here}.
 % Our best result of 63.07 beats the baseline by 3.95 F points.
-\finalversion{
+% \finalversion{
 \paragraph{Role-level evaluation.}
 \Cref{fig:coolplot} shows $F_1$ per frame element, for the
-baseline and the two best models from \cref{tbl:results}.  Each
-$x$-axis value is one role, sorted by decreasing frequency (the
+baseline and the three best models. % from \cref{tbl:results}.
+Each $x$-axis value is one role, sorted by decreasing frequency (the
 distribution, not shown for space, is Zipf-like).  For frequent roles,
 performance is similar; our models achieve gains on rarer roles.
-}
+% }
 
 \finalversion{
 \paragraph{Additional results.} Experiments with another resource,
@@ -1285,14 +1285,14 @@ These results are provided in the supplement.
 %\nss{multitask learning?}
 %\mk{there's no room for citing MTL.. we can do that later}
 
+\finalversion{
 \section{Conclusion}
-
 We have empirically shown that auxiliary semantic resources
 can benefit the challenging task of frame-semantic role labeling. 
 The significant gains come from the FrameNet exemplars and the FrameNet hierarchy, with
 some signs that data annotated with the PropBank scheme can be leveraged as well.
 \nss{release of code and models}
-
+}
 %\mk{For short version: the rest of the conclusion is already present in the Results section}
 %Complementary gains on the standard full-text evaluation are achieved
 %by including the FrameNet exemplars in the training data 
