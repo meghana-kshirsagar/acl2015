@@ -468,12 +468,12 @@ are labeled with role names.
 \label{fig:harbor-fn}
 \end{figure}
 
-%\begin{figure}
-%\includegraphics[width=\columnwidth]{fig/harbor-pb.pdf}
-%\caption{Ideal PropBank (\cref{sec:pb}) annotations for verbs. Though PB uses lexical frames rather than deep frames,
-%there are clear similarities to the FrameNet annotations in \cref{fig:harbor-fn}.}
-%\label{fig:harbor-pb}
-%\end{figure}
+\begin{figure}
+\includegraphics[width=\columnwidth]{fig/harbor-pb.pdf}
+\caption{Ideal PropBank (\cref{sec:pb}) annotations for verbs. Though PB uses lexical frames rather than deep frames,
+there are clear similarities to the FrameNet annotations in \cref{fig:harbor-fn}.}
+\label{fig:harbor-pb}
+\end{figure}
 
 
 
@@ -674,17 +674,18 @@ statistical sharing.}
 % and a set of English predicates that can evoke the scene.
 
 %\finalversion{
-%\subsection{PropBank}\label{sec:pb}
+\subsection{PropBank}\label{sec:pb}
 %\st{TODO: shorten PB section. we should spend less time talking about PB, and
 %more time talking about the specific SRL system we use.}
 %\mk{Is this short enough?}
-%PropBank \citep[PB;][]{palmer-05} is a lexicon and corpus of predicate--argument
-%structures that takes a shallower approach than FrameNet. 
-%FrameNet frames cluster lexical predicates that evoke similar kinds of scenarios %(with the same kinds of roles), 
-%and these frames are organized in a network. In comparison, 
-%PropBank frames are purely lexical and there are no formal relations between different predicates 
-%or their roles. PropBank's sense distinctions are generally coarser-grained than FrameNet's.
-%An example PB-annotated sentence is shown in \cref{fig:harbor-pb}.
+PropBank \citep[PB;][]{palmer-05} is a lexicon and corpus of predicate--argument
+structures that takes a shallower approach than FrameNet. 
+FrameNet frames cluster lexical predicates that evoke similar kinds of scenarios %(with the same kinds of roles), 
+%and these frames are organized in a network. 
+In comparison, 
+PropBank frames are purely lexical and there are no formal relations between different predicates 
+or their roles. PropBank's sense distinctions are generally coarser-grained than FrameNet's.
+An example PB-annotated sentence is shown in \cref{fig:harbor-pb}.
 %}
 %\finalversion{PropBank does represent lexical ambiguity---e.g., the verb \textit{order} is ambiguous 
 %in PropBank between \pbf{order-v-01} ``impelled action'' and \pbf{order-v-02} ``request to be delivered''---but
@@ -1200,7 +1201,7 @@ as guide features offers a small (0.4\% $F_1$) gain.
 \begin{figure}[!t]
 	\begin{subfigure}[b]{0.5\textwidth}
 		%trim option's parameter order: left bottom right top
-		\includegraphics[width=\textwidth,trim = 0 1.5cm 0 1cm]{fig/num_instances}
+		\includegraphics[width=\textwidth,trim = 0 0.5cm 0 1cm]{fig/num_instances}
 		\caption{Frequency of each role appearing in the test set.}\label{fig:num_inst}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.5\textwidth}
