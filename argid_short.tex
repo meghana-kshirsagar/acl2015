@@ -236,8 +236,8 @@
 \newcommand{\nasmarker}{\ensuretext{\textcolor{blue}{\ensuremath{^{\textsc{NA}}_{\textsc{S}}}}}}
 \newcommand{\jbmarker}{\ensuretext{\textcolor{orange}{\ensuremath{^{\textsc{J}}_{\textsc{B}}}}}}
 \newcommand{\dbmarker}{\ensuretext{\textcolor{purple}{\ensuremath{^{\textsc{D}}_{\textsc{B}}}}}}
-%\newcommand{\arkcomment}[3]{\ensuretext{\textcolor{#3}{[#1 #2]}}}
-\newcommand{\arkcomment}[3]{}
+\newcommand{\arkcomment}[3]{\ensuretext{\textcolor{#3}{[#1 #2]}}}
+%\newcommand{\arkcomment}[3]{}
 \newcommand{\cjd}[1]{\arkcomment{\cjdmarker}{#1}{mdgreen}}
 \newcommand{\nss}[1]{\arkcomment{\nssmarker}{#1}{magenta}}
 \newcommand{\mk}[1]{\arkcomment{\mkmarker}{#1}{red}}
@@ -319,8 +319,8 @@
 \newcommand{\shortlong}[2]{#1} % short vs. long version of the paper
 \newcommand{\confversion}[1]{#1}
 \newcommand{\srsversion}[1]{}
-\newcommand{\finalversion}[1]{}
 %\newcommand{\finalversion}[1]{}
+\newcommand{\finalversion}[1]{#1}
 \newcommand{\shortversion}[1]{#1}
 \newcommand{\considercutting}[1]{#1}
 \newcommand{\longversion}[1]{} % ...if only there were more space...
@@ -408,6 +408,8 @@ versus the original model.
 % with the best model achieving nearly a 4-point increase in $F_1$ over the
 % \st{SOTA?} baseline.
 \end{abstract}
+
+\nss{incorporate references mentioned in email thread}
 
 \section{Introduction}
 
@@ -603,6 +605,7 @@ Frames & 15,019 & 4,458 & 137,515 & 4,132 \\
 Overt arguments & 25,918 & 7,210 & 278,985 & 8,417 \\
 \midrule
 \multicolumn{5}{c}{\textsc{types}} \\
+\nss{Frames} \\
 Roles & 2,644 & 1,420 & 4,821 & 1,224 \\
 \multicolumn{2}{@{}l}{Unseen frames  \quad \textit{vs.~train:}} & 46 & & 0 \\
 \multicolumn{2}{@{}l}{Roles in unseen frames \quad \textit{vs.~train:}} & 178 & & 0 \\
@@ -610,7 +613,7 @@ Roles & 2,644 & 1,420 & 4,821 & 1,224 \\
 \multicolumn{2}{@{}l}{Unseen roles \quad \textit{vs.~combined train:}} & 103 & & 32 \\
 \end{tabular}
 \caption{Characteristics of the training and test data. (These statistics exclude the development set, which contains 4,463 frames over 746 sentences.)
-\nss{above role types, add frame types?}}
+\nss{Do we use Exemplars test anywhere? Remove that column and just say a small amount of exemplars data was held out?}}
 \label{tbl:datastats}
 \end{table}
 
@@ -1257,6 +1260,7 @@ expect to see benefits from the additional resources? }
 \st{this isn't actually the baseline SEMAFOR system, is it? I thought it was
 using Hermann frames, which is not part of SEMAFOR.}
 
+\nss{A reviewer asks for feature analysis}
 
 % Here, both models use the optimal training data configuration: (FT+exemplars) but differ in the feature augmentation used. 
 % We find that the model that uses the hierarchy achieves the best recall, and the PB-SRL guide features result in the 
