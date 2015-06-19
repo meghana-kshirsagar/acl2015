@@ -416,7 +416,7 @@ versus the original model.
 Paucity of data resources is a challenge for semantic analyses like
 frame-semantic parsing \citep{gildea-02,das-14} using the
 FrameNet lexicon \citep{baker-98}.
-%\footnote{\url{http://framenet.icsi.berkeley.edu}}
+\footnote{\url{http://framenet.icsi.berkeley.edu}}
 Given a sentence, a frame-semantic parse maps word tokens
 to \textbf{frames} they evoke, and for each frame, finds and labels
 its \textbf{argument} phrases  
@@ -446,11 +446,12 @@ FrameNet via \finalversion{\nss{version X of }}SemLink \citep{bonial-13} hurt pe
 These expansions of the \emph{training corpus} and the \emph{feature set}
 for supervised argument identification  are integrated into SEMAFOR
 \citep{das-14},  the leading open-source frame-semantic parser for English.
-%\footnote{\url{http://www.ark.cs.cmu.edu/SEMAFOR}}
+\footnote{\url{http://www.ark.cs.cmu.edu/SEMAFOR}}
 We observe a 4\% $F_1$ improvement in argument identification on the
 FrameNet test set, leading to a 1\% $F_1$ improvement on the full
-frame-semantic parsing task. \nascomment{this point was not explained
-  in experiments; either cut it or make sure there's a follow up}
+frame-semantic parsing task. 
+%\nascomment{this point was not explained
+ % in experiments; either cut it or make sure there's a follow up}
 
 \begin{figure}
 \includegraphics[width=\columnwidth]{fig/harbor-fn.pdf}
@@ -459,11 +460,10 @@ frame-semantic parsing task. \nascomment{this point was not explained
 \fnf{Body\_movement} is evoked by \textit{crane},
 \fnf{Observable\_body\_parts} by \textit{necks}, 
 and \fnf{Punctual\_perception} by \textit{glimpse}.
-Horizontal lines show the argument spans.
+Horizontal lines representing argument spans 
+are labeled with role names.
 %(Further, \textit{harbor} is annotated as evoking the \fnf{Locale\_by\_use} frame 
 %and doubles as its sole argument; not shown.) 
-%Horizontal lines representing argument spans 
-%are labeled with role names.
 }
 \label{fig:harbor-fn}
 \end{figure}
@@ -490,7 +490,7 @@ Horizontal lines show the argument spans.
 % \subsection{FrameNet}\label{sec:fn}
 
 FrameNet represents events, scenarios, and relationships 
-with an inventory of \textbf{frames} (such as \fnf{Shopping}, \fnf{Scarcity}, and \fnf{Shoot\_projectiles}). 
+with an inventory of \textbf{frames} (such as \fnf{Shopping}, \fnf{Scarcity}). %, and \fnf{Shoot\_projectiles}). 
 Each frame is associated with a set of \textbf{roles} (or \textbf{frame elements}) 
 called to mind in order to understand the scenario,
 and lexical \textbf{predicates} (verbs, nouns, adjectives, and adverbs) capable of 
@@ -500,13 +500,13 @@ and lexical entries including verbs such as \fnlu{bend}, \fnlu{blink}, \fnlu{cra
 plus the noun use of \fnlu{curtsy}.
 %the frame description states,
 %``This frame contains words for motions or actions an \fnr{Agent} performs using some part of his/her body.''
-\finalversion{
-In the annotated sentence in \cref{fig:harbor-fn},
-\fnf{Body\_movement} is evoked by \textit{crane}, and 3~of its roles are filled by overt arguments: 
-the 2~core roles (\fnr{Agent}, \fnr{Body\_part}) happen to be filled by noun phrases 
-(\textit{passengers}, \textit{their necks}), while the non-core role \fnr{Purpose} is filled by a 
-prepositional phrase adjunct (\textit{for dizzying glimpses of the harbor}).
-}
+%\finalversion{
+%In the annotated sentence in \cref{fig:harbor-fn},
+%\fnf{Body\_movement} is evoked by \textit{crane}, and 3~of its roles are filled by overt arguments: 
+%the 2~core roles (\fnr{Agent}, \fnr{Body\_part}) happen to be filled by noun phrases 
+%(\textit{passengers}, \textit{their necks}), while the non-core role \fnr{Purpose} is filled by a 
+%prepositional phrase adjunct (\textit{for dizzying glimpses of the harbor}).
+%}
 In FrameNet~1.5, there are over 1,000 frames and 12,000~lexical predicates.
 
 %\nss{mention somewhere?: roles may be implicit, but are often realized in the sentence.}
@@ -536,10 +536,9 @@ E.g., the \fnf{Criminal\_process} frame groups together subframes
 \fnf{Arrest}, \fnf{Arraignment} and \fnf{Trial}.
 %\fnf{Arrest}, \fnf{Arraignment}, \fnf{Trial}, and \fnf{Sentencing}. 
 \fnf{Criminal\_process}.\fnr{Defendant}, for instance, is mapped to 
-\fnf{Arrest}.\fnr{Suspect}% \fnf{Arraignment}.\fnr{Defendant}, 
-\finalversion{
-\fnf{Trial}.\fnr{Defendant}, and \fnf{Sentencing}.\fnr{Convict}
-}.
+\fnf{Arrest}.\fnr{Suspect}, % \fnf{Arraignment}.\fnr{Defendant}, 
+\fnf{Trial}.\fnr{Defendant}, and \fnf{Sentencing}.\fnr{Convict}.
+
 %Other salient participants in the complex event %(such as the crime for which someone is arrested, tried, etc.)\ 
 %are similarly mapped via Subframe relations.
 % This permits an inference that a person tried for a crime likely
@@ -553,9 +552,10 @@ types in FrameNet 1.5.
 
 Prior work has %noted that the preponderance of role labels in FrameNet poses a challenge, and have
 considered various ways of grouping role labels together in order to share statistical strength. 
-\citet{matsubayashi-09} observed small gains from using the \textbf{Inheritance} relationships (like we do here), 
+\citet{matsubayashi-09} observed small gains from using the \textbf{Inheritance} relationships % (like we do here), 
 and also from grouping by the role name (SEMAFOR already incorporates such features).
 % Their evaluation was on a simpler subtask of argument classification, and our experiments confirm that their results hold for argument identification as well as classification.
+\citet{johansson-12} reports improvements in SRL for Swedish, by exploiting relationships between both frames and roles.
 \citet{baldewein-04} learn latent clusters of roles and role-fillers, reporting mixed results.
 Our approach is described in \cref{sec:hierfeats}.
 
@@ -612,8 +612,7 @@ Roles & 2,644 & 1,420 & 4,821 & 1,224 \\
 \multicolumn{2}{@{}l}{Unseen roles \quad \textit{vs.~train:}} & 289 & & 38 \\
 \multicolumn{2}{@{}l}{Unseen roles \quad \textit{vs.~combined train:}} & 103 & & 32 \\
 \end{tabular}
-\caption{Characteristics of the training and test data. (These statistics exclude the development set, which contains 4,463 frames over 746 sentences.)
-\nss{Do we use Exemplars test anywhere? Remove that column and just say a small amount of exemplars data was held out?}}
+\caption{Characteristics of the training and test data. (These statistics exclude the development set, which contains 4,463 frames over 746 sentences.)}
 \label{tbl:datastats}
 \end{table}
 
@@ -674,60 +673,62 @@ statistical sharing.}
 % an English textual description of the scene and how its roles relate to one another;
 % and a set of English predicates that can evoke the scene.
 
-\finalversion{
-\subsection{PropBank}\label{sec:pb}
-\st{TODO: shorten PB section. we should spend less time talking about PB, and
-more time talking about the specific SRL system we use.}
-PropBank \citep[PB;][]{palmer-05} is a lexicon and corpus of predicate--argument
-structures that takes a shallower approach than FrameNet. Whereas FrameNet frames cluster lexical predicates that evoke similar kinds of scenarios (with the same kinds of roles), 
-and these frames are organized in a network, 
-PropBank frames are purely lexical and there are no formal relations between different predicates 
-or their roles. Further, PropBank's sense distinctions are generally coarser-grained than FrameNet's.
-An example PB-annotated sentence is shown in \cref{fig:harbor-pb}.
-}
-\finalversion{PropBank does represent lexical ambiguity---e.g., the verb \textit{order} is ambiguous 
-in PropBank between \pbf{order-v-01} ``impelled action'' and \pbf{order-v-02} ``request to be delivered''---but
-PropBank's sense distinctions are generally coarser-grained than FrameNet's.}
+%\finalversion{
+%\subsection{PropBank}\label{sec:pb}
+%\st{TODO: shorten PB section. we should spend less time talking about PB, and
+%more time talking about the specific SRL system we use.}
+%\mk{Is this short enough?}
+%PropBank \citep[PB;][]{palmer-05} is a lexicon and corpus of predicate--argument
+%structures that takes a shallower approach than FrameNet. 
+%FrameNet frames cluster lexical predicates that evoke similar kinds of scenarios %(with the same kinds of roles), 
+%and these frames are organized in a network. In comparison, 
+%PropBank frames are purely lexical and there are no formal relations between different predicates 
+%or their roles. PropBank's sense distinctions are generally coarser-grained than FrameNet's.
+%An example PB-annotated sentence is shown in \cref{fig:harbor-pb}.
+%}
+%\finalversion{PropBank does represent lexical ambiguity---e.g., the verb \textit{order} is ambiguous 
+%in PropBank between \pbf{order-v-01} ``impelled action'' and \pbf{order-v-02} ``request to be delivered''---but
+%PropBank's sense distinctions are generally coarser-grained than FrameNet's.}
 
-\finalversion{
-%Within sense-disambiguated PropBank frames, or \textbf{rolesets}, 
-Core roles are defined with textual descriptions and assigned numbers. 
-E.g., \pbf{order-v-02} defines: \pbr{A0} ``orderer'', 
-\pbr{A1} ``thing ordered'', \pbr{A2} ``benefactive, ordered-for'', 
-and \pbr{A3} ``source''.
-Following \citeposs{dowty-91} theory of proto-roles, PropBank rolesets use \pbr{A0} for proto-agents 
-and \pbr{A1} for proto-patients, but in general, there is much less consistency 
-in interpretation of core roles across lexical predicates for PropBank than there is for FrameNet.
-Another difference is that PropBank's non-core roles---named \pbr{AM-*}, 
-such as \pbr{AM-PRP} for purposes---are not frame-specific.\footnote{\Citet{ellsworth-04} 
-has a more extensive discussion of differences between PropBank's and FrameNet's conventions.}
-Despite these differences, there is often a great deal in common between 
-FrameNet-style and PropBank-style analyses, as should be apparent from comparing 
-\cref{fig:harbor-fn} and \cref{fig:harbor-pb}.
-}
+%\finalversion{
+%%Within sense-disambiguated PropBank frames, or \textbf{rolesets}, 
+%Core roles are defined with textual descriptions and assigned numbers. 
+%E.g., \pbf{order-v-02} defines: \pbr{A0} ``orderer'', 
+%\pbr{A1} ``thing ordered'', \pbr{A2} ``benefactive, ordered-for'', 
+%and \pbr{A3} ``source''.
+%Following \citeposs{dowty-91} theory of proto-roles, PropBank rolesets use \pbr{A0} for proto-agents 
+%and \pbr{A1} for proto-patients, but in general, there is much less consistency 
+%in interpretation of core roles across lexical predicates for PropBank than there is for FrameNet.
+%Another difference is that PropBank's non-core roles---named \pbr{AM-*}, 
+%such as \pbr{AM-PRP} for purposes---are not frame-specific.\footnote{\Citet{ellsworth-04} 
+%has a more extensive discussion of differences between PropBank's and FrameNet's conventions.}
+%Despite these differences, there is often a great deal in common between 
+%FrameNet-style and PropBank-style analyses, as should be apparent from comparing 
+%\cref{fig:harbor-fn} and \cref{fig:harbor-pb}.
+%}
 
-\finalversion{
-PropBank provides one million words of fully annotated English sentences.
-% The major benefit to PropBank is that it includes a large and comprehensively
-% annotated corpus.
-% We hypothesize that leveraging this large corpus indirectly 
-% can reap rewards for FrameNet-style SRL. 
-% We use PropBank analyses as a signal in the FrameNet
-% argument identification task 
-% by preprocessing
-% sentences with a PropBank SRL system to obtain new features.
-% \textbf{PropBank} \citep{propbank} is a resource that has been widely
-% used for SRL \citep{palmer-10}.
-% PropBank annotations capture shallower lexical frames and arguments than
-% FrameNet, but
-Very little data is annotated with both PropBank and FrameNet analyses.
-Therefore, to bridge between the PropBank and FrameNet corpora, 
-we run a PropBank-trained semantic role labeler 
-on the FrameNet data as an additional form of preprocessing.\footnote{In preliminary experiments, 
-we tried to leverage PropBank annotations in SemLink \citep{bonial-13}, which include mappings to FrameNet.
-We found that FrameNet mappings in SemLink are noisy/incomplete; including 
-SemLink sentences in the training data only hurt performance.}
-}
+%\finalversion{
+%PropBank provides one million words of fully annotated English sentences.
+%% The major benefit to PropBank is that it includes a large and comprehensively
+%% annotated corpus.
+%% We hypothesize that leveraging this large corpus indirectly 
+%% can reap rewards for FrameNet-style SRL. 
+%% We use PropBank analyses as a signal in the FrameNet
+%% argument identification task 
+%% by preprocessing
+%% sentences with a PropBank SRL system to obtain new features.
+%% \textbf{PropBank} \citep{propbank} is a resource that has been widely
+%% used for SRL \citep{palmer-10}.
+%% PropBank annotations capture shallower lexical frames and arguments than
+%% FrameNet, but
+%Very little data is annotated with both PropBank and FrameNet analyses.
+%Therefore, to bridge between the PropBank and FrameNet corpora, 
+%we run a PropBank-trained semantic role labeler 
+%on the FrameNet data as an additional form of preprocessing.\footnote{In preliminary experiments, 
+%we tried to leverage PropBank annotations in SemLink \citep{bonial-13}, which include mappings to FrameNet.
+%We found that FrameNet mappings in SemLink are noisy/incomplete; including 
+%SemLink sentences in the training data only hurt performance.}
+%}
 
 \section{Model}
 
@@ -945,7 +946,7 @@ exemplars data are our source domains, respectively.
 % Each of the three source models produces SRL-style output, where predicates are assigned frames or rolesets, and for each predicate, spans are assigned role labels.
 % But they differ in the labels used for roles.
 For PropBank, we run the Illinois SRL system
- \citep{punyakanok-08} %\footnote{\url{http://cogcomp.cs.illinois.edu/page/software_view/SRL}} 
+ \citep{punyakanok-08} \footnote{\url{http://cogcomp.cs.illinois.edu/page/software_view/SRL}} 
  on the full-text data.
 For the exemplars, we train baseline SEMAFOR on the exemplars and run it on the
 full-text data.
@@ -1110,7 +1111,7 @@ data. We also merged spans which were adjacent and had the
 same role label.
 
 
-\finalversion{\nss{OntoNotes PropBank preprocessing (NLTK)?}}
+%\finalversion{\nss{OntoNotes PropBank preprocessing (NLTK)?}}
 
 \paragraph{Hyperparameter tuning.}
 We determined the stopping criterion and the $\ell_2$ regularization parameter
@@ -1121,8 +1122,6 @@ $\lambda$:
 % The FT dev set was used  only to tune parameters and not as part of model
 % construction.
 %Also note that we do not tune any parameters w.r.t the exemplars data.
-%\mk{Do I need to mention this -- The model with the best performance on the FT dev set is used for all evaluation}
-
 
 
 \paragraph{Evaluation.}
@@ -1138,22 +1137,22 @@ improvements are retained when incorporated into a full system.
 % Since the focus of this work is argument identification, we assume that
 % the gold-standard frames are given and evaluate the models on their role labeling performance.
 
-\finalversion{
-The performance of the various methods is compared on the FT test set.
-% (1) Full-text: the FrameNet 1.5 FT test split that was used in the evaluation in \citet{das-14}.
-% This data consists of sentences from 23 documents. 
-% (2) Exemplars: a randomly sampled set of sentences from the exemplars data, with approximately the same number of targets as the FT test set.
-Statistics of both the test sets are given in \cref{tbl:datastats}. 
-The FT test set has 289 unseen role types, which is much higher than
-the 38 in the exemplars test set.
-There are no unseen frame types in the exemplars test data, whereas the FT test has 46 of them. 
-These differences are due to the manner in which the train and test splits were
-created, with document-level splits being used for FT and sentence-level splits
-for the exemplars.
-The last row of \cref{tbl:datastats} shows the unseen role types faced by a model that was built on both the FT and exemplars training data.
-In the FT test set it is 103, lower by $\approx$190 than what a FT-only model will see, thus leading us to expect that a model that combines
-both sets of data will certainly benefit in performance.
-}
+%\finalversion{
+%The performance of the various methods is compared on the FT test set.
+%% (1) Full-text: the FrameNet 1.5 FT test split that was used in the evaluation in \citet{das-14}.
+%% This data consists of sentences from 23 documents. 
+%% (2) Exemplars: a randomly sampled set of sentences from the exemplars data, with approximately the same number of targets as the FT test set.
+%Statistics of both the test sets are given in \cref{tbl:datastats}. 
+%The FT test set has 289 unseen role types, which is much higher than
+%the 38 in the exemplars test set.
+%There are no unseen frame types in the exemplars test data, whereas the FT test has 46 of them. 
+%These differences are due to the manner in which the train and test splits were
+%created, with document-level splits being used for FT and sentence-level splits
+%for the exemplars.
+%The last row of \cref{tbl:datastats} shows the unseen role types faced by a model that was built on both the FT and exemplars training data.
+%In the FT test set it is 103, lower by $\approx$190 than what a FT-only model will see, thus leading us to expect that a model that combines
+%both sets of data will certainly benefit in performance.
+%}
 % While the FT test set represents the benchmark set for evaluating the 
 % performance of a frame semantic role labeling system, the exemplars test set being from a different distribution of text, gives us
 % an indication of how well a model generalizes.
@@ -1193,54 +1192,29 @@ as guide features offers a small (0.4\% $F_1$) gain.
 
 
 
-
-
-
 %\mk{Analyze the sparsity of the models? Which features have highest importance?}
-%All the models are quite sparse with $\approx$60-70\% of the features assigned a weight of zero.
 %The larger models take roughly 6 times as long as the baseline to train. 
 
 
 
-%In Table \ref{tbl:results}, the first row corresponds to the state-of-art $F_1$ from \citet{das-14}.\finalversion{\nss{not quite, because of the changes to learning in SEMAFOR, right?}}
-
-% Using the \textit{FN Hierarchy}, we find that adding the sibling-level hierarchical features to the baseline improves 
-% $F_1$ by 1.2 points. The `siblings+parents' features which consider two levels of the hierarchy produce unnoticeable benefits,
-% suggesting that higher levels in the hierarchy can be too general \mk{give example?} and cause very dissimilar roles to fire the same hierarchy features.%
-% %\footnote{We also tried adding grandparents and found only minor improvements. Using an expert-pruned hierarchy with relations that are
-% %most likely to help can give greater benefits, and is beyond the focus of this work.}
-% Guide features defined using the exemplars give us a modest improvement of 1.1, 
-% while including exemplars in the training data results in a bigger increase of 2.8. 
-% %On the exemplars-test we observe a similar trend: guide features give a smaller benefit but the (FT+Exemplars) model increases $F_1$ by $\approx$23 $F_1$-points.
-% `EasyAdapt', the frustratingly easy DA approach to incorporate exemplars
-% gives a minor increase of 0.3 points on the FT-test. %but a reduction of 2.8 points on the exemplars-test.
-% The PB-SRL data in the form of guide features gives small improvements over the baseline. 
-% Overall we observe that an additional resource that is very similar to the original resource helps more as training data than as a `guide model'---%
-% whereas the guide features help more when the additional resource is too distinct (like PB). 
-% To conclude, including the FrameNet exemplars in the training data, grouping features 
-% according to the FrameNet hierarchy and incorporating PB-SRL data in the form of guide features all improve performance.
-
-%To summarize, we find that adding the sibling-level hierarchical features, using exemplars as gold-standard training data and 
-%incorporating PB-SRL data in the form of guide features all help in improving the performance.
-% \finalversion{
 \begin{figure}[!t]
-%	\begin{subfigure}[b]{0.5\textwidth}
-%		\includegraphics[width=\textwidth]{fig/num_instances}
-%		\caption{Frequency of each role appearing in the test set.}\label{fig:num_inst}
-%	\end{subfigure}
-%	\begin{subfigure}[b]{0.5\textwidth}
-%		\vspace{-1cm}
-		\includegraphics[width=0.5\textwidth,trim = 0 0 0 1.5cm]{fig/f1_sorted_by_num_instances}
-%		\caption{$F_1$ of the best methods compared with the baseline.}\label{fig:coolplot}
-%	\end{subfigure}
-%	\caption{Count and $F_1$ for each role appearing in the test
-%	set. $F_1$ values have been smoothed with \texttt{loess}, with
-%	a smoothing parameter of 0.2.}
-\caption{\label{fig:coolplot}$F_1$ by role, ranked by frequency
-  (smoothed using \texttt{loess} with parameter 0.2). ``Siblings'' refers to hierarchy features.\nascomment{make
-  font bigger in the figure, and make lines thicker}}
+	\begin{subfigure}[b]{0.5\textwidth}
+		%trim option's parameter order: left bottom right top
+		\includegraphics[width=\textwidth,trim = 0 1.5cm 0 1cm]{fig/num_instances}
+		\caption{Frequency of each role appearing in the test set.}\label{fig:num_inst}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.5\textwidth}
+		%\vspace{-1cm}
+		\includegraphics[width=\textwidth,trim = 0 0 0 1.5cm]{fig/f1_sorted_by_num_instances}
+		\caption{$F_1$ of the best methods compared with the baseline.}\label{fig:coolplot}
+	\end{subfigure}
+	\caption{$F_1$ for each role appearing in the test
+	set, ranked by frequency. $F_1$ values have been smoothed with \texttt{loess}, with
+	a smoothing parameter of 0.2. ``Siblings'' refers to hierarchy features.}
+%\caption{\label{fig:coolplot}$F_1$ by role, ranked by frequency
+ % (smoothed using \texttt{loess} with parameter 0.2). ``Siblings'' refers to hierarchy features.\nascomment{make
+  %font bigger in the figure, and make lines thicker}}
 \end{figure}
-% }
 
 % \paragraph{Combining all resources.}
 The last two rows of 
@@ -1252,7 +1226,7 @@ The best result is the latter, gaining 3.95\% $F_1$ over the baseline.
 \paragraph{Full system.} When using the frame output of \cite{hermann-14}, $F_1$
 improves by 1.1, from 66.8 for the baseline, to 67.9 for our combined
 model (from the last row in \cref{tbl:results}).
-\mk{New text above and below.. please check. Do we want to quote the result: 70.27 on full-system 
+\mk{Do we want to quote the result: 70.27 on full-system 
 from Tackstrom 2015? If you see the plot I sent over email, they
 are doing much better than SEMAFOR on the frequent roles. We improve F1 on the rare ones.
 Hence should we say that if we use their system as baseline, we would still
@@ -1262,31 +1236,25 @@ using Hermann frames, which is not part of SEMAFOR.}
 
 \nss{A reviewer asks for feature analysis}
 
-% Here, both models use the optimal training data configuration: (FT+exemplars) but differ in the feature augmentation used. 
-% We find that the model that uses the hierarchy achieves the best recall, and the PB-SRL guide features result in the 
-% best precision. %This result is intuitive because we expect the hierarchy to help \mk{insert good explanation here}.
-% Our best result of 63.07 beats the baseline by 3.95 F points.
 % \finalversion{
 \paragraph{Role-level evaluation.}
 \Cref{fig:coolplot} shows $F_1$ per frame element, for the
 baseline and the three best models. % from \cref{tbl:results}.
-Each $x$-axis value is one role, sorted by decreasing frequency (the
-distribution, not shown for space, is Zipf-like).  For frequent roles,
+Each $x$-axis value is one role, sorted by decreasing frequency 
+(the distribution of role frequencies is shown in \Cref{fig:num_inst})
+%(the distribution, not shown for space, is Zipf-like).  
+For frequent roles,
 performance is similar; our models achieve gains on rarer roles.
 % }
 
-\finalversion{
-\paragraph{Additional results.} Experiments with another resource,
-SemLink \citep{bonial-13}, yielded negative results. We also evaluated
-all models on a test set sampled from the exemplars, which differs in distribution from the FT data.
-These results are provided in the supplement.
-}
-
-\finalversion{\nss{impact of automatic frames?}}
-%\subsection{Frame element--level evaluation}
-%The results so far have discussed the overall improvement in $F_1$, but do not present a detailed picture of how we gain from the additional
-%coverage. Towards this, we present a frame-element i.e role type level analysis comparing the best results with the baseline.
-
+%\finalversion{
+%\paragraph{Additional results.} Experiments with another resource,
+%SemLink \citep{bonial-13}, yielded negative results. We also evaluated
+%all models on a test set sampled from the exemplars, which differs in distribution from the FT data.
+%These results are provided in the supplement.
+%}
+%
+%\finalversion{\nss{impact of automatic frames?}}
 
 %\section{Related Work}
 
@@ -1325,7 +1293,6 @@ will lead to further gains in this task.
 Moreover, the techniques discussed here could be further explored 
 using semi-automatic mappings between lexical resources \citep[such as UBY;][]{gurevych-12}, 
 and correspondingly, this task could be used to extrinsically validate those mappings.}
-\finalversion{\nss{release of code and models}}
 
 \finalversion{\section*{Acknowledgments}
 
