@@ -1055,7 +1055,8 @@ We have made two modifications to training which had negligible impact on
 full-text accuracy, but decreased training time significantly:\footnote{With
 SEMAFOR's original features and training data, the result of the above changes is that full-text $F_1$ decreases from 59.3\% to 59.1\%, 
 while training time (running optimization to convergence) 
-decreases from 729 minutes to 82 minutes\nss{say something about hardware this was tested on?}.%
+decreases from 729 minutes to 82 minutes%\nss{say something about hardware this was tested on?}%
+.%
 %\mk{P/R/F numbers are in the table (see rows 1 and 2). Times: 12 hrs 9 mins for the earlier algorithm to converge. That took 290 iterations. An equivalent number of iterations took 45 minutes for the new system. Running till convergence (about 700 iterations) took 82 minutes, thus giving a speed-up of $\approx$ 9X. The P/R/F on exemplars improves (row 2); I believe it is due to the regularization in Sam's objective.}
 } 
 
