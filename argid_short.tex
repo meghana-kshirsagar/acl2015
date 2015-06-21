@@ -1258,16 +1258,19 @@ The best result is the latter, gaining 3.95\% $F_1$ over the baseline.
 
 \paragraph{Example.} \Cref{fig:hold-off-fn} is a sentence for which our best model
 fared better than the baseline.
-The baseline predicted no arguments for \textit{hold off}; 
+The baseline predicted no arguments for \textit{hold off}, 
 while the best system matched the gold standard except for the label 
 of the second role---it predicted \fnr{Time} instead of \fnr{End\_point}.\nss{how many attestions of `hold off' in FT training vs. exemplars?}
 For \textit{want}, both systems correctly found \textit{you} as the \fnr{Experiencer}, 
 but only the best system identified \textit{me} as the \fnr{Focal\_participant} (the baseline mislabeled it as \fnr{Event}).\nss{how many `want' \fnr{Focal\_participant}s in FT training vs. exemplars?}
-Even the best system, though, missed the \fnr{Event}, \textit{to hold off\ldots}, 
-which is surprising because infinitival \fnr{Event} arguments to \textit{want} 
-are well attested in the data\nss{please check}.
-Perhaps the dependency parser's impoverished label set is to blame
-(infinitival complements as well as adverbial phrase heads are attached with the \texttt{VMOD} relation).
+Even the best system, though, missed the correct \fnr{Event}, \textit{to hold off\ldots}, 
+which is surprising because infinitival \fnr{Event} arguments to \textit{want} and other \fnf{Desiring} verbs
+are well attested in the training data\nss{please check}.
+\nss{Is it not considering \textit{to hold off until I finish July and August} as an argument span? 
+It is not a complete subtree because \textit{me} is the subject of \textit{hold}. 
+If so, this would likely be solved by better syntactic heuristics.}
+%Perhaps the dependency parser's impoverished label set is to blame
+%(infinitival complements as well as adverbial phrase heads are attached with the \texttt{VMOD} relation).
 Both systems correctly parsed the arguments of \textit{finish}.
 
 
