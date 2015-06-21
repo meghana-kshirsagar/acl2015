@@ -494,7 +494,7 @@ there are clear similarities to the FrameNet annotations in \cref{fig:hold-off-f
 % \subsection{FrameNet}\label{sec:fn}
 
 FrameNet represents events, scenarios, and relationships 
-with an inventory of \textbf{frames} (such as \fnf{Shopping}, \fnf{Scarcity}). %, and \fnf{Shoot\_projectiles}). 
+with an inventory of \textbf{frames} (such as \fnf{Shopping} and \fnf{Scarcity}). %, and \fnf{Shoot\_projectiles}). 
 Each frame is associated with a set of \textbf{roles} (or \textbf{frame elements}) 
 called to mind in order to understand the scenario,
 and lexical \textbf{predicates} (verbs, nouns, adjectives, and adverbs) capable of 
@@ -958,9 +958,9 @@ In our case, the full text data is our target domain, and PropBank and the
 exemplars data are our source domains, respectively.
 % Each of the three source models produces SRL-style output, where predicates are assigned frames or rolesets, and for each predicate, spans are assigned role labels.
 % But they differ in the labels used for roles.
-For PropBank, we run \st{version X of} the Illinois SRL system
- \citep{punyakanok-08} \footnote{\url{http://cogcomp.cs.illinois.edu/page/software_view/SRL}} 
- on the full-text data.
+For PropBank, we run\st{ version X of} the Illinois SRL system
+ \citep{punyakanok-08}\footnote{\url{http://cogcomp.cs.illinois.edu/page/software_view/SRL}} 
+ on verbs in the full-text data.
 For the exemplars, we train baseline SEMAFOR on the exemplars and run it on the
 full-text data.
 
