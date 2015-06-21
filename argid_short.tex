@@ -1295,11 +1295,21 @@ Our code and models are available at
 %improved models are also more \emph{robust}, capturing a broader swath of the English language.
 
 \finalversion{We are optimistic that future improvements to lexical semantic resources, 
-including planned changes for PropBank \citep{bonial-14} and SemLink \citep{bonial-13}, 
+such as crowdsourced lexical expansion of FrameNet \citep{pavlick-15} 
+as well as ongoing/planned changes for PropBank \citep{bonial-14} and SemLink \citep{bonial-13}, 
 will lead to further gains in this task. 
 Moreover, the techniques discussed here could be further explored 
 using semi-automatic mappings between lexical resources \citep[such as UBY;][]{gurevych-12}, 
 and correspondingly, this task could be used to extrinsically validate those mappings.}
+
+Ours is not the only study to show benefit from heterogeneous annotations for semantic analysis tasks.
+\Citet{feizabadi-15}, for example, successfully applied similar techniques
+for SRL of \emph{implicit} arguments.\footnote{They applied frustratingly easy domain adaptation 
+to learn from FrameNet along with a PropBank-like dataset of nominal frames.}
+Ultimately, given the diversity of semantic resources, 
+we expect that learning from heterogeneous annotations in different corpora 
+will be necessary to build automatic semantic analyzers that are 
+both accurate and robust.
 
 \finalversion{\section*{Acknowledgments}
 
