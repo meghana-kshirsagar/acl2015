@@ -443,13 +443,14 @@ FrameNet via \finalversion{\nss{version X of }}SemLink \citep{bonial-13} hurt pe
 % parsing, as evaluated on full-text text annotations.
 These expansions of the \emph{training corpus} and the \emph{feature set}
 for supervised argument identification  are integrated into SEMAFOR
-\citep{das-14},  the leading open-source frame-semantic parser for English.%
-\footnote{\url{http://www.ark.cs.cmu.edu/SEMAFOR}}
+\citep{das-14},  the leading open-source frame-semantic parser for English.
+% \footnote{\url{http://www.ark.cs.cmu.edu/SEMAFOR}}
 We observe a 4\% $F_1$ improvement in argument identification on the
 FrameNet test set, leading to a 1\% $F_1$ improvement on the full
 frame-semantic parsing task. 
 %\nascomment{this point was not explained
  % in experiments; either cut it or make sure there's a follow up}
+Our code and models are available at \url{http://www.ark.cs.cmu.edu/SEMAFOR/}.
 
 \begin{figure}
 \includegraphics[width=\columnwidth]{fig/hold-off-fn.pdf}
@@ -1287,7 +1288,6 @@ We have empirically shown that auxiliary semantic resources
 can benefit the challenging task of frame-semantic role labeling. 
 The significant gains come from the FrameNet exemplars and the FrameNet hierarchy, with
 some signs that the PropBank scheme can be leveraged as well.
-Our code and models are available at \url{http://www.ark.cs.cmu.edu/SEMAFOR/}.
 % }
 %\mk{For short version: the rest of the conclusion is already present in the Results section}
 %Complementary gains on the standard full-text evaluation are achieved
