@@ -957,7 +957,7 @@ In our case, the full text data is our target domain, and PropBank and the
 exemplars data are our source domains, respectively.
 % Each of the three source models produces SRL-style output, where predicates are assigned frames or rolesets, and for each predicate, spans are assigned role labels.
 % But they differ in the labels used for roles.
-For PropBank, we run the Illinois SRL system
+For PropBank, we run \st{version X of} the Illinois SRL system
  \citep{punyakanok-08} \footnote{\url{http://cogcomp.cs.illinois.edu/page/software_view/SRL}} 
  on the full-text data.
 For the exemplars, we train baseline SEMAFOR on the exemplars and run it on the
@@ -1287,8 +1287,7 @@ We have empirically shown that auxiliary semantic resources
 can benefit the challenging task of frame-semantic role labeling. 
 The significant gains come from the FrameNet exemplars and the FrameNet hierarchy, with
 some signs that the PropBank scheme can be leveraged as well.
-Our code and models are available at
-\nss{\url{http://theurl}}.
+Our code and models are available at \url{http://www.ark.cs.cmu.edu/SEMAFOR/}.
 % }
 %\mk{For short version: the rest of the conclusion is already present in the Results section}
 %Complementary gains on the standard full-text evaluation are achieved
