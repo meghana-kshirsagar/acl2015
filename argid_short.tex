@@ -413,13 +413,13 @@ versus the original model.
 
 Paucity of data resources is a challenge for semantic analyses like
 frame-semantic parsing \citep{gildea-02,das-14} using the
-FrameNet lexicon \citep{baker-98,fillmore_frames_2010}.
+FrameNet lexicon \citep{baker-98,fillmore_frames_2010}.%
 \footnote{\url{http://framenet.icsi.berkeley.edu}}
 Given a sentence, a frame-semantic parse maps word tokens
 to \textbf{frames} they evoke, and for each frame, finds and labels
 its \textbf{argument} phrases  
 with frame-specific \textbf{roles}. 
-An example appears in \cref{fig:harbor-fn}. %; it will be explained in detail in \cref{sec:fn}.
+An example appears in \cref{fig:hold-off-fn}. %; it will be explained in detail in \cref{sec:fn}.
 
 
 In this paper, we address this \textbf{argument identification} 
@@ -443,7 +443,7 @@ FrameNet via \finalversion{\nss{version X of }}SemLink \citep{bonial-13} hurt pe
 % parsing, as evaluated on full-text text annotations.
 These expansions of the \emph{training corpus} and the \emph{feature set}
 for supervised argument identification  are integrated into SEMAFOR
-\citep{das-14},  the leading open-source frame-semantic parser for English.
+\citep{das-14},  the leading open-source frame-semantic parser for English.%
 \footnote{\url{http://www.ark.cs.cmu.edu/SEMAFOR}}
 We observe a 4\% $F_1$ improvement in argument identification on the
 FrameNet test set, leading to a 1\% $F_1$ improvement on the full
@@ -452,25 +452,30 @@ frame-semantic parsing task.
  % in experiments; either cut it or make sure there's a follow up}
 
 \begin{figure}
-\includegraphics[width=\columnwidth]{fig/harbor-fn.pdf}
-\caption{Example sentence from FrameNet full-text annotation. 
+\includegraphics[width=\columnwidth]{fig/hold-off-fn.pdf}
+\caption{Part of a sentence from FrameNet full-text annotation. 
 3~frames and their arguments are shown: 
-\fnf{Body\_movement} is evoked by \textit{crane},
-\fnf{Observable\_body\_parts} by \textit{necks}, 
-and \fnf{Punctual\_perception} by \textit{glimpse}.
-Horizontal lines representing argument spans 
+\fnf{Desiring} is evoked by \textit{want},
+\fnf{Activity\_finish} by \textit{finish}, 
+and \fnf{Holding\_off\_on} by \textit{hold off}. 
+Thin horizontal lines representing argument spans 
 are labeled with role names.
-%(Further, \textit{harbor} is annotated as evoking the \fnf{Locale\_by\_use} frame 
-%and doubles as its sole argument; not shown.) 
+(Not shown: \textit{July} and \textit{August} evoke \fnf{Calendric\_unit} 
+and fill its \fnr{Unit} role.)
 }
-\label{fig:harbor-fn}
+\label{fig:hold-off-fn}
 \end{figure}
 
 \begin{figure}
-\includegraphics[width=\columnwidth]{fig/harbor-pb.pdf}
-\caption{Ideal PropBank (\cref{sec:pb}) annotations for verbs. Though PB uses lexical frames rather than deep frames,
-there are clear similarities to the FrameNet annotations in \cref{fig:harbor-fn}.}
-\label{fig:harbor-pb}
+\includegraphics[width=\columnwidth]{fig/hold-off-pb.pdf}
+\caption{Ideal PropBank (\cref{sec:pb}) annotations for verbs. 
+The PB lexicon defines rolesets (verb sense--specific frames) and their core roles: 
+e.g., \texttt{finish-v-01} `cause to stop', \texttt{A0} `intentional agent', \texttt{A1} `thing finishing', 
+and \texttt{A2} `explicit instrument, thing finished with'. (\texttt{finish-v-03}, by contrast, 
+means `apply a finish, as to wood'.) 
+Though PB uses lexical frames rather than deep frames,
+there are clear similarities to the FrameNet annotations in \cref{fig:hold-off-fn}.}
+\label{fig:hold-off-pb}
 \end{figure}
 
 
@@ -683,7 +688,7 @@ FrameNet frames cluster lexical predicates that evoke similar kinds of scenarios
 In comparison, 
 PropBank frames are purely lexical and there are no formal relations between different predicates 
 or their roles. PropBank's sense distinctions are generally coarser-grained than FrameNet's.
-An example PB-annotated sentence is shown in \cref{fig:harbor-pb}.
+An example PB-annotated sentence is shown in \cref{fig:hold-off-pb}.
 %}
 %\finalversion{PropBank does represent lexical ambiguity---e.g., the verb \textit{order} is ambiguous 
 %in PropBank between \pbf{order-v-01} ``impelled action'' and \pbf{order-v-02} ``request to be delivered''---but
