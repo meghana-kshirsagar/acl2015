@@ -127,6 +127,9 @@
 \usepackage{nameref}
 \usepackage{cleveref}
 
+%\captionsetup[subfigure]{subrefformat=simple,labelformat=simple,listofformat=subsimple}
+\renewcommand\thesubfigure{(\alph{subfigure})}
+
 % use \S for all references to all kinds of sections, and \P to paragraphs
 % (sadly, we cannot use the simpler \crefname{} macro because it would insert a space after the symbol)
 \crefformat{part}{\S#2#1#3}
@@ -156,6 +159,8 @@
 \crefname{chapter}{ch.}{ch.}
 \Crefname{chapter}{Ch.}{Ch.}
 \crefname{figure}{figure}{figures}
+\crefname{subfigure}{figure}{figures}
+\Crefname{subfigure}{Figure}{Figures}
 \crefname{appsec}{appendix}{appendices}
 \Crefname{appsec}{Appendix}{Appendices}
 \crefname{algocf}{algorithm}{algorithms}
@@ -1268,7 +1273,7 @@ using Hermann frames, which is not part of SEMAFOR.}
 \Cref{fig:coolplot} shows $F_1$ per frame element, for the
 baseline and the three best models. % from \cref{tbl:results}.
 Each $x$-axis value is one role, sorted by decreasing frequency 
-(the distribution of role frequencies is shown in \Cref{fig:num_inst}).
+(the distribution of role frequencies is shown in \cref{fig:num_inst}).
 %(the distribution, not shown for space, is Zipf-like).  
 For frequent roles,
 performance is similar; our models achieve gains on rarer roles.
