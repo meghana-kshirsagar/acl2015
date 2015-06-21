@@ -354,11 +354,16 @@
 \title{Frame-Semantic Role Labeling with Heterogeneous Annotations}
 
 % Nathan Schneider, Shay B. Cohen, and Noah A. Smith 
-% \author{Nathan Schneider \quad Emily Danchik \quad Chris Dyer \quad Noah A. Smith \\
-% 	    School of Computer Science\\
-% 	    Carnegie Mellon University\\
-% 	    Pittsburgh, PA 15213, USA\\
-% 	    {\tt \{nschneid,emilydan,cdyer,nasmith\}@cs.cmu.edu}}
+ \author{Meghana Kshirsagar$^\ast$ \quad Sam Thomson$^\ast$ \quad
+   Nathan Schneider$^\dagger$ \\
+  \bf \quad Jaime Carbonell$^\ast$ \quad Noah A. Smith$^\ast$ \quad Chris
+   Dyer$^\ast$  \\
+ 	    $^\ast$School of Computer Science,
+ 	    Carnegie Mellon University,
+ 	    Pittsburgh, PA, USA\\
+$^\dagger$School of Informatics, University of Edinburgh, Edinburgh,
+Scotland, UK \\
+ 	   Corresponding author:  {\tt mkshirsa@cs.cmu.edu}}
 
 % \author{Author 1\\
 % 	    XYZ Company\\
@@ -571,7 +576,7 @@ Beginning with the SemEval-2007 shared task on FrameNet analysis,
 frame-semantic parsers have been trained and evaluated on the full-text data
 % of the FrameNet corpus
  \citep{baker-07,das-14}.\footnote{Though these 
-were \emph{annotated} at the document level, and train/dev/test splits are by document, the frame-semantic parsing 
+were \emph{annotated} at the document level, and train/development/test splits are by document, the frame-semantic parsing 
 is currently restricted to the sentence level.}
 % Beginning with the SemEval-2007 shared task on FrameNet analysis \citep{baker-07},
 % frame-semantic parsers have been trained and evaluated on the \textbf{full-text (FT)}\footnote{Though these 
@@ -936,7 +941,12 @@ I still don't think this is exactly equivalent to Daume.
 If it is, we should explain why.
 If it isn't, we should explain more clearly that it's not, and why the
 difference doesn't matter.
-}
+} \nascomment{I agree with Sam -- this is not equivalent, and the
+  parenthetical is not actually correct.  adding a copy for the other
+  domain would give more freedom to capture idiosyncrasies of that
+  domain and let the general feature coefficients be more general.
+  it's true that there would be no more expressive power that way only
+  if we don't regularize, but I'm assuming we do regularize.}
 
 \subsection{Guide Features}
 \label{sec:guide}
@@ -1073,9 +1083,10 @@ be the $i$th training example.
 Then the squared hinge loss is given by $L_{\mathbf{w}}(i) =$
 \begin{align*}
 %\lefteqn{\textit{SqHinge}_\mathbf{w}(i) =} \\
-\left(\max_{a^\prime} \left\{ \begin{array}{c} \mathbf{w}^\top \boldsymbol{\phi}(a^\prime, \mathbf{x}, p, f,
+\arraycolsep=1pt
+\left(\hspace{-2pt}\max_{a^\prime} \left\{ \begin{array}{c} \mathbf{w}^\top \boldsymbol{\phi}(a^\prime, \mathbf{x}, p, f,
 r) \\ + \boldsymbol{1}\{a^\prime \not = a\} \end{array}\right \} - 
-  \mathbf{w}^\top \boldsymbol{\phi}(a, \mathbf{x}, p, f, r)\right)^2
+  \mathbf{w}^\top \boldsymbol{\phi}(a, \mathbf{x}, p, f, r)\hspace{-2pt}\right)^2
 \end{align*}
 \end{itemize}
 % and squared hinge loss is:
@@ -1128,7 +1139,7 @@ same role label.
 
 \paragraph{Hyperparameter tuning.}
 We determined the stopping criterion and the $\ell_2$ regularization parameter
-$\lambda$ by tuning on the FT dev set, searching over the following values for
+$\lambda$ by tuning on the FT development set, searching over the following values for
 $\lambda$:
 10$^{-5}$, 10$^{-7}$, 10$^{-9}$, 10$^{-12}$.
 % We use the $F_1$ on the FT dev set to determine the stopping criterion for optimization.
@@ -1187,7 +1198,7 @@ instances in \cref{tbl:results}, for all approaches. % that we
 The evaluation used in \cite{das-14} assesses both frames and arguments;
 since our focus is on SRL, we only report performance for arguments, rendering
 our scores more interpretable.
-Under our argument-only evaluation, the system of \cite{das-14} gets a 59.3\%
+Under our argument-only evaluation, the system of \cite{das-14} gets  59.3\%
 $F_1$.
 
 The first block shows baseline performance.
@@ -1237,7 +1248,7 @@ first uses PropBank SRL as guide features, and the second adds hierarchy %(sibli
 features.  
 The best result is the latter, gaining 3.95\% $F_1$ over the baseline.
 \paragraph{Full system.} When using the frame output of \cite{hermann-14}, $F_1$
-improves by 1.1, from 66.8 for the baseline, to 67.9 for our combined
+improves by 1.1\%, from 66.8\% for the baseline, to 67.9\% for our combined
 model (from the last row in \cref{tbl:results}).
 \mk{Do we want to quote the result: 70.27 on full-system 
 from Tackstrom 2015? If you see the plot I sent over email, they
@@ -1254,7 +1265,7 @@ using Hermann frames, which is not part of SEMAFOR.}
 \Cref{fig:coolplot} shows $F_1$ per frame element, for the
 baseline and the three best models. % from \cref{tbl:results}.
 Each $x$-axis value is one role, sorted by decreasing frequency 
-(the distribution of role frequencies is shown in \Cref{fig:num_inst})
+(the distribution of role frequencies is shown in \Cref{fig:num_inst}).
 %(the distribution, not shown for space, is Zipf-like).  
 For frequent roles,
 performance is similar; our models achieve gains on rarer roles.
