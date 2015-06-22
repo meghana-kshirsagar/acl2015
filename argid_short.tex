@@ -1275,6 +1275,16 @@ If so, this would likely be solved by better syntactic heuristics.}
 Both systems correctly parsed the arguments of \textit{finish}.
 
 
+\paragraph{Role-level evaluation.} 
+\Cref{fig:coolplot} shows $F_1$ per frame element, for the
+baseline and the three best models. % from \cref{tbl:results}.
+Each $x$-axis value is one role, sorted by decreasing frequency 
+(the distribution of role frequencies is shown in \cref{fig:num_inst}).
+%(the distribution, not shown for space, is Zipf-like).  
+For frequent roles,
+performance is similar; our models achieve gains on rarer roles.
+
+
 \paragraph{Full system.} When using the frame output of \cite{hermann-14}, $F_1$
 improves by 1.1\%, from 66.8\% for the baseline, to 67.9\% for our combined
 model (from the last row in \cref{tbl:results}).
@@ -1286,18 +1296,6 @@ expect to see benefits from the additional resources? }
 \st{this isn't actually the baseline SEMAFOR system, is it? I thought it was
 using Hermann frames, which is not part of SEMAFOR.}
 
-
-
-% \finalversion{
-\paragraph{Role-level evaluation.}\nss{Put this before the previous paragraph (``full system'') to avoid confusion?}
-\Cref{fig:coolplot} shows $F_1$ per frame element, for the
-baseline and the three best models. % from \cref{tbl:results}.
-Each $x$-axis value is one role, sorted by decreasing frequency 
-(the distribution of role frequencies is shown in \cref{fig:num_inst}).
-%(the distribution, not shown for space, is Zipf-like).  
-For frequent roles,
-performance is similar; our models achieve gains on rarer roles.
-% }
 
 %\finalversion{
 %\paragraph{Additional results.} Experiments with another resource,
