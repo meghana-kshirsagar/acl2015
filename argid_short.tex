@@ -447,7 +447,8 @@ adaptation techniques.  We exploit three annotation sources:
   by using ``frustratingly easy'' domain adaptation (\cref{sec:frust}), and
   \item a PropBank-style SRL system, by using guide features (\cref{sec:guide}).%
 \footnote{Preliminary experiments training on PropBank annotations mapped to 
-FrameNet via \finalversion{\nss{version X of }}SemLink \citep{bonial-13} hurt performance, likely due to errors and coverage gaps in the mappings.}
+FrameNet via SemLink 1.2.2c \citep{bonial-13}
+hurt performance, likely due to errors and coverage gaps in the mappings.}
 \end{itemize}
 % We show that these internal and external resources improve frame-semantic
 % parsing, as evaluated on full-text text annotations.
@@ -976,7 +977,7 @@ In our case, the full text data is our target domain, and PropBank and the
 exemplars data are our source domains, respectively.
 % Each of the three source models produces SRL-style output, where predicates are assigned frames or rolesets, and for each predicate, spans are assigned role labels.
 % But they differ in the labels used for roles.
-For PropBank, we run\st{ version X of} the Illinois SRL system
+For PropBank, we run the SRL system of Illinois Curator 1.1.4
  \citep{punyakanok-08}\footnote{\url{http://cogcomp.cs.illinois.edu/page/software_view/SRL}} 
  on verbs in the full-text data.
 For the exemplars, we train baseline SEMAFOR on the exemplars and run it on the
