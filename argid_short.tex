@@ -127,8 +127,6 @@
 \usepackage{nameref}
 \usepackage{cleveref}
 
-%\captionsetup[subfigure]{subrefformat=simple,labelformat=simple,listofformat=subsimple}
-\renewcommand\thesubfigure{(\alph{subfigure})}
 
 % use \S for all references to all kinds of sections, and \P to paragraphs
 % (sadly, we cannot use the simpler \crefname{} macro because it would insert a space after the symbol)
@@ -185,6 +183,9 @@
 \newcommand*{\fullref}[1]{\hyperref[{#1}]{\cref*{#1}: \nameref{#1}}}
 \newcommand{\fnref}[1]{fn.~\ref{#1}} % don't use \cref{} due to bug in (now out-of-date) cleveref package w.r.t. footnotes
 \newcommand{\Fnref}[1]{Fn.~\ref{#1}}
+
+\captionsetup[subfigure]{labelformat=simple}
+\renewcommand\thesubfigure{(\alph{subfigure})}
 
 
 \newcommand{\backtick}[0]{\textasciigrave}
