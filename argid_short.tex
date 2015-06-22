@@ -333,6 +333,14 @@
 \newcommand{\draftnotice}[1]{} % for the draft version only
 %\newcommand{\subversion}[1]{}
 
+\newcommand\blfootnote[1]{%
+ \begingroup
+  \renewcommand\thefootnote{}\footnote{#1}%
+   \addtocounter{footnote}{-1}%
+ \endgroup
+}
+
+
 %%%%%%%%%% HYPHENATION
 
 \hyphenation{WordNet}
@@ -368,7 +376,7 @@
  	    Pittsburgh, PA, USA\\
 $^\dagger$School of Informatics, University of Edinburgh, Edinburgh,
 Scotland, UK \\
- 	   Corresponding author:  {\tt mkshirsa@cs.cmu.edu}}
+	   }
 
 % \author{Author 1\\
 % 	    XYZ Company\\
@@ -420,6 +428,9 @@ versus the original model.
 \end{abstract}
 
 \section{Introduction}
+
+ \blfootnote{$^\ddagger$ Corresponding author: \tt {mkshirsa@cs.cmu.edu}}
+
 
 Paucity of data resources is a challenge for semantic analyses like
 frame-semantic parsing \citep{gildea-02,das-14} using the
