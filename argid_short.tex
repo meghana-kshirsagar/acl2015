@@ -904,6 +904,7 @@ widely used in supervised domain adaptation scenarios.
 % \end{array}
 % \right.
 % \]
+We use a slight variant of this approach.
 Let $\mathcal{D}_{\exemplars}$ denote the exemplars training data, and
 $\mathcal{D}_{\fulltext}$ denote the full text training data.
 For every feature $\phi(a, \mathbf{x}, p, f, r)$ in the base model, we add a new
@@ -935,8 +936,8 @@ The intuition is that each base feature contributes both a ``general'' weight an
 to the model; thus, it can exhibit a general preference for specific roles,  
 but this general preference can be fine-tuned for the domain.
 Regularization encourages the model to use the general version over the domain-specific, if possible.
-(Explicit features for both domains would not make the model any more expressive; 
-effectively, the source domain is the default.)
+% (Explicit features for both domains would not make the model any more expressive; 
+% effectively, the source domain is the default.)
 % \nascomment{this doesn't seem exactly like the Daume thing, which
 %   would have three sets of features: a general one, and one for each
 %   domain.  shouldn't there also be a copy for the exemplars, so that
